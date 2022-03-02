@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FancyMansion">
         <activity
-            android:name=".ViewerActivity"
+            android:name=".ViewStartActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,12 +21,16 @@
 
         </activity>
         <activity
-            android:name=".SplashActivity"
+            android:name=".ViewerActivity"
             android:exported="true">
+
         </activity>
         <activity
+            android:name=".SplashActivity"
+            android:exported="true"></activity>
+        <activity
             android:name=".MainActivity"
-            android:exported="false"/>
+            android:exported="false" />
     </application>
 
 </manifest>

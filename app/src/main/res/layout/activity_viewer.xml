@@ -28,40 +28,42 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <TextView
+        android:id="@+id/tvSlideTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_default_left"
+        android:layout_marginEnd="@dimen/margin_default_right"
+        android:layout_marginTop="@dimen/margin_slide_title"
+        android:text="타이틀"
+        android:textSize="@dimen/size_slide_title"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/layoutSlideShow"
+        />
+
     <ScrollView
         android:id="@+id/scrollSlideContent"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/layoutSlideShow"
+        android:layout_marginTop="@dimen/margin_slide_detail"
+        app:layout_constraintTop_toBottomOf="@id/tvSlideTitle"
         app:layout_constraintBottom_toTopOf="@+id/layoutTail">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layoutSlideContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_default_left"
-            android:layout_marginRight="@dimen/margin_default_right"
+            android:layout_marginStart="@dimen/margin_default_left"
+            android:layout_marginEnd="@dimen/margin_default_right"
             app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/tvSlideTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_slide_title"
-                android:text="타이틀"
-                android:textSize="@dimen/size_slide_title"
-                android:textStyle="bold"
-                app:layout_constraintTop_toTopOf="parent"
-                />
 
             <TextView
                 android:id="@+id/tvSlideDetail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_slide_detail"
                 android:text="디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일"
                 android:textSize="@dimen/size_slide_detail"
-                app:layout_constraintTop_toBottomOf="@id/tvSlideTitle"
+                app:layout_constraintTop_toTopOf="parent"
                 />
 
             <TextView
