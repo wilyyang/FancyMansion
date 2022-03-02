@@ -1,15 +1,36 @@
+# Gradle cache
+.gradle/
+
+# Eclipse project files
+.classpath
+.project
+
+# Android Studio project files
+.idea/
+.idea/workspace.xml
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+
+# Windows thumbnail db
 .DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+
+# generated files
+bin/
+gen/
+out/
+build/
+
+# Configuration file
 local.properties
+gradle.properties
+
+# Keystore file
+*.keystore
+
+# CMake Build files
+.externalNativeBuild
+
+# app folder generated
+./app/build/
+./app/release/
+./app/debug/
+
