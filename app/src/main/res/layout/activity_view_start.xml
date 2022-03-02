@@ -23,8 +23,7 @@
         <ImageView
             android:id="@+id/imageSlideShowMain"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/teal_700"/>
+            android:layout_height="match_parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -58,7 +57,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/tvSlideDetail"
+                android:id="@+id/tvSlideDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일"
