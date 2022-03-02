@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="size_slide_title">21sp</dimen>
+    <dimen name="size_slide_detail">16sp</dimen>
+    <dimen name="size_slide_question">20sp</dimen>
+    <dimen name="size_slide_item">18sp</dimen>
+
+    <dimen name="margin_default_left">20dp</dimen>
+    <dimen name="margin_default_right">20dp</dimen>
+
+    <dimen name="margin_slide_title">20dp</dimen>
+    <dimen name="margin_slide_detail">15dp</dimen>
+    <dimen name="margin_slide_question">25dp</dimen>
+    <dimen name="margin_slide_item">10dp</dimen>
+</resources>
