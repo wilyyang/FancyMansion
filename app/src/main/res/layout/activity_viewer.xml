@@ -75,36 +75,11 @@
                 app:layout_constraintTop_toBottomOf="@id/tvSlideDescription"
                 />
 
-            <TextView
-                android:id="@+id/tvSlideItem1"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerChoice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_slide_item"
-                android:text="선택 1"
-                android:textSize="@dimen/size_slide_item"
-                app:layout_constraintTop_toBottomOf="@id/tvSlideQuestion"
-                />
-
-            <TextView
-                android:id="@+id/tvSlideItem2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_slide_item"
-                android:text="선택 2"
-                android:textSize="@dimen/size_slide_item"
-                app:layout_constraintTop_toBottomOf="@id/tvSlideItem1"
-                />
-
-            <TextView
-                android:id="@+id/tvSlideItem3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_slide_item"
-                android:layout_marginBottom="@dimen/margin_slide_item"
-                android:text="선택 3"
-                android:textSize="@dimen/size_slide_item"
-                app:layout_constraintTop_toBottomOf="@id/tvSlideItem2"
-                />
+                app:layout_constraintTop_toBottomOf="@id/tvSlideQuestion" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

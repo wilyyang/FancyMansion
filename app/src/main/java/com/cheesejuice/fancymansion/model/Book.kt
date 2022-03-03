@@ -11,10 +11,10 @@ data class Slide(val id: Long, val slideImage: String, val title: String, val de
 data class SlideItem(val id: Long, val title: String, val showConditions: ArrayList<ShowCondition>, val enterItems: ArrayList<EnterItem>)
 
 // 2.2.2 <ShowCondition>
-data class ShowCondition(val id: Long, val conditionId: Long, val conditionCount: Int)
+data class ShowCondition(val id: Long, val conditionId: Long, val conditionCount: Int, val conditionOp: String)
 
 // 2.2.3 <EnterItem>
 data class EnterItem(val id: Long, val enterConditions: ArrayList<EnterCondition>)
 
 // 2.2.3.2 <EnterCondition>
-data class EnterCondition(val id: Long, val conditionId: Long, val conditionCount: Int, val enterSlide: Long)
+data class EnterCondition(val id: Long, val conditionId: Long, val conditionCount: Int, val enterSlide: Long, val conditionOp: String)

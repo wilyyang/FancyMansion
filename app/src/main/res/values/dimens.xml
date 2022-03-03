@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="size_slide_title">21sp</dimen>
-    <dimen name="size_slide_detail">16sp</dimen>
-    <dimen name="size_slide_question">20sp</dimen>
-    <dimen name="size_slide_item">18sp</dimen>
+    <dimen name="size_slide_detail">14sp</dimen>
+    <dimen name="size_slide_question">16sp</dimen>
+    <dimen name="size_slide_item">15sp</dimen>
+
     <dimen name="size_slide_config">13sp</dimen>
 
     <dimen name="margin_default">10dp</dimen>
