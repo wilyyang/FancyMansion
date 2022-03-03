@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">FancyMansion</string>
     <string name="start_book">START</string>
+
+    <string name="book_config_id">id :&#160;</string>
+    <string name="book_config_date">date :&#160;</string>
+    <string name="book_config_writer">writer :&#160;</string>
+    <string name="book_config_illustrator">illustrator :&#160;</string>
 </resources>

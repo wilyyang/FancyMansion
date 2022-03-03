@@ -60,7 +60,6 @@
                 android:id="@+id/tvSlideDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일디테일"
                 android:textSize="@dimen/size_slide_detail"
                 app:layout_constraintTop_toTopOf="parent"
                 />

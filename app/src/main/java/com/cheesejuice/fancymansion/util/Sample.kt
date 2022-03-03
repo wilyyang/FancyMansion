@@ -6,11 +6,15 @@ class Sample {
           "config":
           {
             "id":12345,
+            "version":101001,
+            "updateDate":234256544566,
+            "publish":0,
             "title":"고양이 찾기",
             "writer":"양동국",
             "illustrator":"free",
             "description":"나의 고양이 존 크리스탈을 찾아주세요.. \n누군가 데려간걸까요? \n크리스탈의 친구들이 오늘따라 이상하군요..",
-            "defaultImage":"image_1.gif"
+            "defaultImage":"image_1.gif",
+            "startId":100
           },
           
           "slides":[

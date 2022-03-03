@@ -1,5 +1,6 @@
 package com.cheesejuice.fancymansion
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -11,10 +12,13 @@ import com.cheesejuice.fancymansion.util.Sample
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class ViewStartActivity : AppCompatActivity() {
     private lateinit var binding: ActivityViewStartBinding
+    private lateinit var book: Book
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityViewStartBinding.inflate(layoutInflater)
@@ -24,19 +28,32 @@ class ViewStartActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        test()
-    }
+        binding.btnStartBook.setOnClickListener {
+            val intent = Intent(this, ViewerActivity::class.java)
+            intent.putExtra("book", book)
+            startActivity(Intent(this, ViewerActivity::class.java))
+        }
 
-    fun test() {
         val sample = Sample()
         val jsonString = sample.getSampleJson()
-        val book = Gson().fromJson(jsonString, Book::class.java)
+        book = Gson().fromJson(jsonString, Book::class.java)
 
-        binding.toolbar.title = book.config.title
-        binding.tvSlideTitle.text = book.config.title
-        binding.tvSlideDescription.text = book.config.description
+        makeReadyScreen(book)
+    }
 
-        Glide.with(this).load(R.raw.image_1).into(binding.imageSlideShowMain)
+    fun makeReadyScreen(book: Book) {
+        with(book.config){
+            binding.toolbar.title = title
+            binding.tvSlideTitle.text = title
+            binding.tvSlideDescription.text = description
+
+            binding.tvSlideConfigId.text = "#$id  (${MainApplication.commonUtil.longToTimeFormatss(updateDate)})"
+            binding.tvSlideConfigWriter.text = writer
+            binding.tvSlideConfigIllustrator.text = illustrator
+
+        }
+        Glide.with(applicationContext).load(R.raw.image_1).into(binding.imageSlideShowMain)
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean
