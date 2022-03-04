@@ -65,5 +65,6 @@ class CommonUtil(val context: Context){
         val pref = context.getSharedPreferences(Const.KEY_PREFIX_PREF_BOOK+bookId, MODE_PRIVATE)
         val editor = pref.edit()
         editor.putInt(Const.KEY_PREFIX_PREF_COUNT+slideId, count)
+        editor.commit()
     }
 }

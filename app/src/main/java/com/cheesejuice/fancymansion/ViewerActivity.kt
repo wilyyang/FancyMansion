@@ -9,8 +9,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityViewerBinding
 import com.cheesejuice.fancymansion.model.Book
+import com.cheesejuice.fancymansion.model.ChoiceItem
+import com.cheesejuice.fancymansion.model.Condition
 import com.cheesejuice.fancymansion.model.Slide
 import com.cheesejuice.fancymansion.util.CommonUtil
+import com.cheesejuice.fancymansion.util.CondOp
 import com.cheesejuice.fancymansion.util.Const
 import com.cheesejuice.fancymansion.util.Sample
 import com.cheesejuice.fancymansion.view.ChoiceAdapter
@@ -22,7 +25,7 @@ class ViewerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityViewerBinding
     private var book: Book? = null
     private lateinit var slideMap: Map<Long, Slide>
-    private lateinit var commonUtil: CommonUtil
+    private lateinit var util: CommonUtil
     private lateinit var currentSlide: Slide
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,33 +35,36 @@ class ViewerActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        commonUtil = CommonUtil(applicationContext)
+        util = CommonUtil(applicationContext)
 
-//        val targetId = intent.getLongExtra(Const.KEY_CURRENT_BOOK_ID, 0)
-//        if(targetId == 0L) finish()
+        initBookAndSlide()
+    }
 
-        val firstRead = intent.getBooleanExtra(Const.KEY_FIRST_READ, true)
+    private fun initBookAndSlide(){
+        //        val targetId = intent.getLongExtra(Const.KEY_CURRENT_BOOK_ID, 0)
+        //        if(targetId == 0L) finish()
 
+        var firstRead = intent.getBooleanExtra(Const.KEY_FIRST_READ, true)
         CoroutineScope(Dispatchers.Default).launch {
             book = extractBookFromJson("temp")
             book?.also { bookInfo ->
                 slideMap = bookInfo.slides.map { slide -> slide.id to slide }.toMap()
-                if(firstRead || !commonUtil.isBookReading(bookInfo.config.id) || commonUtil.getReadingSlideId(bookInfo.config.id) == Const.BOOK_FIRST_READ){
-                    commonUtil.initReadingBookInfo(bookInfo.config.id, bookInfo.config.startId)
-                    commonUtil.setReadingSlideId(bookInfo.config.id, bookInfo.config.startId)
+
+                if(firstRead || !util.isBookReading(bookInfo.config.id) || util.getReadingSlideId(bookInfo.config.id) == Const.BOOK_FIRST_READ){
+                    util.initReadingBookInfo(bookInfo.config.id, bookInfo.config.startId)
+                    util.setReadingSlideId(bookInfo.config.id, bookInfo.config.startId)
+                    firstRead = true
                 }
 
                 withContext(Dispatchers.Main){
                     binding.toolbar.title = bookInfo.config.title
 
-                    val currentSlideId = commonUtil.getReadingSlideId(bookInfo.config.id)
-                    slideMap[currentSlideId]?.let { slide ->
-                        makeSlideScreen(slide)
-                    }
+                    val currentSlideId = util.getReadingSlideId(bookInfo.config.id)
+                    makeSlideScreen(slideMap[currentSlideId], firstRead)
                 }
             }?: also{
                 withContext(Dispatchers.Main){
-                    commonUtil.getAlertDailog(this@ViewerActivity).show()
+                    util.getAlertDailog(this@ViewerActivity).show()
                 }
             }
         }
@@ -76,28 +82,79 @@ class ViewerActivity : AppCompatActivity() {
         return result
     }
 
-    private fun makeSlideScreen(slide: Slide) {
+    private fun incrementSlideCount(slide: Slide){
+        val count = util.getSlideCount(book!!.config.id, slide.id) + 1
+        util.setSlideCount(book!!.config.id, slide.id, count)
+    }
+
+    private fun makeSlideScreen(slide: Slide?, isCount: Boolean) {
+        slide?:let {
+            util.getAlertDailog(this@ViewerActivity).show()
+            return
+        }
+        if(isCount){ incrementSlideCount(slide) }
+
         currentSlide = slide
         binding.layoutLoading.root.visibility = View.GONE
         binding.layoutMain.visibility = View.VISIBLE
-        with(slide){
+        with(currentSlide){
+            Glide.with(applicationContext).load(Sample.getSampleImageId(slideImage)).into(binding.imageSlideShowMain)
             binding.tvSlideTitle.text = title
             binding.tvSlideDescription.text = description
-
             binding.tvSlideQuestion.text = question
 
-            val layoutManager = LinearLayoutManager(baseContext)
-            binding.recyclerChoice.layoutManager=layoutManager
-            val adapter = ChoiceAdapter(choiceItems, object : OnChoiceItemClickListener {
-                override fun onItemClick(choiceId: Long) {
-                    val count = commonUtil.getSlideCount(book!!.config.id, currentSlide.id)+1
-                    commonUtil.setSlideCount(book!!.config.id, currentSlide.id, count)
-                    val enterSlideId = currentSlide.choiceItems[0].enterItems[0].enterSlideId
-                    slideMap[enterSlideId]?.also { makeSlideScreen(it) }?:also{ commonUtil.getAlertDailog(this@ViewerActivity).show() }
+            val passChoiceItems: ArrayList<ChoiceItem> = arrayListOf()
+            for(choiceItem in choiceItems){
+                if(checkConditions(choiceItem.showConditions)){
+                    passChoiceItems.add(choiceItem)
+                }
+            }
+
+            binding.recyclerChoice.layoutManager=LinearLayoutManager(baseContext)
+            binding.recyclerChoice.adapter = ChoiceAdapter(passChoiceItems, object : OnChoiceItemClickListener {
+                override fun onItemClick(choiceItem: ChoiceItem) {
+                    enterNextSlide(choiceItem)
                 }
             })
-            binding.recyclerChoice.adapter=adapter
         }
-        Glide.with(applicationContext).load(Sample.getSampleImageId(slide.slideImage)).into(binding.imageSlideShowMain)
+    }
+
+    private fun checkConditions(conditions: ArrayList<Condition>): Boolean{
+        for(condition in conditions){
+            if(!checkCondition(condition)){
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun checkCondition(condition: Condition): Boolean =
+        condition.run{
+            Log.d(Const.TAG, "$conditionId : $conditionCount $conditionOp ${util.getSlideCount(book!!.config.id, conditionId)}")
+            CondOp.from(conditionOp).check(conditionCount, util.getSlideCount(book!!.config.id, conditionId))
+        }
+
+    private fun enterNextSlide(choiceItem: ChoiceItem){
+        binding.layoutLoading.root.visibility = View.VISIBLE
+        binding.layoutMain.visibility = View.GONE
+
+        CoroutineScope(Dispatchers.Default).launch {
+            var enterSlideId = Const.END_SLIDE_ID
+
+            for(enterItem in choiceItem.enterItems) {
+                if(checkConditions(enterItem.enterConditions)){
+                    enterSlideId = enterItem.enterSlideId
+                    break
+                }
+            }
+
+            withContext(Dispatchers.Main){
+                if(enterSlideId != Const.END_SLIDE_ID){
+                    makeSlideScreen(slideMap[enterSlideId], true)
+                }else{
+                    makeSlideScreen(slideMap[book!!.config.defaultEndId], true)
+                }
+            }
+        }
     }
 }

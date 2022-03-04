@@ -22,7 +22,7 @@ import kotlinx.coroutines.Dispatchers.Main
 class ViewStartActivity : AppCompatActivity() {
     private lateinit var binding: ActivityViewStartBinding
     private var config: Config? = null
-    private lateinit var commonUtil: CommonUtil
+    private lateinit var util: CommonUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +33,7 @@ class ViewStartActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        commonUtil = CommonUtil(applicationContext)
+        util = CommonUtil(applicationContext)
         binding.btnStartBook.setOnClickListener {
             val intent = Intent(this, ViewerActivity::class.java)
             intent.putExtra(Const.KEY_CURRENT_BOOK_ID, config!!.id)
@@ -49,7 +49,7 @@ class ViewStartActivity : AppCompatActivity() {
                 }
             } ?: also {
                 withContext(Main){
-                    commonUtil.getAlertDailog(this@ViewStartActivity).show()
+                    util.getAlertDailog(this@ViewStartActivity).show()
                 }
             }
         }
@@ -75,7 +75,7 @@ class ViewStartActivity : AppCompatActivity() {
             binding.tvSlideTitle.text = title
             binding.tvSlideDescription.text = description
 
-            binding.tvSlideConfigId.text = "#$id  (${commonUtil.longToTimeFormatss(updateDate)})"
+            binding.tvSlideConfigId.text = "#$id  (${util.longToTimeFormatss(updateDate)})"
             binding.tvSlideConfigWriter.text = writer
             binding.tvSlideConfigIllustrator.text = illustrator
 

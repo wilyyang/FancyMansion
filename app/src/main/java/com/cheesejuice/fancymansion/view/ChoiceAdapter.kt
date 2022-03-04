@@ -7,7 +7,7 @@ import com.cheesejuice.fancymansion.databinding.ItemChoiceBinding
 import com.cheesejuice.fancymansion.model.ChoiceItem
 
 interface OnChoiceItemClickListener{
-    fun onItemClick(choiceId: Long)
+    fun onItemClick(choiceItem: ChoiceItem)
 }
 
 class ChoiceAdapter(val datas: MutableList<ChoiceItem>, val adapterListener: OnChoiceItemClickListener): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
@@ -22,14 +22,14 @@ class ChoiceAdapter(val datas: MutableList<ChoiceItem>, val adapterListener: OnC
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val binding=(holder as ChoiceViewHolder).binding
         binding.tvItemText.text= datas[position].title
-        holder.choiceId = datas.get(position).id
+        holder.choiceItem = datas[position]
     }
 
     inner class ChoiceViewHolder(val binding: ItemChoiceBinding): RecyclerView.ViewHolder(binding.root){
-        var choiceId : Long = 0
+        var choiceItem : ChoiceItem? = null
         init {
             binding.root.setOnClickListener {
-                adapterListener.onItemClick(choiceId)
+                adapterListener.onItemClick(choiceItem!!)
             }
         }
     }

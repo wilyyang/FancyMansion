@@ -18,7 +18,8 @@ class Sample {
             "illustrator":"free",
             "description":"나의 고양이 존 크리스탈을 찾아주세요.. \n누군가 데려간걸까요? \n크리스탈의 친구들이 오늘따라 이상하군요..",
             "defaultImage":"image_1.gif",
-            "startId":100
+            "startId":100,
+            "defaultEndId":100
           },
           
           "slides":[
@@ -37,17 +38,10 @@ class Sample {
                   "showConditions":[
                     {
                       "id":12354,
-                      "conditionId":600,
-                      "conditionCount":3,
-                      "conditionOp":"over"
-                    },
-                    {
-                      "id":12355,
-                      "conditionId":600,
-                      "conditionCount":6,
-                      "conditionOp":"below"
-                    }
-                  ],
+                      "conditionId":100,
+                      "conditionCount":2,
+                      "conditionOp":"all"
+                    }],
                   
                   "enterItems":[
                     {
@@ -56,11 +50,22 @@ class Sample {
                       "enterConditions":[
                         {
                           "id":12354,
-                          "conditionId":202,
-                          "conditionCount":0,
-                          "conditionOp":"equal"
+                          "conditionId":400,
+                          "conditionCount":3,
+                          "conditionOp":"over"
+                        },
+                        {
+                          "id":12354,
+                          "conditionId":100,
+                          "conditionCount":10,
+                          "conditionOp":"under"
                         }
                       ]
+                    },
+                    {
+                      "id":12354,
+                      "enterSlideId":100,
+                      "enterConditions":[]
                     }
                   ]
                 },
@@ -74,7 +79,7 @@ class Sample {
                   "enterItems":[
                     {
                       "id":12354,
-                      "enterSlideId":300,
+                      "enterSlideId":400,
                       "enterConditions":[
                         {
                           "id":12354,
