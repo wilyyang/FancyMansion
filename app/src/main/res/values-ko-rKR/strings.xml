@@ -3,6 +3,11 @@
     <string name="app_name">상상멘션</string>
     <string name="start_book">시작</string>
 
+    <string name="wait_make_object">데이터 추출 중입니다. 대기해주세요.</string>
+    <string name="alert_default_title">오류</string>
+    <string name="alert_default_message">데이터 처리 중에 문제가 발생했습니다. 이전 화면으로 이동합니다.</string>
+    <string name="alert_default_button">확인</string>
+
     <string name="book_config_id">id :&#160;</string>
     <string name="book_config_date">업데이트 :&#160;</string>
     <string name="book_config_writer">작가 :&#160;</string>

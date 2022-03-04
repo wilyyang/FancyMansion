@@ -1,7 +1,11 @@
 package com.cheesejuice.fancymansion.util
 
+import com.cheesejuice.fancymansion.R
+import com.cheesejuice.fancymansion.R.*
+
 class Sample {
-    fun getSampleJson(): String ="""
+    companion object{
+        fun getSampleJson(): String ="""
         { 
           "config":
           {
@@ -25,7 +29,7 @@ class Sample {
               "description":"아아.. 존 크리스탈 너는 어딨는거야.. 누가데려간거야?",
               "count":0,
               "question":"우선 다른 고양이에게 가보자!",
-              "slideItems":[
+              "choiceItems":[
                 {
                   "id":12354,
                   "title":"하얀 고양이 믕믕에게로",
@@ -48,12 +52,12 @@ class Sample {
                   "enterItems":[
                     {
                       "id":12354,
+                      "enterSlideId":300,
                       "enterConditions":[
                         {
                           "id":12354,
                           "conditionId":202,
                           "conditionCount":0,
-                          "enterSlide":300,
                           "conditionOp":"equal"
                         }
                       ]
@@ -70,15 +74,61 @@ class Sample {
                   "enterItems":[
                     {
                       "id":12354,
+                      "enterSlideId":300,
                       "enterConditions":[
                         {
                           "id":12354,
                           "conditionId":202,
                           "conditionCount":0,
-                          "enterSlide":300,
                           "conditionOp":"all"
                         }
                       ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id":300,
+              "slideImage":"image_2.gif",
+              "title":"와와와와와와",
+              "description":"소소소소소소소소소소소소",
+              "count":0,
+              "question":"큐큐큐큐큐큐큐큐",
+              "choiceItems":[
+                {
+                  "id":12678,
+                  "title":"푸푸푸푸푸",
+                  
+                  "showConditions":[],
+                  "enterItems":[
+                    {
+                      "id":12354,
+                      "enterSlideId":400,
+                      "enterConditions":[]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id":400,
+              "slideImage":"image_5.gif",
+              "title":"rkrkrk",
+              "description":"rkrkrkrkrkrkrkrkrk",
+              "count":0,
+              "question":"rkrkrkrkrkrkrkrkrkrkrkrk",
+              "choiceItems":[
+                {
+                  "id":12678,
+                  "title":"rkrkrk",
+                  
+                  "showConditions":[],
+                  "enterItems":[
+                    {
+                      "id":12354,
+                      "enterSlideId":100,
+                      "enterConditions":[]
                     }
                   ]
                 }
@@ -89,7 +139,7 @@ class Sample {
     """.trimIndent()
 
 
-    fun getSampleConfig(): String ="""
+        fun getSampleConfig(): String ="""
         { 
           "id":12345,
           "version":101001,
@@ -103,4 +153,15 @@ class Sample {
           "startId":100
         }
     """.trimIndent()
+
+        fun getSampleImageId(image: String):Int = when(image){
+            "image_1.gif" -> raw.image_1
+            "image_2.gif" -> raw.image_2
+            "image_3.gif" -> raw.image_3
+            "image_4.gif" -> raw.image_4
+            "image_5.gif" -> raw.image_5
+            "image_6.gif" -> raw.image_6
+            else -> raw.image_1
+        }
+    }
 }

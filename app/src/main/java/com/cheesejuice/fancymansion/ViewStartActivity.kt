@@ -1,19 +1,29 @@
 package com.cheesejuice.fancymansion
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityViewStartBinding
 import com.cheesejuice.fancymansion.model.Config
+import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.Const
 import com.cheesejuice.fancymansion.util.Sample
 import com.google.gson.Gson
+import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.Dispatchers.Main
 
 class ViewStartActivity : AppCompatActivity() {
     private lateinit var binding: ActivityViewStartBinding
-    private lateinit var config: Config
+    private var config: Config? = null
+    private lateinit var commonUtil: CommonUtil
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityViewStartBinding.inflate(layoutInflater)
@@ -23,31 +33,55 @@ class ViewStartActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
+        commonUtil = CommonUtil(applicationContext)
         binding.btnStartBook.setOnClickListener {
             val intent = Intent(this, ViewerActivity::class.java)
-            intent.putExtra(Const.KEY_TARGET_BOOK_ID, config.id)
+            intent.putExtra(Const.KEY_CURRENT_BOOK_ID, config!!.id)
+            intent.putExtra(Const.KEY_FIRST_READ, true)
             startActivity(intent)
         }
 
-        val sample = Sample()
-        val configJson = sample.getSampleConfig()
-        config = Gson().fromJson(configJson, Config::class.java)
+        CoroutineScope(Default).launch {
+            config = extractConfigFromJson("temp")
+            config?.also {  configInfo ->
+                withContext(Dispatchers.Main) {
+                    makeReadyScreen(configInfo)
+                }
+            } ?: also {
+                withContext(Main){
+                    commonUtil.getAlertDailog(this@ViewStartActivity).show()
+                }
+            }
+        }
+    }
 
-        makeReadyScreen(config)
+    private fun extractConfigFromJson(fileName: String): Config?{
+        val configJson = Sample.getSampleConfig()
+        var result:Config? = null
+        try{
+            result = Gson().fromJson(configJson, Config::class.java)
+        }catch (e : Exception){
+            Log.e(Const.TAG, "Exception : "+e.message)
+            return null
+        }
+        return result
     }
 
     private fun makeReadyScreen(config: Config) {
+        binding.layoutLoading.root.visibility = View.GONE
+        binding.layoutMain.visibility = View.VISIBLE
         with(config){
             binding.toolbar.title = title
             binding.tvSlideTitle.text = title
             binding.tvSlideDescription.text = description
 
-            binding.tvSlideConfigId.text = "#$id  (${MainApplication.commonUtil.longToTimeFormatss(updateDate)})"
+            binding.tvSlideConfigId.text = "#$id  (${commonUtil.longToTimeFormatss(updateDate)})"
             binding.tvSlideConfigWriter.text = writer
             binding.tvSlideConfigIllustrator.text = illustrator
 
         }
-        Glide.with(applicationContext).load(R.raw.image_1).into(binding.imageSlideShowMain)
+        Glide.with(applicationContext).load(Sample.getSampleImageId(config.defaultImage)).into(binding.imageSlideShowMain)
+        binding.btnStartBook.isEnabled = true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean

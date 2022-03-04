@@ -15,4 +15,6 @@
     <dimen name="margin_slide_detail">15dp</dimen>
     <dimen name="margin_slide_question">25dp</dimen>
     <dimen name="margin_slide_item">10dp</dimen>
+
+    <dimen name="padding_slide_item">10dp</dimen>
 </resources>
