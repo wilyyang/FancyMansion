@@ -12,10 +12,7 @@ import com.cheesejuice.fancymansion.model.Book
 import com.cheesejuice.fancymansion.model.ChoiceItem
 import com.cheesejuice.fancymansion.model.Condition
 import com.cheesejuice.fancymansion.model.Slide
-import com.cheesejuice.fancymansion.util.CommonUtil
-import com.cheesejuice.fancymansion.util.CondOp
-import com.cheesejuice.fancymansion.util.Const
-import com.cheesejuice.fancymansion.util.Sample
+import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.view.ChoiceAdapter
 import com.cheesejuice.fancymansion.view.OnChoiceItemClickListener
 import com.google.gson.Gson
@@ -82,9 +79,9 @@ class ViewerActivity : AppCompatActivity() {
         return result
     }
 
-    private fun incrementSlideCount(slide: Slide){
-        val count = util.getSlideCount(book!!.config.id, slide.id) + 1
-        util.setSlideCount(book!!.config.id, slide.id, count)
+    private fun incrementIdCount(id: Long){
+        val count = util.getSlideCount(book!!.config.id, id) + 1
+        util.setSlideCount(book!!.config.id, id, count)
     }
 
     private fun makeSlideScreen(slide: Slide?, isCount: Boolean) {
@@ -92,7 +89,7 @@ class ViewerActivity : AppCompatActivity() {
             util.getAlertDailog(this@ViewerActivity).show()
             return
         }
-        if(isCount){ incrementSlideCount(slide) }
+        if(isCount){ incrementIdCount(slide.id) }
 
         currentSlide = slide
         binding.layoutLoading.root.visibility = View.GONE
@@ -113,6 +110,7 @@ class ViewerActivity : AppCompatActivity() {
             binding.recyclerChoice.layoutManager=LinearLayoutManager(baseContext)
             binding.recyclerChoice.adapter = ChoiceAdapter(passChoiceItems, object : OnChoiceItemClickListener {
                 override fun onItemClick(choiceItem: ChoiceItem) {
+                    incrementIdCount(choiceItem.id)
                     enterNextSlide(choiceItem)
                 }
             })
@@ -120,18 +118,22 @@ class ViewerActivity : AppCompatActivity() {
     }
 
     private fun checkConditions(conditions: ArrayList<Condition>): Boolean{
+        var result = true
+        var nextLogic = CondNext.AND
         for(condition in conditions){
-            if(!checkCondition(condition)){
-                return false
-            }
+            result = nextLogic.check(result, checkCondition(condition))
+            nextLogic = CondNext.from(condition.nextLogic)
+            if(result && nextLogic == CondNext.OR) break
         }
-        return true
+        return result
     }
 
     private fun checkCondition(condition: Condition): Boolean =
         condition.run{
-            Log.d(Const.TAG, "$conditionId : $conditionCount $conditionOp ${util.getSlideCount(book!!.config.id, conditionId)}")
-            CondOp.from(conditionOp).check(conditionCount, util.getSlideCount(book!!.config.id, conditionId))
+            val count1 = util.getSlideCount(book!!.config.id, conditionId1)
+            val count2 = if(conditionId2==Const.NOT_SUPPORT_COND_ID_2) conditionCount else util.getSlideCount(book!!.config.id, conditionId2)
+            Log.d(Const.TAG, "check : $conditionId1 ($count1) $conditionOp $conditionId2 ($count2)")
+            CondOp.from(conditionOp).check(count1, count2)
         }
 
     private fun enterNextSlide(choiceItem: ChoiceItem){
@@ -143,11 +145,13 @@ class ViewerActivity : AppCompatActivity() {
 
             for(enterItem in choiceItem.enterItems) {
                 if(checkConditions(enterItem.enterConditions)){
+                    incrementIdCount(enterItem.id)
                     enterSlideId = enterItem.enterSlideId
                     break
                 }
             }
 
+            delay(100)
             withContext(Dispatchers.Main){
                 if(enterSlideId != Const.END_SLIDE_ID){
                     makeSlideScreen(slideMap[enterSlideId], true)

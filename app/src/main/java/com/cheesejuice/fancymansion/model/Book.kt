@@ -14,4 +14,4 @@ data class ChoiceItem(val id: Long, val title: String, val showConditions: Array
 data class EnterItem(val id: Long, val enterSlideId: Long, val enterConditions: ArrayList<Condition>)
 
 // 2.2.2 showConditions <Condition> /  2.2.3.2 enterConditions <Condition>
-data class Condition(val id: Long, val conditionId: Long, val conditionCount: Int, val conditionOp: String)
+data class Condition(val id: Long, val conditionId1: Long, val conditionId2: Long, val conditionCount: Int, val conditionOp: String, val nextLogic: String)
