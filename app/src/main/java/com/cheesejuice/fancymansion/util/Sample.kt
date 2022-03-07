@@ -6,7 +6,7 @@ import com.cheesejuice.fancymansion.R.*
 class Sample {
     companion object {
         // 00 / 00 / 00 / 00 / 00 = slide / choice / showCondition / enterId / enterCondition
-        fun getSampleConfig(): String = """
+        fun getSampleConfig(id: Long): String = """
         { 
             "id":12345,
             "version":101001,
@@ -18,9 +18,21 @@ class Sample {
             "description":"나의 고양이 존 크리스탈을 찾아주세요.. \n누군가 데려간걸까요? \n크리스탈의 친구들을 유심히 살펴보면 단서를 얻을지도 모르죠..",
             "defaultImage":"image_1.gif",
             "startId":200000000,
-            "defaultEndId":100000000
+            "defaultEndId":100000000,
+            "isEdit":false,
+            "briefs":[
+                { "slideId":100000000, "slideTitle":"더 이상 존 크리스탈을 찾을 수 없습니다..." },
+                { "slideId":200000000, "slideTitle":"대체 어딨는거야!" },
+                { "slideId":300000000, "slideTitle":"하얀 고양이 모야!" },
+                { "slideId":400000000, "slideTitle":"모야가 가져다준 물고기!" },
+                { "slideId":500000000, "slideTitle":"응꼬를 핥으려는 고양이 웬디!" },
+                { "slideId":600000000, "slideTitle":"빙글빙글 상자속에서 돌고도는 너와 나" },
+                { "slideId":700000000, "slideTitle":"응꼬를 핥으려는 고양이 웬디!" },
+                { "slideId":800000000, "slideTitle":"그 녀석은 용서할 수 없는 녀석이야.." },
+                { "slideId":900000000, "slideTitle":"아니 이 녀석 집에 있었잖아?" }
+            ]
         }
-    """.trimIndent()
+        """.trimIndent()
 
         fun getSampleImageId(image: String): Int = when (image) {
             "image_1.gif" -> raw.image_1
@@ -34,7 +46,7 @@ class Sample {
             else -> raw.game_end
         }
 
-        fun getSlideJson(slideId: Long): String =
+        fun getSlideJson(bookId: Long, slideId: Long): String =
             when(slideId){
                 100000000L ->
                     """
@@ -421,7 +433,19 @@ class Sample {
             "description":"나의 고양이 존 크리스탈을 찾아주세요.. \n누군가 데려간걸까요? \n크리스탈의 친구들을 유심히 살펴보면 단서를 얻을지도 모르죠..",
             "defaultImage":"image_1.gif",
             "startId":200000000,
-            "defaultEndId":100000000
+            "defaultEndId":100000000,
+            "isEdit":false,
+            "briefs":[
+                { "slideId":100000000, "slideTitle":"더 이상 존 크리스탈을 찾을 수 없습니다..." },
+                { "slideId":200000000, "slideTitle":"대체 어딨는거야!" },
+                { "slideId":300000000, "slideTitle":"하얀 고양이 모야!" },
+                { "slideId":400000000, "slideTitle":"모야가 가져다준 물고기!" },
+                { "slideId":500000000, "slideTitle":"응꼬를 핥으려는 고양이 웬디!" },
+                { "slideId":600000000, "slideTitle":"빙글빙글 상자속에서 돌고도는 너와 나" },
+                { "slideId":700000000, "slideTitle":"응꼬를 핥으려는 고양이 웬디!" },
+                { "slideId":800000000, "slideTitle":"그 녀석은 용서할 수 없는 녀석이야.." },
+                { "slideId":900000000, "slideTitle":"아니 이 녀석 집에 있었잖아?" }
+            ]
           },
           "slides":[
 
@@ -765,6 +789,6 @@ class Sample {
             }
           ]
         }
-    """.trimIndent()
+        """.trimIndent()
     }
 }
