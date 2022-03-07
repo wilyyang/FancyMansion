@@ -44,7 +44,7 @@ class ViewStartActivity : AppCompatActivity() {
         }
 
         CoroutineScope(Default).launch {
-            config = fileUtil.extractConfigFromJson("temp")
+            config = fileUtil.extractConfigFromJson(-1)
             config?.also {  configInfo ->
                 withContext(Dispatchers.Main) {
                     makeReadyScreen(configInfo)

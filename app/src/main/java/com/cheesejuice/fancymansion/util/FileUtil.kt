@@ -9,7 +9,7 @@ import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
 
 class FileUtil @Inject constructor(@ActivityContext private val context: Context){
-    fun extractConfigFromJson(fileName: String): Config?{
+    fun extractConfigFromJson(bookId: Long): Config?{
         val configJson = Sample.getSampleConfig()
         var result: Config? = null
         try{

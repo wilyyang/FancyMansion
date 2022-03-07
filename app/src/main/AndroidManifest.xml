@@ -11,26 +11,24 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FancyMansion">
         <activity
-            android:name=".ViewStartActivity"
+            android:name=".EditStartActivity"
             android:exported="true" >
+
+        </activity>
+        <activity
+            android:name=".ViewStartActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".ViewerActivity"
             android:exported="true">
 
         </activity>
-        <activity
-            android:name=".SplashActivity"
-            android:exported="true"></activity>
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" />
     </application>
 
 </manifest>
