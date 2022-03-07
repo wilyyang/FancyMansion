@@ -4,8 +4,9 @@ import android.content.Context
 import android.util.Log
 import com.cheesejuice.fancymansion.model.Book
 import com.cheesejuice.fancymansion.model.Config
-import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ActivityContext
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 class FileUtil @Inject constructor(@ActivityContext private val context: Context){
@@ -13,7 +14,8 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         val configJson = Sample.getSampleConfig()
         var result: Config? = null
         try{
-            result = Gson().fromJson(configJson, Config::class.java)
+            result = Json.decodeFromString<Config>(configJson)
+
         }catch (e : Exception){
             Log.e(Const.TAG, "Exception : "+e.printStackTrace())
             return null
@@ -25,7 +27,8 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         val bookJson = Sample.getSampleJson()
         var result: Book? = null
         try{
-            result = Gson().fromJson(bookJson, Book::class.java)
+            result = Json.decodeFromString<Book>(bookJson)
+//            result = Gson().fromJson(bookJson, Book::class.java)
         }catch (e : Exception){
             Log.e(Const.TAG, "Exception : "+e.message)
             return null

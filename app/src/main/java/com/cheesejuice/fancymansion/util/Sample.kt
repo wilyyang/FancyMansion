@@ -423,7 +423,6 @@ class Sample {
             "startId":200000000,
             "defaultEndId":100000000
           },
-          
           "slides":[
 
             {
@@ -435,7 +434,6 @@ class Sample {
               "question":"",
               "choiceItems":[]
             },
-            
             {
               "id":200000000,
               "slideImage":"image_1.gif",
@@ -507,7 +505,6 @@ class Sample {
                 }
               ]
             },
-            
             {
               "id":300000000,
               "slideImage":"image_6.gif",
@@ -582,7 +579,6 @@ class Sample {
                 }
               ]
             },
-            
             {
               "id":400000000,
               "slideImage":"fish_cat.jpg",
@@ -605,7 +601,6 @@ class Sample {
                 }
               ]
             },
-            
             {
               "id":500000000,
               "slideImage":"image_3.gif",
@@ -640,7 +635,6 @@ class Sample {
                 }
               ]
             },
-            
             {
               "id":600000000,
               "slideImage":"image_5.gif",
@@ -704,7 +698,6 @@ class Sample {
                 }
               ]
             },
-            
             {
               "id":700000000,
               "slideImage":"image_3.gif",
@@ -727,7 +720,6 @@ class Sample {
                 }
               ]
             },
-            
             {
               "id":800000000,
               "slideImage":"image_2.gif",
@@ -762,7 +754,6 @@ class Sample {
                 }
               ]
             },
-            
             {
               "id":900000000,
               "slideImage":"image_4.gif",
@@ -772,7 +763,6 @@ class Sample {
               "question":"",
               "choiceItems":[]
             }
-            
           ]
         }
     """.trimIndent()
