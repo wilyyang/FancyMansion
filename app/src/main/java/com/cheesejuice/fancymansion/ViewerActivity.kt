@@ -1,6 +1,5 @@
 package com.cheesejuice.fancymansion
 
-import android.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -15,14 +14,21 @@ import com.cheesejuice.fancymansion.model.Slide
 import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.view.ChoiceAdapter
 import com.cheesejuice.fancymansion.view.OnChoiceItemClickListener
-import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ViewerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityViewerBinding
     private var book: Book? = null
     private lateinit var slideMap: Map<Long, Slide>
-    private lateinit var util: CommonUtil
+    @Inject
+    lateinit var util: CommonUtil
+    @Inject
+    lateinit var bookPrefUtil: BookPrefUtil
+    @Inject
+    lateinit var fileUtil: FileUtil
     private lateinit var currentSlide: Slide
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +38,6 @@ class ViewerActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        util = CommonUtil(applicationContext)
 
         initBookAndSlide()
     }
@@ -43,20 +48,20 @@ class ViewerActivity : AppCompatActivity() {
 
         var firstRead = intent.getBooleanExtra(Const.KEY_FIRST_READ, true)
         CoroutineScope(Dispatchers.Default).launch {
-            book = extractBookFromJson("temp")
+            book = fileUtil.extractBookFromJson("temp")
             book?.also { bookInfo ->
                 slideMap = bookInfo.slides.map { slide -> slide.id to slide }.toMap()
 
-                if(firstRead || !util.isBookReading(bookInfo.config.id) || util.getReadingSlideId(bookInfo.config.id) == Const.BOOK_FIRST_READ){
-                    util.initReadingBookInfo(bookInfo.config.id, bookInfo.config.startId)
-                    util.setReadingSlideId(bookInfo.config.id, bookInfo.config.startId)
+                if(firstRead || !bookPrefUtil.isBookReading(bookInfo.config.id) || bookPrefUtil.getReadingSlideId(bookInfo.config.id) == Const.BOOK_FIRST_READ){
+                    bookPrefUtil.initReadingBookInfo(bookInfo.config.id, bookInfo.config.startId)
+                    bookPrefUtil.setReadingSlideId(bookInfo.config.id, bookInfo.config.startId)
                     firstRead = true
                 }
 
                 withContext(Dispatchers.Main){
                     binding.toolbar.title = bookInfo.config.title
 
-                    val currentSlideId = util.getReadingSlideId(bookInfo.config.id)
+                    val currentSlideId = bookPrefUtil.getReadingSlideId(bookInfo.config.id)
                     makeSlideScreen(slideMap[currentSlideId], firstRead)
                 }
             }?: also{
@@ -67,29 +72,12 @@ class ViewerActivity : AppCompatActivity() {
         }
     }
 
-    private fun extractBookFromJson(fileName: String): Book?{
-        val bookJson = Sample.getSampleJson()
-        var result:Book? = null
-        try{
-            result = Gson().fromJson(bookJson, Book::class.java)
-        }catch (e : Exception){
-            Log.e(Const.TAG, "Exception : "+e.message)
-            return null
-        }
-        return result
-    }
-
-    private fun incrementIdCount(id: Long){
-        val count = util.getSlideCount(book!!.config.id, id) + 1
-        util.setSlideCount(book!!.config.id, id, count)
-    }
-
     private fun makeSlideScreen(slide: Slide?, isCount: Boolean) {
         slide?:let {
             util.getAlertDailog(this@ViewerActivity).show()
             return
         }
-        if(isCount){ incrementIdCount(slide.id) }
+        if(isCount){ bookPrefUtil.incrementIdCount(book!!.config.id, slide.id) }
 
         currentSlide = slide
         binding.layoutLoading.root.visibility = View.GONE
@@ -110,7 +98,7 @@ class ViewerActivity : AppCompatActivity() {
             binding.recyclerChoice.layoutManager=LinearLayoutManager(baseContext)
             binding.recyclerChoice.adapter = ChoiceAdapter(passChoiceItems, object : OnChoiceItemClickListener {
                 override fun onItemClick(choiceItem: ChoiceItem) {
-                    incrementIdCount(choiceItem.id)
+                    bookPrefUtil.incrementIdCount(book!!.config.id, choiceItem.id)
                     enterNextSlide(choiceItem)
                 }
             })
@@ -130,8 +118,8 @@ class ViewerActivity : AppCompatActivity() {
 
     private fun checkCondition(condition: Condition): Boolean =
         condition.run{
-            val count1 = util.getSlideCount(book!!.config.id, conditionId1)
-            val count2 = if(conditionId2==Const.NOT_SUPPORT_COND_ID_2) conditionCount else util.getSlideCount(book!!.config.id, conditionId2)
+            val count1 = bookPrefUtil.getIdCount(book!!.config.id, conditionId1)
+            val count2 = if(conditionId2==Const.NOT_SUPPORT_COND_ID_2) conditionCount else bookPrefUtil.getIdCount(book!!.config.id, conditionId2)
             Log.d(Const.TAG, "check : $conditionId1 ($count1) $conditionOp $conditionId2 ($count2)")
             CondOp.from(conditionOp).check(count1, count2)
         }
@@ -145,7 +133,7 @@ class ViewerActivity : AppCompatActivity() {
 
             for(enterItem in choiceItem.enterItems) {
                 if(checkConditions(enterItem.enterConditions)){
-                    incrementIdCount(enterItem.id)
+                    bookPrefUtil.incrementIdCount(book!!.config.id, enterItem.id)
                     enterSlideId = enterItem.enterSlideId
                     break
                 }
