@@ -15,6 +15,7 @@ import com.cheesejuice.fancymansion.util.Sample
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import javax.inject.Inject
 
@@ -44,7 +45,9 @@ class ViewStartActivity : AppCompatActivity() {
         }
 
         CoroutineScope(Default).launch {
-            config = fileUtil.extractConfigFromJson(-1)
+            createSampleFiles()
+
+            config = fileUtil.getConfigFromFile(12345L)
             config?.also {  configInfo ->
                 withContext(Dispatchers.Main) {
                     makeReadyScreen(configInfo)
@@ -80,5 +83,20 @@ class ViewStartActivity : AppCompatActivity() {
             android.R.id.home -> finish()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun createSampleFiles(){
+        val tempConfig = Sample.extractConfigFromJson(-1)!!
+        fileUtil.makeBookFolder(tempConfig)
+        fileUtil.makeConfigFile(tempConfig)
+        for(i in 1 .. 9){
+            val slide = Sample.extractSlideFromJson(-1, i*100000000L)
+            fileUtil.makeSlideJson(tempConfig.id, slide!!)
+        }
+
+//        val array = arrayOf("image_1.gif", "image_2.gif", "image_3.gif", "image_4.gif", "image_5.gif", "image_6.gif", "fish_cat.jpg", "game_end.jpg")
+//        for (fileName in array){
+//            fileUtil.saveImageFile(getDrawable(Sample.getSampleImageId(fileName))!!, config!!.id,  fileName)
+//        }
     }
 }

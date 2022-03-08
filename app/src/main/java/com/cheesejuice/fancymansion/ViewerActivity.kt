@@ -39,10 +39,9 @@ class ViewerActivity : AppCompatActivity() {
 
     private fun initConfigObject(){
         val bookId = intent.getLongExtra(Const.KEY_CURRENT_BOOK_ID, 0)
-        // if(targetId == 0L) finish()
-
+         if(bookId == 0L) finish()
         CoroutineScope(Dispatchers.Default).launch {
-            fileUtil.extractConfigFromJson(bookId)?.also { conf ->
+            fileUtil.getConfigFromFile(bookId)?.also { conf ->
                 config = conf
                 var firstRead = intent.getBooleanExtra(Const.KEY_FIRST_READ, true)
                 val isReading = bookPrefUtil.isBookReading(config.id)
@@ -54,7 +53,7 @@ class ViewerActivity : AppCompatActivity() {
                     bookPrefUtil.setReadingSlideId(config.id, slideId)
                 }
 
-                currentSlide = fileUtil.extractSlideFromJson(bookId, slideId)
+                currentSlide = fileUtil.getSlideFromJson(bookId, slideId)
                 withContext(Dispatchers.Main){
                     makeSlideScreen(currentSlide, firstRead)
                 }
@@ -115,9 +114,9 @@ class ViewerActivity : AppCompatActivity() {
             }
 
             if(enterSlideId != Const.END_SLIDE_ID){
-                currentSlide = fileUtil.extractSlideFromJson(-1, enterSlideId)
+                currentSlide = fileUtil.getSlideFromJson(config.id, enterSlideId)
             }else{
-                currentSlide = fileUtil.extractSlideFromJson(-1, config.defaultEndId)
+                currentSlide = fileUtil.getSlideFromJson(config.id, config.defaultEndId)
             }
 
             delay(100)

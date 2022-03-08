@@ -1,11 +1,56 @@
 package com.cheesejuice.fancymansion.util
 
+import android.util.Log
 import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.R.*
+import com.cheesejuice.fancymansion.model.Book
+import com.cheesejuice.fancymansion.model.Config
+import com.cheesejuice.fancymansion.model.Slide
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 class Sample {
     companion object {
         // 00 / 00 / 00 / 00 / 00 = slide / choice / showCondition / enterId / enterCondition
+        fun extractConfigFromJson(bookId: Long): Config?{
+            val configJson = Sample.getSampleConfig(bookId)
+            var result: Config? = null
+            try{
+                result = Json.decodeFromString<Config>(configJson)
+
+            }catch (e : Exception){
+                Log.e(Const.TAG, "Exception : "+e.printStackTrace())
+                return null
+            }
+            return result
+        }
+
+        fun extractSlideFromJson(bookId: Long, slideId: Long): Slide?{
+            val slideJson = Sample.getSlideJson(bookId, slideId)
+            var result: Slide? = null
+            try{
+                result = Json.decodeFromString<Slide>(slideJson)
+
+            }catch (e : Exception){
+                Log.e(Const.TAG, "Exception : "+e.printStackTrace())
+                return null
+            }
+            return result
+        }
+
+        fun extractBookFromJson(bookId: Long): Book?{
+            val bookJson = Sample.getSampleJson()
+            var result: Book? = null
+            try{
+                result = Json.decodeFromString<Book>(bookJson)
+
+            }catch (e : Exception){
+                Log.e(Const.TAG, "Exception : "+e.message)
+                return null
+            }
+            return result
+        }
+
         fun getSampleConfig(id: Long): String = """
         { 
             "id":12345,
@@ -19,7 +64,7 @@ class Sample {
             "defaultImage":"image_1.gif",
             "startId":200000000,
             "defaultEndId":100000000,
-            "isEdit":false,
+            "readMode":"edit",
             "briefs":[
                 { "slideId":100000000, "slideTitle":"더 이상 존 크리스탈을 찾을 수 없습니다..." },
                 { "slideId":200000000, "slideTitle":"대체 어딨는거야!" },
@@ -434,7 +479,7 @@ class Sample {
             "defaultImage":"image_1.gif",
             "startId":200000000,
             "defaultEndId":100000000,
-            "isEdit":false,
+            "readMode":"edit",
             "briefs":[
                 { "slideId":100000000, "slideTitle":"더 이상 존 크리스탈을 찾을 수 없습니다..." },
                 { "slideId":200000000, "slideTitle":"대체 어딨는거야!" },

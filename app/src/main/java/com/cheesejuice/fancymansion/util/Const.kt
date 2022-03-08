@@ -18,6 +18,11 @@ class Const {
         const val KEY_IS_READING = "KEY_IS_READING"
 
         const val KEY_FIRST_READ = "KEY_FIRST_READ"
+
+        const val FILE_PREFIX_BOOK = "book_"
+        const val FILE_PREFIX_CONFIG = "config_"
+        const val FILE_PREFIX_SLIDE = "slide_"
+        const val FILE_PREFIX_IMAGE = "image_"
     }
 }
 
