@@ -76,7 +76,7 @@ class ViewerActivity : AppCompatActivity() {
         binding.layoutLoading.root.visibility = View.GONE
         binding.layoutMain.visibility = View.VISIBLE
         with(slide){
-            Glide.with(applicationContext).load(Sample.getSampleImageId(slideImage)).into(binding.imageSlideShowMain)
+            Glide.with(applicationContext).load(fileUtil.getImageFile(config.id, slide.slideImage)).into(binding.imageSlideShowMain)
             binding.tvSlideTitle.text = title
             binding.tvSlideDescription.text = description
             binding.tvSlideQuestion.text = question

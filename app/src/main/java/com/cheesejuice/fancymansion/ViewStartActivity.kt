@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.cheesejuice.fancymansion.databinding.ActivityViewStartBinding
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.CommonUtil
@@ -17,6 +18,10 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.nio.ByteBuffer
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -38,6 +43,7 @@ class ViewStartActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
         binding.btnStartBook.setOnClickListener {
+
             val intent = Intent(this, ViewerActivity::class.java)
             intent.putExtra(Const.KEY_CURRENT_BOOK_ID, config!!.id)
             intent.putExtra(Const.KEY_FIRST_READ, true)
@@ -73,7 +79,7 @@ class ViewStartActivity : AppCompatActivity() {
             binding.tvSlideConfigIllustrator.text = illustrator
 
         }
-        Glide.with(applicationContext).load(Sample.getSampleImageId(config.defaultImage)).into(binding.imageSlideShowMain)
+        Glide.with(applicationContext).load(fileUtil.getImageFile(config.id, config.defaultImage)).into(binding.imageSlideShowMain)
         binding.btnStartBook.isEnabled = true
     }
 
@@ -94,9 +100,22 @@ class ViewStartActivity : AppCompatActivity() {
             fileUtil.makeSlideJson(tempConfig.id, slide!!)
         }
 
-//        val array = arrayOf("image_1.gif", "image_2.gif", "image_3.gif", "image_4.gif", "image_5.gif", "image_6.gif", "fish_cat.jpg", "game_end.jpg")
-//        for (fileName in array){
-//            fileUtil.saveImageFile(getDrawable(Sample.getSampleImageId(fileName))!!, config!!.id,  fileName)
-//        }
+        val array = arrayOf("image_1.gif", "image_2.gif", "image_3.gif", "image_4.gif", "image_5.gif", "image_6.gif", "fish_cat.jpg", "game_end.jpg")
+        for (fileName in array){
+            val file = File(getExternalFilesDir(null), Const.FILE_PREFIX_BOOK+ tempConfig.id + File.separator+fileName)
+            val input: InputStream = resources.openRawResource(Sample.getSampleImageId(fileName))
+            val out = FileOutputStream(file)
+            val buff = ByteArray(1024)
+            var read = 0
+
+            try {
+                while (input.read(buff).also { read = it } > 0) {
+                    out.write(buff, 0, read)
+                }
+            } finally {
+                input.close()
+                out.close()
+            }
+        }
     }
 }

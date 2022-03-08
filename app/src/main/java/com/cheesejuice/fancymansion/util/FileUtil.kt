@@ -1,6 +1,8 @@
 package com.cheesejuice.fancymansion.util
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
 import android.widget.ImageView
@@ -110,20 +112,28 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
     }
 
     fun saveImageFile(drawable: Drawable, bookId: Long, imageName: String): Boolean{
-        if(drawable is GifDrawable){
-            val byteBuffer = drawable.buffer
-            val file = File(path, Const.FILE_PREFIX_BOOK+bookId+File.separator+imageName+".gif")
 
-            val output = FileOutputStream(file)
-            val bytes = ByteArray(byteBuffer.capacity())
-            (byteBuffer.duplicate().clear() as ByteBuffer).get(bytes)
-            output.write(bytes, 0 ,bytes.size)
+        try{
+            val output = FileOutputStream(File(path, Const.FILE_PREFIX_BOOK+bookId+ File.separator+imageName))
+            val ext = imageName.split(".").last()
+            if(drawable is GifDrawable && ext == "gif"){
+                val byteBuffer = drawable.buffer
+                val bytes = ByteArray(byteBuffer.capacity())
+                (byteBuffer.duplicate().clear() as ByteBuffer).get(bytes)
+                output.write(bytes, 0 ,bytes.size)
+            }else if(drawable is BitmapDrawable){
+                if(ext == "jpg"){
+                    drawable.bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
+                }else if(ext == "png"){
+                    drawable.bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
+                }
+            }
             output.close()
+        }catch (e: Exception){
+            Log.d(Const.TAG, ""+e.printStackTrace())
         }
         return true
     }
 
-    fun getImageFile(bookId: Long, slide: Slide): Boolean{
-        return true
-    }
+    fun getImageFile(bookId: Long, fileName: String)= File(path, Const.FILE_PREFIX_BOOK+ bookId + File.separator+fileName)
 }
