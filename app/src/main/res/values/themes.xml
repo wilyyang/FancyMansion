@@ -14,7 +14,7 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="RoundEditText" parent="Widget.AppCompat.EditText">
+    <style name="RoundEditText" parent="ThemeOverlay.Material3.TextInputEditText">
         <item name="android:textSize">@dimen/size_edit_book</item>
         <item name="android:background">@drawable/edittext_round</item>
         <item name="android:padding">@dimen/margin_default</item>

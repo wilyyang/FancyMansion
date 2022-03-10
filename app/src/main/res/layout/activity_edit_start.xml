@@ -83,11 +83,17 @@
                         android:text="@string/book_config_title"
                         android:textSize="@dimen/size_edit_book"/>
 
-                    <EditText
-                        android:id="@+id/etConfigTitle"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/input_layout"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/RoundEditText"/>
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/RoundEditText"/>
+
+                    </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
 
