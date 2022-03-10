@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import android.widget.ImageView
 import com.bumptech.glide.load.resource.gif.GifDrawable
+import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.model.Book
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.model.Slide
@@ -112,6 +113,9 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
     }
 
     fun saveImageFile(drawable: Drawable, bookId: Long, imageName: String): Boolean{
+        if(imageName == ""){
+            return true
+        }
 
         try{
             val output = FileOutputStream(File(path, Const.FILE_PREFIX_BOOK+bookId+ File.separator+imageName))
@@ -135,5 +139,12 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         return true
     }
 
-    fun getImageFile(bookId: Long, fileName: String)= File(path, Const.FILE_PREFIX_BOOK+ bookId + File.separator+fileName)
+    fun getImageFile(bookId: Long, imageName: String): Any{
+        val file = File(path, Const.FILE_PREFIX_BOOK+ bookId + File.separator+imageName)
+        if(imageName!="" && file.exists()){
+            return file
+        }else{
+            return R.drawable.add_image
+        }
+    }
 }

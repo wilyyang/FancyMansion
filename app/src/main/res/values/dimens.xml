@@ -7,6 +7,8 @@
 
     <dimen name="size_slide_config">13sp</dimen>
 
+    <dimen name="size_edit_book">18sp</dimen>
+
     <dimen name="margin_default">10dp</dimen>
     <dimen name="margin_default_left">20dp</dimen>
     <dimen name="margin_default_right">20dp</dimen>

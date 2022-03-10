@@ -13,4 +13,11 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="RoundEditText" parent="Widget.AppCompat.EditText">
+        <item name="android:textSize">@dimen/size_edit_book</item>
+        <item name="android:background">@drawable/edittext_round</item>
+        <item name="android:padding">@dimen/margin_default</item>
+        <item name="android:inputType">text</item>
+    </style>
 </resources>

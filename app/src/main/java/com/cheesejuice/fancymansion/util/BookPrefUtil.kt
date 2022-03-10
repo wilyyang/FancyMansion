@@ -7,6 +7,20 @@ import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
 
 class BookPrefUtil @Inject constructor(@ActivityContext private val context: Context){
+    fun incrementBookCount():Long{
+        val pref = context.getSharedPreferences(Const.KEY_PREF_SETTING, Context.MODE_PRIVATE)
+        val count = pref.getLong(Const.KEY_PREF_BOOK_COUNT, 0L) + 1L
+        val editor = pref.edit()
+        editor.putLong(Const.KEY_PREF_BOOK_COUNT, count)
+        editor.commit()
+        return count
+    }
+
+    fun getBookCount():Long{
+        val pref = context.getSharedPreferences(Const.KEY_PREF_SETTING, Context.MODE_PRIVATE)
+        return pref.getLong(Const.KEY_PREF_BOOK_COUNT, 0L)
+    }
+
     fun checkConditions(bookId: Long, conditions: ArrayList<Condition>): Boolean{
         var result = true
         var nextLogic = CondNext.AND

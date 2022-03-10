@@ -10,6 +10,9 @@ class Const {
         const val END_SLIDE_ID = -1L
         const val NOT_SUPPORT_COND_ID_2 = -1L
 
+        const val KEY_PREF_BOOK_COUNT = "KEY_PREF_BOOK_COUNT"
+        const val KEY_PREF_SETTING = "KEY_PREF_SETTING"
+
         const val KEY_PREFIX_PREF_BOOK = "book_"
         const val KEY_PREFIX_PREF_COUNT = "count_"
 
@@ -18,6 +21,10 @@ class Const {
         const val KEY_IS_READING = "KEY_IS_READING"
 
         const val KEY_FIRST_READ = "KEY_FIRST_READ"
+        const val KEY_BOOK_CREATE = "KEY_BOOK_CREATE"
+        const val KEY_BOOK_ID = "KEY_BOOK_ID"
+
+        const val KEY_BOOK_ID_NOT_FOUND = -1L
 
         const val FILE_PREFIX_BOOK = "book_"
         const val FILE_PREFIX_CONFIG = "config_"

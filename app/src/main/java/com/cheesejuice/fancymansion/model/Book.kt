@@ -7,7 +7,7 @@ data class Book(val config: Config, val slides: ArrayList<Slide>)
 
 // 1
 @Serializable
-data class Config(val id: Long, val version: Long, val updateDate: Long, val publish: Long, val title: String, val writer: String, val illustrator: String, val description: String, val defaultImage: String, val startId: Long, val defaultEndId: Long, val readMode: String, val briefs: ArrayList<SlideBrief>)
+data class Config(val id: Long, val version: Long = 0L, val updateDate: Long = System.currentTimeMillis(), val publish: Long = 0, val title: String, val writer: String = "", val illustrator: String = "", val description: String = "", val defaultImage: String = "", val startId: Long = 100000000, val defaultEndId: Long = 100000000, val readMode: String = "edit", val briefs: ArrayList<SlideBrief> = arrayListOf())
 
 // 1.2 <SlideBrief>
 @Serializable

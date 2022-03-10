@@ -11,6 +11,7 @@ import com.cheesejuice.fancymansion.databinding.ActivityViewStartBinding
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.Const
+import com.cheesejuice.fancymansion.util.Const.Companion.KEY_BOOK_ID_NOT_FOUND
 import com.cheesejuice.fancymansion.util.FileUtil
 import com.cheesejuice.fancymansion.util.Sample
 import dagger.hilt.android.AndroidEntryPoint
@@ -53,10 +54,11 @@ class ViewStartActivity : AppCompatActivity() {
         CoroutineScope(Default).launch {
             createSampleFiles()
 
-            config = fileUtil.getConfigFromFile(12345L)
+            val bookId = intent.getLongExtra(Const.KEY_BOOK_ID, KEY_BOOK_ID_NOT_FOUND)
+            config = fileUtil.getConfigFromFile(bookId)
             config?.also {  configInfo ->
                 withContext(Dispatchers.Main) {
-                    makeReadyScreen(configInfo)
+                    makeViewReadyScreen(configInfo)
                 }
             } ?: also {
                 withContext(Main){
@@ -66,7 +68,7 @@ class ViewStartActivity : AppCompatActivity() {
         }
     }
 
-    private fun makeReadyScreen(config: Config) {
+    private fun makeViewReadyScreen(config: Config) {
         binding.layoutLoading.root.visibility = View.GONE
         binding.layoutMain.visibility = View.VISIBLE
         with(config){

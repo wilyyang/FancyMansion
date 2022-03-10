@@ -17,6 +17,9 @@ class CommonUtil @Inject constructor(@ActivityContext private val context: Conte
     fun longToTimeFormatss(time: Long) = formatss.format(Date(time))
     fun longToTimeFormatdate(time: Long) = formatdate.format(Date(time))
 
+//    fun versionIntToString(version: Int) = formatdate.format(Date(time))
+//    fun versionStringToInt(str: String) = formatdate.format(Date(time))
+
     fun getAlertDailog(context: Context,
                        title:String = context.getString(R.string.alert_default_title),
                        message:String = context.getString(R.string.alert_default_message),
