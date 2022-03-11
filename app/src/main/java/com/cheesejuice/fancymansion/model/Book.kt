@@ -3,28 +3,28 @@ package com.cheesejuice.fancymansion.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Book(val config: Config, val slides: ArrayList<Slide>)
+data class Book(var config: Config, var slides: ArrayList<Slide>)
 
 // 1
 @Serializable
-data class Config(val id: Long, val version: Long = 0L, val updateDate: Long = System.currentTimeMillis(), val publish: Long = 0, val title: String, val writer: String = "", val illustrator: String = "", val description: String = "", val defaultImage: String = "", val startId: Long = 100000000, val defaultEndId: Long = 100000000, val readMode: String = "edit", val briefs: ArrayList<SlideBrief> = arrayListOf())
+data class Config(var id: Long, var version: Long = 0L, var updateDate: Long = System.currentTimeMillis(), var publish: Long = 0, var title: String, var writer: String = "", var illustrator: String = "", var description: String = "", var defaultImage: String = "", var startId: Long = 100000000, var defaultEndId: Long = 100000000, var readMode: String = "edit", var briefs: ArrayList<SlideBrief> = arrayListOf())
 
 // 1.2 <SlideBrief>
 @Serializable
-data class SlideBrief(val slideId: Long, val slideTitle: String)
+data class SlideBrief(var slideId: Long, var slideTitle: String)
 
 // 2 <Slide>
 @Serializable
-data class Slide(val id: Long, val slideImage: String, val title: String, val description: String, val count: Int, val question: String, val choiceItems: ArrayList<ChoiceItem>)
+data class Slide(var id: Long, var slideImage: String, var title: String, var description: String, var count: Int, var question: String, var choiceItems: ArrayList<ChoiceItem>)
 
 // 2.2 <ChoiceItem>
 @Serializable
-data class ChoiceItem(val id: Long, val title: String, val showConditions: ArrayList<Condition>, val enterItems: ArrayList<EnterItem>)
+data class ChoiceItem(var id: Long, var title: String, var showConditions: ArrayList<Condition>, var enterItems: ArrayList<EnterItem>)
 
 // 2.2.3 <EnterItem>
 @Serializable
-data class EnterItem(val id: Long, val enterSlideId: Long, val enterConditions: ArrayList<Condition>)
+data class EnterItem(var id: Long, var enterSlideId: Long, var enterConditions: ArrayList<Condition>)
 
 // 2.2.2 showConditions <Condition> /  2.2.3.2 enterConditions <Condition>
 @Serializable
-data class Condition(val id: Long, val conditionId1: Long, val conditionId2: Long, val conditionCount: Int, val conditionOp: String, val nextLogic: String)
+data class Condition(var id: Long, var conditionId1: Long, var conditionId2: Long, var conditionCount: Int, var conditionOp: String, var nextLogic: String)

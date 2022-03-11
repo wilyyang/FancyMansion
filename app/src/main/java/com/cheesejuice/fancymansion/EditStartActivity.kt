@@ -1,9 +1,15 @@
 package com.cheesejuice.fancymansion
 
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityEditStartBinding
 import com.cheesejuice.fancymansion.model.Config
@@ -31,6 +37,16 @@ class EditStartActivity : AppCompatActivity() {
     @Inject
     lateinit var fileUtil: FileUtil
 
+    private val gallaryForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                try{
+
+                }catch (e : Exception){
+                    e.printStackTrace()
+                }
+            }
+        }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEditStartBinding.inflate(layoutInflater)
@@ -40,6 +56,11 @@ class EditStartActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
+        binding.imageConfigAddImage.setOnClickListener {
+            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            intent.type = "image/*"
+            gallaryForResult.launch(intent)
+        }
         binding.btnEditBook.setOnClickListener {
         }
 
@@ -63,6 +84,7 @@ class EditStartActivity : AppCompatActivity() {
                 if(isCreate){
                     binding.btnEditBook.text = getString(R.string.create_book)
                 }
+                config!!.updateDate = System.currentTimeMillis()
                 makeEditReadyScreen(config!!)
             }
         }
@@ -73,8 +95,8 @@ class EditStartActivity : AppCompatActivity() {
         binding.layoutMain.visibility = View.VISIBLE
         with(config){
             binding.toolbar.title = title
-            binding.tvSlideConfigId.text = "#$id  (${util.longToTimeFormatss(updateDate)})"
-
+            binding.tvSlideConfigId.text = "#$id"
+            binding.tvSlideConfigTime.text = util.longToTimeFormatss(updateDate)
 
             binding.etConfigTitle.setText(title)
             binding.etConfigVersion.setText(""+version)

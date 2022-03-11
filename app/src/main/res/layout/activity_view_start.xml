@@ -69,13 +69,23 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:weightSum="1">
 
                 <TextView
                     android:id="@+id/tvSlideConfigId"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/size_slide_config"/>
+                    android:textSize="@dimen/size_slide_config"
+                    android:layout_weight="0.5"/>
+
+                <TextView
+                    android:id="@+id/tvSlideConfigTime"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/size_slide_config"
+                    android:layout_weight="0.5"
+                    android:gravity="right"/>
 
             </LinearLayout>
 
@@ -88,7 +98,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/book_config_writer"
-                    android:textSize="@dimen/size_slide_config"/>
+                    android:textSize="@dimen/size_slide_config"
+                    android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/tvSlideConfigWriter"
@@ -107,7 +118,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/book_config_illustrator"
-                    android:textSize="@dimen/size_slide_config"/>
+                    android:textSize="@dimen/size_slide_config"
+                    android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/tvSlideConfigIllustrator"

@@ -54,7 +54,7 @@ class ViewStartActivity : AppCompatActivity() {
         CoroutineScope(Default).launch {
             createSampleFiles()
 
-            val bookId = intent.getLongExtra(Const.KEY_BOOK_ID, KEY_BOOK_ID_NOT_FOUND)
+            val bookId = 12345L//intent.getLongExtra(Const.KEY_BOOK_ID, KEY_BOOK_ID_NOT_FOUND)
             config = fileUtil.getConfigFromFile(bookId)
             config?.also {  configInfo ->
                 withContext(Dispatchers.Main) {
@@ -76,7 +76,8 @@ class ViewStartActivity : AppCompatActivity() {
             binding.tvSlideTitle.text = title
             binding.tvSlideDescription.text = description
 
-            binding.tvSlideConfigId.text = "#$id  (${util.longToTimeFormatss(updateDate)})"
+            binding.tvSlideConfigId.text = "#$id"
+            binding.tvSlideConfigTime.text = util.longToTimeFormatss(updateDate)
             binding.tvSlideConfigWriter.text = writer
             binding.tvSlideConfigIllustrator.text = illustrator
 

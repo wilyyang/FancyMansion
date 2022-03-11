@@ -29,38 +29,12 @@
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutSlideShow"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintHeight_percent="0.4">
-
-            <ImageView
-                android:id="@+id/imageSlideShowMain"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <TextView
-            android:id="@+id/tvSlideConfigId"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_default_left"
-            android:layout_marginEnd="@dimen/margin_default_right"
-            android:layout_marginTop="@dimen/margin_slide_title"
-            android:text="id"
-            android:textSize="@dimen/size_slide_config"
-            app:layout_constraintTop_toBottomOf="@+id/layoutSlideShow"
-            />
-
         <ScrollView
             android:id="@+id/scrollSlideContent"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="@dimen/margin_slide_detail"
-            app:layout_constraintTop_toBottomOf="@id/tvSlideConfigId"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/layoutTail">
 
             <LinearLayout
@@ -70,30 +44,52 @@
                 android:layout_marginStart="@dimen/margin_default_left"
                 android:layout_marginEnd="@dimen/margin_default_right"
                 app:layout_constraintTop_toTopOf="parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:clickable="true"
+                android:focusableInTouchMode="true">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutSlideShow"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp">
+
+                    <ImageView
+                        android:id="@+id/imageSlideShowMain"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+
+                    <ImageView
+                        android:id="@+id/imageConfigAddImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/margin_default"
+                        android:layout_marginBottom="@dimen/margin_default"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:srcCompat="@android:drawable/ic_menu_gallery" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:weightSum="1">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:id="@+id/tvSlideConfigId"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="@string/book_config_title"
-                        android:textSize="@dimen/size_edit_book"/>
+                        android:textSize="@dimen/size_slide_config"
+                        android:layout_weight="0.5"/>
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/input_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            style="@style/RoundEditText"/>
-
-                    </com.google.android.material.textfield.TextInputLayout>
+                    <TextView
+                        android:id="@+id/tvSlideConfigTime"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/size_slide_config"
+                        android:layout_weight="0.5"
+                        android:gravity="right"/>
 
                 </LinearLayout>
 
@@ -105,14 +101,50 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@string/book_config_title"
+                        android:textSize="@dimen/size_edit_book" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/BookInputLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.cheesejuice.fancymansion.view.RoundEditText
+                            android:id="@+id/etConfigTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="@string/book_config_version"
                         android:textSize="@dimen/size_edit_book"/>
 
-                    <EditText
-                        android:id="@+id/etConfigVersion"
-                        android:layout_width="match_parent"
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/BookInputLayout"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        style="@style/RoundEditText"/>
+                        android:layout_weight="0.4">
+
+                        <com.cheesejuice.fancymansion.view.RoundEditText
+                            android:id="@+id/etConfigVersion"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:maxLength="7"
+                            android:inputType="number" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
 
@@ -127,11 +159,17 @@
                         android:text="@string/book_config_writer"
                         android:textSize="@dimen/size_edit_book"/>
 
-                    <EditText
-                        android:id="@+id/etConfigWriter"
-                        style="@style/RoundEditText"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/BookInputLayout"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content">
+
+                        <com.cheesejuice.fancymansion.view.RoundEditText
+                            android:id="@+id/etConfigWriter"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+
+                    </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
                 <LinearLayout
@@ -145,11 +183,17 @@
                         android:text="@string/book_config_illustrator"
                         android:textSize="@dimen/size_edit_book"/>
 
-                    <EditText
-                        android:id="@+id/etConfigIllustrator"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/BookInputLayout"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/RoundEditText"/>
+                        android:layout_height="wrap_content">
+
+                        <com.cheesejuice.fancymansion.view.RoundEditText
+                            android:id="@+id/etConfigIllustrator"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+
+                    </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
 
@@ -160,11 +204,19 @@
                     android:textSize="@dimen/size_edit_book"
                     android:layout_marginTop="@dimen/margin_default"/>
 
-                <EditText
-                    android:id="@+id/etConfigDescription"
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/BookInputLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    style="@style/RoundEditText"/>
+                    android:layout_height="wrap_content">
+
+                    <com.cheesejuice.fancymansion.view.RoundEditText
+                        android:id="@+id/etConfigDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minLines="3"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
             </LinearLayout>
 
         </ScrollView>
