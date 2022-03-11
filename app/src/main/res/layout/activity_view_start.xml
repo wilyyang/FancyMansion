@@ -30,21 +30,21 @@
         android:visibility="gone">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutSlideShow"
+            android:id="@+id/layoutShow"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintHeight_percent="0.4">
 
             <ImageView
-                android:id="@+id/imageSlideShowMain"
+                android:id="@+id/imageViewShowMain"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
-            android:id="@+id/tvSlideTitle"
+            android:id="@+id/tvConfigTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_default_left"
@@ -53,17 +53,18 @@
             android:text="타이틀"
             android:textSize="@dimen/size_slide_title"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@+id/layoutSlideShow"
+            android:maxLength="@integer/count_config_title"
+            app:layout_constraintTop_toBottomOf="@+id/layoutShow"
             />
 
         <LinearLayout
-            android:id="@+id/layoutSlideConfig"
+            android:id="@+id/layoutConfig"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_default_left"
             android:layout_marginEnd="@dimen/margin_default_right"
             android:layout_marginTop="@dimen/margin_slide_title"
-            app:layout_constraintTop_toBottomOf="@id/tvSlideTitle"
+            app:layout_constraintTop_toBottomOf="@id/tvConfigTitle"
             android:orientation="vertical">
 
             <LinearLayout
@@ -73,14 +74,14 @@
                 android:weightSum="1">
 
                 <TextView
-                    android:id="@+id/tvSlideConfigId"
+                    android:id="@+id/tvConfigId"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/size_slide_config"
                     android:layout_weight="0.5"/>
 
                 <TextView
-                    android:id="@+id/tvSlideConfigTime"
+                    android:id="@+id/tvConfigTime"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/size_slide_config"
@@ -102,10 +103,13 @@
                     android:textStyle="bold"/>
 
                 <TextView
-                    android:id="@+id/tvSlideConfigWriter"
+                    android:id="@+id/tvConfigWriter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/size_slide_config"/>
+                    android:textSize="@dimen/size_slide_config"
+                    android:maxLength="@integer/count_config_writer"
+                    android:maxLines="1"
+                    android:ellipsize="end"/>
 
             </LinearLayout>
 
@@ -122,10 +126,13 @@
                     android:textStyle="bold"/>
 
                 <TextView
-                    android:id="@+id/tvSlideConfigIllustrator"
+                    android:id="@+id/tvConfigIllustrator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/size_slide_config"/>
+                    android:textSize="@dimen/size_slide_config"
+                    android:maxLength="@integer/count_config_illustrator"
+                    android:maxLines="1"
+                    android:ellipsize="end"/>
 
             </LinearLayout>
         </LinearLayout>
@@ -134,11 +141,11 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="@dimen/margin_slide_detail"
-            app:layout_constraintTop_toBottomOf="@id/layoutSlideConfig"
+            app:layout_constraintTop_toBottomOf="@id/layoutConfig"
             app:layout_constraintBottom_toTopOf="@+id/layoutTail">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layoutSlideContent"
+                android:id="@+id/layoutContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_default_left"
@@ -146,12 +153,12 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:id="@+id/tvSlideDescription"
+                    android:id="@+id/tvConfigDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/size_slide_detail"
                     app:layout_constraintTop_toTopOf="parent"
-                    />
+                    android:maxLength="@integer/count_config_description"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

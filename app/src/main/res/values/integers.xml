@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="count_config_title">30</integer>
+    <integer name="count_config_writer">20</integer>
+    <integer name="count_config_illustrator">20</integer>
+    <integer name="count_config_description">1000</integer>
+
+    <integer name="count_slide_title">30</integer>
+    <integer name="count_slide_question">30</integer>
+    <integer name="count_slide_choice">30</integer>
+    <integer name="count_slide_description">1000</integer>
+
+</resources>

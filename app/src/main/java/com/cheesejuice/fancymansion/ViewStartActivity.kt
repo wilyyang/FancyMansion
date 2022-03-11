@@ -52,7 +52,7 @@ class ViewStartActivity : AppCompatActivity() {
         }
 
         CoroutineScope(Default).launch {
-            createSampleFiles()
+//            createSampleFiles()
 
             val bookId = 12345L//intent.getLongExtra(Const.KEY_BOOK_ID, KEY_BOOK_ID_NOT_FOUND)
             config = fileUtil.getConfigFromFile(bookId)
@@ -73,16 +73,16 @@ class ViewStartActivity : AppCompatActivity() {
         binding.layoutMain.visibility = View.VISIBLE
         with(config){
             binding.toolbar.title = title
-            binding.tvSlideTitle.text = title
-            binding.tvSlideDescription.text = description
+            binding.tvConfigTitle.text = title
+            binding.tvConfigDescription.text = description
 
-            binding.tvSlideConfigId.text = "#$id"
-            binding.tvSlideConfigTime.text = util.longToTimeFormatss(updateDate)
-            binding.tvSlideConfigWriter.text = writer
-            binding.tvSlideConfigIllustrator.text = illustrator
+            binding.tvConfigId.text = "#$id"
+            binding.tvConfigTime.text = util.longToTimeFormatss(updateDate)
+            binding.tvConfigWriter.text = writer
+            binding.tvConfigIllustrator.text = illustrator
 
         }
-        Glide.with(applicationContext).load(fileUtil.getImageFile(config.id, config.defaultImage)).into(binding.imageSlideShowMain)
+        Glide.with(applicationContext).load(fileUtil.getImageFile(config.id, config.defaultImage)).into(binding.imageViewShowMain)
         binding.btnStartBook.isEnabled = true
     }
 

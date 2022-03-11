@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.app.AlertDialog
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.cheesejuice.fancymansion.R
 import dagger.hilt.android.qualifiers.ActivityContext
@@ -14,7 +15,8 @@ import java.util.*
 import javax.inject.Inject
 
 class CommonUtil @Inject constructor(@ActivityContext private val context: Context){
-    val permissions = arrayOf<String>(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+    val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+    val PERMISSION_REQUEST_CODE = 20
     fun checkPermissions() :Boolean{
         for (permission in permissions) {
             if (ContextCompat.checkSelfPermission(context, permission) != PERMISSION_GRANTED)
@@ -23,14 +25,15 @@ class CommonUtil @Inject constructor(@ActivityContext private val context: Conte
         return true
     }
 
-    fun requestPermissions{
+    fun checkRequestPermissions(): Boolean{
         if(!checkPermissions()){
             ActivityCompat.requestPermissions(
                 context as Activity,
-                arrayOf<String>(Manifest.permission.READ_EXTERNAL_STORAGE),
-                20
+                permissions, PERMISSION_REQUEST_CODE
             )
+            return false
         }
+        return true
     }
 
     val formatss = SimpleDateFormat("yyyy-MM-dd kk:mm:ss", Locale("ko", "KR"))

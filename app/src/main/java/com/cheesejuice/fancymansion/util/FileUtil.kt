@@ -112,9 +112,9 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         return slide
     }
 
-    fun saveImageFile(drawable: Drawable, bookId: Long, imageName: String): Boolean{
-        if(imageName == ""){
-            return true
+    fun saveImageFile(drawable: Drawable?, bookId: Long, imageName: String): Boolean{
+        if(drawable == null || imageName == ""){
+            return false
         }
 
         try{
@@ -141,7 +141,7 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
 
     fun getImageFile(bookId: Long, imageName: String): Any{
         val file = File(path, Const.FILE_PREFIX_BOOK+ bookId + File.separator+imageName)
-        if(imageName!="" && file.exists()){
+        if(imageName != "" && file.exists()){
             return file
         }else{
             return R.drawable.add_image

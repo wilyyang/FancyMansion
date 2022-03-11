@@ -1,13 +1,16 @@
 package com.cheesejuice.fancymansion
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
@@ -19,6 +22,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -40,13 +45,18 @@ class EditStartActivity : AppCompatActivity() {
     private val gallaryForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
-                try{
+                Glide.with(getApplicationContext()).load(result.data!!.data).into(binding.imageViewShowMain)
 
-                }catch (e : Exception){
-                    e.printStackTrace()
+                result.data!!.data?.let { returnUri ->
+                    contentResolver.query(returnUri, null, null, null, null)
+                }?.use { cursor ->
+                    val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    cursor.moveToFirst()
+                    config!!.defaultImage = cursor.getString(nameIndex)
                 }
             }
         }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEditStartBinding.inflate(layoutInflater)
@@ -56,16 +66,44 @@ class EditStartActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        binding.imageConfigAddImage.setOnClickListener {
+        binding.imageViewConfigAdd.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             intent.type = "image/*"
             gallaryForResult.launch(intent)
         }
+
         binding.btnEditBook.setOnClickListener {
+            val view = this.currentFocus
+            if (view != null) {
+                view.clearFocus()
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(view.windowToken, 0)
+            }
+
+            with(config!!){
+                updateDate = System.currentTimeMillis()
+                version += 1
+                title = binding.etConfigTitle.text.toString()
+                writer = binding.etConfigWriter.text.toString()
+                illustrator = binding.etConfigIllustrator.text.toString()
+                description = binding.etConfigDescription.text.toString()
+            }
+
+            CoroutineScope(IO).launch {
+                if(!fileUtil.saveImageFile(binding.imageViewShowMain.drawable, config!!.id, config!!.defaultImage)){
+                    config!!.defaultImage = ""
+                }
+                fileUtil.makeConfigFile(config!!)
+
+                val intent = Intent(this@EditStartActivity, ViewStartActivity::class.java)
+                startActivity(intent)
+            }
         }
 
+        util.checkRequestPermissions()
+
         CoroutineScope(Default).launch {
-            createSampleFiles()
+//            createSampleFiles()
 
             var isCreate = intent.getBooleanExtra(Const.KEY_BOOK_CREATE, false)
             var bookId = 12345L //intent.getLongExtra(Const.KEY_BOOK_ID, KEY_BOOK_ID_NOT_FOUND)
@@ -95,16 +133,15 @@ class EditStartActivity : AppCompatActivity() {
         binding.layoutMain.visibility = View.VISIBLE
         with(config){
             binding.toolbar.title = title
-            binding.tvSlideConfigId.text = "#$id"
-            binding.tvSlideConfigTime.text = util.longToTimeFormatss(updateDate)
+            binding.tvConfigId.text = "#$id (v $version)"
+            binding.tvConfigTime.text = util.longToTimeFormatss(updateDate)
 
             binding.etConfigTitle.setText(title)
-            binding.etConfigVersion.setText(""+version)
             binding.etConfigWriter.setText(writer)
             binding.etConfigIllustrator.setText(illustrator)
             binding.etConfigDescription.setText(description)
         }
-        Glide.with(applicationContext).load(fileUtil.getImageFile(config.id, config.defaultImage)).into(binding.imageSlideShowMain)
+        Glide.with(applicationContext).load(fileUtil.getImageFile(config.id, config.defaultImage)).into(binding.imageViewShowMain)
         binding.btnEditBook.isEnabled = true
     }
 
