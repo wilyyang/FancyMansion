@@ -12,15 +12,22 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityEditSlideBinding
+import com.cheesejuice.fancymansion.model.ChoiceItem
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.model.Slide
+import com.cheesejuice.fancymansion.model.SlideBrief
 import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.util.Const.Companion.ID_NOT_FOUND
+import com.cheesejuice.fancymansion.view.BriefAdapter
+import com.cheesejuice.fancymansion.view.ChoiceAdapter
+import com.cheesejuice.fancymansion.view.OnBriefItemClickListener
+import com.cheesejuice.fancymansion.view.OnChoiceItemClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -41,6 +48,8 @@ class EditSlideActivity : AppCompatActivity() {
     lateinit var fileUtil: FileUtil
 
     private var updateImage = false
+
+    lateinit var toggle: ActionBarDrawerToggle
 
     private val gallaryForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -101,16 +110,35 @@ class EditSlideActivity : AppCompatActivity() {
         }
     }
 
-    private fun makeEditSlideScreen(slide: Slide) {
+    private fun makeEditSlideScreen(_slide: Slide) {
         binding.layoutLoading.root.visibility = View.GONE
         binding.layoutMain.visibility = View.VISIBLE
-        with(slide){
+        with(_slide){
             binding.etSlideTitle.setText(title)
             binding.etSlideDescription.setText(description)
             binding.etSlideQuestion.setText(question)
         }
-        Glide.with(applicationContext).load(fileUtil.getImageFile(config!!.id, slide.slideImage)).into(binding.imageViewShowMain)
+        Glide.with(applicationContext).load(fileUtil.getImageFile(config!!.id, _slide.slideImage)).into(binding.imageViewShowMain)
         binding.btnSaveSlide.isEnabled = true
+
+        binding.recyclerNavEditSlide.layoutManager= LinearLayoutManager(baseContext)
+        binding.recyclerNavEditSlide.adapter = BriefAdapter(config!!.briefs, object : OnBriefItemClickListener {
+            override fun onItemClick(brief: SlideBrief) {
+                binding.layoutLoading.root.visibility = View.VISIBLE
+                binding.layoutMain.visibility = View.GONE
+                CoroutineScope(Default).launch {
+                    config = fileUtil.getConfigFromFile(config!!.id)
+                    slide = fileUtil.getSlideFromJson(config!!.id, brief.slideId)
+                    withContext(Main) {
+                        binding.toolbar.title = "# ${slide!!.id}"
+                        makeEditSlideScreen(slide!!)
+                    }
+                }
+            }
+        })
+
+        toggle = ActionBarDrawerToggle(this@EditSlideActivity, binding.drawerEditSlide, R.string.drawer_opened, R.string.drawer_closed)
+        toggle.syncState()
     }
 
     private fun bringLoading(isLoading: Boolean){
@@ -145,11 +173,15 @@ class EditSlideActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_edit_slide, menu)
-        return true;
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
+        if(toggle.onOptionsItemSelected(item)){
+            return true
+        }
+
         when(item.itemId) {
             android.R.id.home -> finish()
             R.id.menu_play -> {

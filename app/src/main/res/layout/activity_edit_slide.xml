@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.drawerlayout.widget.DrawerLayout
+    android:id="@+id/drawerEditSlide"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,160 +8,178 @@
     android:layout_height="match_parent"
     tools:context=".EditSlideActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <include
-        android:id="@+id/layoutLoading"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        layout="@layout/layout_loading"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:visibility="gone"/>
-
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutMain"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:layout_height="match_parent">
 
-        <ScrollView
-            android:id="@+id/scrollEditSlide"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="@dimen/margin_detail"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/layoutTail">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_default_left"
-                android:layout_marginEnd="@dimen/margin_default_right"
-                app:layout_constraintTop_toTopOf="parent"
-                android:orientation="vertical"
-                android:clickable="true"
-                android:focusableInTouchMode="true">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/layoutShow"
-                    android:layout_width="match_parent"
-                    android:layout_height="300dp">
-
-                    <ImageView
-                        android:id="@+id/imageViewShowMain"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"/>
-
-                    <ImageView
-                        android:id="@+id/imageViewSlideAdd"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin_default"
-                        android:layout_marginBottom="@dimen/margin_default"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:srcCompat="@android:drawable/ic_menu_gallery" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/book_slide_title"
-                        android:textSize="@dimen/size_book" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/BookInputLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:counterMaxLength="@integer/count_slide_title">
-
-                        <com.cheesejuice.fancymansion.view.RoundEditText
-                            android:id="@+id/etSlideTitle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:maxLength="@integer/count_slide_title"/>
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/book_slide_description"
-                    android:textSize="@dimen/size_book"
-                    android:layout_marginTop="@dimen/margin_default"/>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/BookInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:counterMaxLength="@integer/count_slide_description">
-
-                    <com.cheesejuice.fancymansion.view.RoundEditText
-                        android:id="@+id/etSlideDescription"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:minLines="3"
-                        android:maxLength="@integer/count_slide_description"/>
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/book_slide_question"
-                        android:textSize="@dimen/size_book"/>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/BookInputLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:counterMaxLength="@integer/count_slide_question">
-
-                        <com.cheesejuice.fancymansion.view.RoundEditText
-                            android:id="@+id/etSlideQuestion"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:maxLength="@integer/count_slide_question"/>
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                </LinearLayout>
-            </LinearLayout>
-        </ScrollView>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutTail"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_default"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <include
+            android:id="@+id/layoutLoading"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            layout="@layout/layout_loading"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:visibility="gone"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutMain"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <Button
-                android:enabled="false"
-                android:id="@+id/btnSaveSlide"
+            <ScrollView
+                android:id="@+id/scrollEditSlide"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="@dimen/margin_detail"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/layoutTail">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_default_left"
+                    android:layout_marginEnd="@dimen/margin_default_right"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:orientation="vertical"
+                    android:clickable="true"
+                    android:focusableInTouchMode="true">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/layoutShow"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp">
+
+                        <ImageView
+                            android:id="@+id/imageViewShowMain"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"/>
+
+                        <ImageView
+                            android:id="@+id/imageViewSlideAdd"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/margin_default"
+                            android:layout_marginBottom="@dimen/margin_default"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:srcCompat="@android:drawable/ic_menu_gallery" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/book_slide_title"
+                            android:textSize="@dimen/size_book" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/BookInputLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:counterMaxLength="@integer/count_slide_title">
+
+                            <com.cheesejuice.fancymansion.view.RoundEditText
+                                android:id="@+id/etSlideTitle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:maxLength="@integer/count_slide_title"/>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/book_slide_description"
+                        android:textSize="@dimen/size_book"
+                        android:layout_marginTop="@dimen/margin_default"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/BookInputLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:counterMaxLength="@integer/count_slide_description">
+
+                        <com.cheesejuice.fancymansion.view.RoundEditText
+                            android:id="@+id/etSlideDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minLines="3"
+                            android:maxLength="@integer/count_slide_description"/>
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/book_slide_question"
+                            android:textSize="@dimen/size_book"/>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/BookInputLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:counterMaxLength="@integer/count_slide_question">
+
+                            <com.cheesejuice.fancymansion.view.RoundEditText
+                                android:id="@+id/etSlideQuestion"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:maxLength="@integer/count_slide_question"/>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+            </ScrollView>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutTail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/save_slide"
-                app:layout_constraintTop_toTopOf="parent"/>
+                android:layout_margin="@dimen/margin_default"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <Button
+                    android:enabled="false"
+                    android:id="@+id/btnSaveSlide"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/save_slide"
+                    app:layout_constraintTop_toTopOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navEditSlide"
+        android:layout_width="250dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerNavEditSlide"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </com.google.android.material.navigation.NavigationView>
+</androidx.drawerlayout.widget.DrawerLayout>
