@@ -2,11 +2,26 @@
 <resources>
     <string name="app_name">상상멘션</string>
 
-    <string name="book_default_title">새로운&#160;책&#160;</string>
+    <string name="book_default_title">새로운 책</string>
+
+    <string name="toolbar_title_create">새 책만들기</string>
+    <string name="toolbar_title_update">책 수정하기</string>
+
+    <string name="menu_play">시연</string>
 
     <string name="start_book">시작</string>
     <string name="create_book">생성</string>
     <string name="edit_book">수정</string>
+    <string name="save_slide">저장</string>
+
+    <string name="save_dialog_title">수정사항 저장</string>
+    <string name="save_dialog_question">재생하기 전에 편집 내용을 저장하시겠습니까?</string>
+    <string name="save_dialog_ok">예</string>
+    <string name="save_dialog_no">아니오</string>
+
+    <string name="name_book_prefix">책&#160;</string>
+    <string name="name_slide_prefix">화면&#160;</string>
+    <string name="text_question_default">무엇을 할까요?</string>
 
     <string name="wait_make_object">데이터 추출 중입니다. 대기해주세요.</string>
     <string name="alert_default_title">오류</string>
@@ -22,4 +37,9 @@
     <string name="book_config_date">업데이트 :&#160;</string>
     <string name="book_config_writer">작가 :&#160;</string>
     <string name="book_config_illustrator">일러스트 :&#160;</string>
+
+    <string name="book_slide_title">제목 :&#160;</string>
+    <string name="book_slide_description">내용 :&#160;</string>
+    <string name="book_slide_question">질문 :&#160;</string>
+    <string name="book_slide_choice">선택 :&#160;</string>
 </resources>

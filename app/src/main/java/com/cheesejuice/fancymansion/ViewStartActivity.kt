@@ -6,23 +6,20 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.cheesejuice.fancymansion.databinding.ActivityViewStartBinding
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.Const
-import com.cheesejuice.fancymansion.util.Const.Companion.KEY_BOOK_ID_NOT_FOUND
+import com.cheesejuice.fancymansion.util.Const.Companion.ID_NOT_FOUND
 import com.cheesejuice.fancymansion.util.FileUtil
 import com.cheesejuice.fancymansion.util.Sample
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Default
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
-import java.nio.ByteBuffer
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -54,7 +51,7 @@ class ViewStartActivity : AppCompatActivity() {
         CoroutineScope(Default).launch {
 //            createSampleFiles()
 
-            val bookId = 12345L//intent.getLongExtra(Const.KEY_BOOK_ID, KEY_BOOK_ID_NOT_FOUND)
+            val bookId = intent.getLongExtra(Const.KEY_BOOK_ID, ID_NOT_FOUND)
             config = fileUtil.getConfigFromFile(bookId)
             config?.also {  configInfo ->
                 withContext(Dispatchers.Main) {

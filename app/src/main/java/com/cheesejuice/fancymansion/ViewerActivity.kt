@@ -12,6 +12,7 @@ import com.cheesejuice.fancymansion.view.ChoiceAdapter
 import com.cheesejuice.fancymansion.view.OnChoiceItemClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.Main
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -26,6 +27,8 @@ class ViewerActivity : AppCompatActivity() {
     lateinit var fileUtil: FileUtil
     private var currentSlide: Slide? = null
 
+    var onlyPlay: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityViewerBinding.inflate(layoutInflater)
@@ -39,14 +42,27 @@ class ViewerActivity : AppCompatActivity() {
 
     private fun initConfigObject(){
         val bookId = intent.getLongExtra(Const.KEY_CURRENT_BOOK_ID, 0)
-         if(bookId == 0L) finish()
+        if(bookId == 0L) finish()
         CoroutineScope(Dispatchers.Default).launch {
             fileUtil.getConfigFromFile(bookId)?.also { conf ->
                 config = conf
+
+                onlyPlay = intent.getBooleanExtra(Const.KEY_EDIT_PLAY, false)
+
                 var firstRead = intent.getBooleanExtra(Const.KEY_FIRST_READ, true)
                 val isReading = bookPrefUtil.isBookReading(config.id)
                 var slideId = bookPrefUtil.getReadingSlideId(config.id)
-                if(firstRead || !isReading || slideId == Const.BOOK_FIRST_READ){
+
+                if(onlyPlay){
+                    val playId = intent.getLongExtra(Const.KEY_PLAY_SLIDE_ID, Const.ID_NOT_FOUND)
+                    if(playId != Const.ID_NOT_FOUND){
+                        slideId = playId
+                    }else{
+                        withContext(Main){
+                            util.getAlertDailog(this@ViewerActivity).show()
+                        }
+                    }
+                }else if(firstRead || !isReading || slideId == Const.BOOK_FIRST_READ){
                     firstRead = true
                     slideId = config.startId
                     bookPrefUtil.initReadingBookInfo(config.id, slideId)

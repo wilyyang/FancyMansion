@@ -49,9 +49,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_default_left"
             android:layout_marginEnd="@dimen/margin_default_right"
-            android:layout_marginTop="@dimen/margin_slide_title"
+            android:layout_marginTop="@dimen/margin_title"
             android:text="타이틀"
-            android:textSize="@dimen/size_slide_title"
+            android:textSize="@dimen/size_title"
             android:textStyle="bold"
             android:maxLength="@integer/count_config_title"
             app:layout_constraintTop_toBottomOf="@+id/layoutShow"
@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_default_left"
             android:layout_marginEnd="@dimen/margin_default_right"
-            android:layout_marginTop="@dimen/margin_slide_title"
+            android:layout_marginTop="@dimen/margin_title"
             app:layout_constraintTop_toBottomOf="@id/tvConfigTitle"
             android:orientation="vertical">
 
@@ -77,14 +77,14 @@
                     android:id="@+id/tvConfigId"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/size_slide_config"
+                    android:textSize="@dimen/size_config"
                     android:layout_weight="0.5"/>
 
                 <TextView
                     android:id="@+id/tvConfigTime"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/size_slide_config"
+                    android:textSize="@dimen/size_config"
                     android:layout_weight="0.5"
                     android:gravity="right"/>
 
@@ -99,14 +99,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/book_config_writer"
-                    android:textSize="@dimen/size_slide_config"
+                    android:textSize="@dimen/size_config"
                     android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/tvConfigWriter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/size_slide_config"
+                    android:textSize="@dimen/size_config"
                     android:maxLength="@integer/count_config_writer"
                     android:maxLines="1"
                     android:ellipsize="end"/>
@@ -122,14 +122,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/book_config_illustrator"
-                    android:textSize="@dimen/size_slide_config"
+                    android:textSize="@dimen/size_config"
                     android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/tvConfigIllustrator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/size_slide_config"
+                    android:textSize="@dimen/size_config"
                     android:maxLength="@integer/count_config_illustrator"
                     android:maxLines="1"
                     android:ellipsize="end"/>
@@ -140,7 +140,7 @@
             android:id="@+id/scrollSlideContent"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="@dimen/margin_slide_detail"
+            android:layout_marginTop="@dimen/margin_detail"
             app:layout_constraintTop_toBottomOf="@id/layoutConfig"
             app:layout_constraintBottom_toTopOf="@+id/layoutTail">
 
@@ -156,7 +156,7 @@
                     android:id="@+id/tvConfigDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/size_slide_detail"
+                    android:textSize="@dimen/size_detail"
                     app:layout_constraintTop_toTopOf="parent"
                     android:maxLength="@integer/count_config_description"/>
 

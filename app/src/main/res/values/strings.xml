@@ -1,11 +1,26 @@
 <resources>
     <string name="app_name">FancyMansion</string>
 
-    <string name="book_default_title">New&#160;Book&#160;</string>
+    <string name="book_default_title">New Book</string>
+
+    <string name="toolbar_title_create">New CreateBook</string>
+    <string name="toolbar_title_update">Edit Book</string>
+
+    <string name="menu_play">Play</string>
 
     <string name="start_book">START</string>
     <string name="create_book">CREATE</string>
     <string name="edit_book">EDIT</string>
+    <string name="save_slide">SAVE</string>
+
+    <string name="save_dialog_title">Save Edits</string>
+    <string name="save_dialog_question">Save your edits before playing?</string>
+    <string name="save_dialog_ok">OK</string>
+    <string name="save_dialog_no">NO</string>
+
+    <string name="name_book_prefix">Book&#160;</string>
+    <string name="name_slide_prefix">Slide&#160;</string>
+    <string name="text_question_default">What to do?</string>
 
     <string name="wait_make_object">Data Extract ... Please Wait ...</string>
     <string name="alert_default_title">ERROR</string>
@@ -21,4 +36,9 @@
     <string name="book_config_date">date :&#160;</string>
     <string name="book_config_writer">writer :&#160;</string>
     <string name="book_config_illustrator">illustrator :&#160;</string>
+
+    <string name="book_slide_title">title :&#160;</string>
+    <string name="book_slide_description">description :&#160;</string>
+    <string name="book_slide_question">question :&#160;</string>
+    <string name="book_slide_choice">choice :&#160;</string>
 </resources>

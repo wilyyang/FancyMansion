@@ -48,8 +48,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_default_left"
             android:layout_marginEnd="@dimen/margin_default_right"
-            android:layout_marginTop="@dimen/margin_slide_title"
-            android:textSize="@dimen/size_slide_title"
+            android:layout_marginTop="@dimen/margin_title"
+            android:textSize="@dimen/size_title"
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@+id/layoutShow"
             android:maxLength="@integer/count_slide_title"/>
@@ -58,7 +58,7 @@
             android:id="@+id/scrollSlideContent"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="@dimen/margin_slide_detail"
+            android:layout_marginTop="@dimen/margin_detail"
             app:layout_constraintTop_toBottomOf="@id/tvSlideTitle"
             app:layout_constraintBottom_toTopOf="@+id/layoutTail">
 
@@ -74,7 +74,7 @@
                     android:id="@+id/tvSlideDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/size_slide_detail"
+                    android:textSize="@dimen/size_detail"
                     app:layout_constraintTop_toTopOf="parent"
                     android:maxLength="@integer/count_slide_description"/>
 
@@ -82,8 +82,8 @@
                     android:id="@+id/tvSlideQuestion"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_slide_question"
-                    android:textSize="@dimen/size_slide_question"
+                    android:layout_marginTop="@dimen/margin_question"
+                    android:textSize="@dimen/size_question"
                     android:textStyle="bold"
                     app:layout_constraintTop_toBottomOf="@id/tvSlideDescription"
                     android:maxLength="@integer/count_slide_question"/>
@@ -92,7 +92,7 @@
                     android:id="@+id/recyclerChoice"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_slide_question"
+                    android:layout_marginTop="@dimen/margin_question"
                     app:layout_constraintTop_toBottomOf="@id/tvSlideQuestion" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

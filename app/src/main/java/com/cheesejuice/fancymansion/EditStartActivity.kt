@@ -1,13 +1,12 @@
 package com.cheesejuice.fancymansion
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.OpenableColumns
-import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -16,11 +15,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityEditStartBinding
 import com.cheesejuice.fancymansion.model.Config
+import com.cheesejuice.fancymansion.model.Slide
+import com.cheesejuice.fancymansion.model.SlideBrief
 import com.cheesejuice.fancymansion.util.*
-import com.cheesejuice.fancymansion.util.Const.Companion.KEY_BOOK_ID_NOT_FOUND
+import com.cheesejuice.fancymansion.util.Const.Companion.ID_NOT_FOUND
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -42,10 +42,14 @@ class EditStartActivity : AppCompatActivity() {
     @Inject
     lateinit var fileUtil: FileUtil
 
+    private var updateImage = false
+
+    private var isCreate = false
+
     private val gallaryForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
-                Glide.with(getApplicationContext()).load(result.data!!.data).into(binding.imageViewShowMain)
+                Glide.with(applicationContext).load(result.data!!.data).into(binding.imageViewShowMain)
 
                 result.data!!.data?.let { returnUri ->
                     contentResolver.query(returnUri, null, null, null, null)
@@ -53,6 +57,7 @@ class EditStartActivity : AppCompatActivity() {
                     val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
                     cursor.moveToFirst()
                     config!!.defaultImage = cursor.getString(nameIndex)
+                    updateImage = true
                 }
             }
         }
@@ -73,30 +78,17 @@ class EditStartActivity : AppCompatActivity() {
         }
 
         binding.btnEditBook.setOnClickListener {
-            val view = this.currentFocus
-            if (view != null) {
-                view.clearFocus()
-                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(view.windowToken, 0)
-            }
-
-            with(config!!){
-                updateDate = System.currentTimeMillis()
-                version += 1
-                title = binding.etConfigTitle.text.toString()
-                writer = binding.etConfigWriter.text.toString()
-                illustrator = binding.etConfigIllustrator.text.toString()
-                description = binding.etConfigDescription.text.toString()
-            }
-
+            bringLoading(true)
             CoroutineScope(IO).launch {
-                if(!fileUtil.saveImageFile(binding.imageViewShowMain.drawable, config!!.id, config!!.defaultImage)){
-                    config!!.defaultImage = ""
-                }
-                fileUtil.makeConfigFile(config!!)
+                saveConfigFile(config!!)
+                withContext(Main) {
+                    bringLoading(false)
 
-                val intent = Intent(this@EditStartActivity, ViewStartActivity::class.java)
-                startActivity(intent)
+                    val intent = Intent(this@EditStartActivity, EditSlideActivity::class.java)
+                    intent.putExtra(Const.KEY_BOOK_ID, config!!.id)
+                    intent.putExtra((Const.KEY_PREFIX_EDIT_SLIDE+config!!.id), config!!.startId)
+                    startActivity(intent)
+                }
             }
         }
 
@@ -105,22 +97,24 @@ class EditStartActivity : AppCompatActivity() {
         CoroutineScope(Default).launch {
 //            createSampleFiles()
 
-            var isCreate = intent.getBooleanExtra(Const.KEY_BOOK_CREATE, false)
+            isCreate = intent.getBooleanExtra(Const.KEY_BOOK_CREATE, false)
             var bookId = 12345L //intent.getLongExtra(Const.KEY_BOOK_ID, KEY_BOOK_ID_NOT_FOUND)
 
             // if(!isCreate && bookId != KEY_BOOK_ID_NOT_FOUND && config != null){
-            if(isCreate || bookId == KEY_BOOK_ID_NOT_FOUND){
+            if(isCreate || bookId == ID_NOT_FOUND){
                 isCreate = true
                 val count = bookPrefUtil.incrementBookCount()
                 config = Config(id = count, title = "${getString(R.string.book_default_title)} $count")
-                fileUtil.makeBookFolder(config!!)
-                fileUtil.makeConfigFile(config!!)
                 bookId = count
             }
             config = fileUtil.getConfigFromFile(bookId)
-            withContext(Dispatchers.Main) {
+            withContext(Main) {
                 if(isCreate){
                     binding.btnEditBook.text = getString(R.string.create_book)
+                    binding.toolbar.title = getString(R.string.toolbar_title_create)
+                }else{
+                    binding.btnEditBook.text = getString(R.string.edit_book)
+                    binding.toolbar.title = getString(R.string.toolbar_title_update)
                 }
                 config!!.updateDate = System.currentTimeMillis()
                 makeEditReadyScreen(config!!)
@@ -132,7 +126,6 @@ class EditStartActivity : AppCompatActivity() {
         binding.layoutLoading.root.visibility = View.GONE
         binding.layoutMain.visibility = View.VISIBLE
         with(config){
-            binding.toolbar.title = title
             binding.tvConfigId.text = "#$id (v $version)"
             binding.tvConfigTime.text = util.longToTimeFormatss(updateDate)
 
@@ -145,10 +138,83 @@ class EditStartActivity : AppCompatActivity() {
         binding.btnEditBook.isEnabled = true
     }
 
+    private fun bringLoading(isLoading: Boolean){
+        if(isLoading){
+            val view = this.currentFocus
+            if (view != null) {
+                view.clearFocus()
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(view.windowToken, 0)
+            }
+            binding.layoutLoading.root.visibility = View.VISIBLE
+            binding.layoutMain.visibility = View.GONE
+        }else{
+            binding.layoutLoading.root.visibility = View.GONE
+            binding.layoutMain.visibility = View.VISIBLE
+        }
+    }
+
+    private fun saveConfigFile(config : Config): Boolean {
+        with(config){
+            if(isCreate){
+                fileUtil.makeBookFolder(this)
+                val slide = Slide(id = Const.FIRST_SLIDE, title = getString(R.string.name_slide_prefix)+1, question = getString(R.string.text_question_default))
+                briefs.add(SlideBrief(slide.id, slide.title))
+                fileUtil.makeSlideJson(id, slide)
+            }
+
+            updateDate = System.currentTimeMillis()
+            version += 1
+            title = binding.etConfigTitle.text.toString()
+            writer = binding.etConfigWriter.text.toString()
+            illustrator = binding.etConfigIllustrator.text.toString()
+            description = binding.etConfigDescription.text.toString()
+
+            if(updateImage && !fileUtil.saveImageFile(binding.imageViewShowMain.drawable, id, defaultImage)){
+                this.defaultImage = ""
+            }
+            fileUtil.makeConfigFile(this)
+        }
+        return true
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu_edit_config, menu)
+        return true;
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
         when(item.itemId) {
             android.R.id.home -> finish()
+            R.id.menu_play -> {
+                if(config != null){
+                    util.getAlertDailog(
+                        this@EditStartActivity,
+                        getString(R.string.save_dialog_title),
+                        getString(R.string.save_dialog_question),
+                        getString(R.string.save_dialog_ok)
+                    ) { _, _ ->
+                        bringLoading(true)
+                        CoroutineScope(IO).launch {
+                            saveConfigFile(config!!)
+                            withContext(Main) {
+                                bringLoading(false)
+                                val intent = Intent(this@EditStartActivity, ViewStartActivity::class.java)
+                                intent.putExtra(Const.KEY_BOOK_ID, config!!.id)
+                                startActivity(intent)
+                            }
+                        }
+                    }.apply {
+                        setNegativeButton(getString(R.string.save_dialog_no)) { _, _ ->
+                            val intent = Intent(this@EditStartActivity, ViewStartActivity::class.java)
+                            intent.putExtra(Const.KEY_BOOK_ID, config!!.id)
+                            startActivity(intent)
+                        }
+                    }.show()
+                }
+            }
         }
         return super.onOptionsItemSelected(item)
     }

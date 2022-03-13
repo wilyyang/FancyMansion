@@ -118,15 +118,17 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         }
 
         try{
-            val output = FileOutputStream(File(path, Const.FILE_PREFIX_BOOK+bookId+ File.separator+imageName))
+            val file = File(path, Const.FILE_PREFIX_BOOK+bookId+ File.separator+imageName)
+            val output = FileOutputStream(file)
             val ext = imageName.split(".").last()
             if(drawable is GifDrawable && ext == "gif"){
                 val byteBuffer = drawable.buffer
                 val bytes = ByteArray(byteBuffer.capacity())
                 (byteBuffer.duplicate().clear() as ByteBuffer).get(bytes)
                 output.write(bytes, 0 ,bytes.size)
+
             }else if(drawable is BitmapDrawable){
-                if(ext == "jpg"){
+                if(ext == "jpg" || ext == "jpeg"){
                     drawable.bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
                 }else if(ext == "png"){
                     drawable.bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
@@ -134,7 +136,8 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
             }
             output.close()
         }catch (e: Exception){
-            Log.d(Const.TAG, ""+e.printStackTrace())
+            e.printStackTrace()
+            return false
         }
         return true
     }
