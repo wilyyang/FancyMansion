@@ -13,6 +13,10 @@ import com.google.android.material.textfield.TextInputEditText
 class RoundEditText @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = R.attr.editTextStyle
 ): TextInputEditText(context, attrs, defStyleAttr){
+    companion object{
+        var onceFocus: Boolean = false
+    }
+
     init {
         this.setPadding(context.resources.getDimensionPixelSize(R.dimen.padding_default_edit))
     }
@@ -21,6 +25,7 @@ class RoundEditText @JvmOverloads constructor(
         val mgr: InputMethodManager? = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
 
         when(focused){
+            true -> onceFocus = true
             false -> {
                 mgr!!.hideSoftInputFromWindow(windowToken, 0)
             }

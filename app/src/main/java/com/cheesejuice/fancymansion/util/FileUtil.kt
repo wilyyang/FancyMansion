@@ -112,37 +112,43 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         return slide
     }
 
-    fun saveImageFile(drawable: Drawable?, bookId: Long, imageName: String): Boolean{
+    fun saveImageFile(drawable: Drawable?, bookId: Long, imageName: String): String{
         if(drawable == null || imageName == ""){
-            return false
+            return ""
         }
 
         try{
             val file = File(path, Const.FILE_PREFIX_BOOK+bookId+ File.separator+imageName)
-            val output = FileOutputStream(file)
             val ext = imageName.split(".").last()
+
+            val output = FileOutputStream(file)
             if(drawable is GifDrawable && ext == "gif"){
                 val byteBuffer = drawable.buffer
                 val bytes = ByteArray(byteBuffer.capacity())
                 (byteBuffer.duplicate().clear() as ByteBuffer).get(bytes)
                 output.write(bytes, 0 ,bytes.size)
-
             }else if(drawable is BitmapDrawable){
                 if(ext == "jpg" || ext == "jpeg"){
                     drawable.bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
                 }else if(ext == "png"){
                     drawable.bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
+                }else{
+                    val name = imageName.split(".").first()
+                    drawable.bitmap.compress(Bitmap.CompressFormat.JPEG, 100, FileOutputStream(File(path, Const.FILE_PREFIX_BOOK+bookId+ File.separator+"$name.jpg")))
+                    return "$name.jpg"
                 }
             }
             output.close()
         }catch (e: Exception){
             e.printStackTrace()
-            return false
+            return ""
         }
-        return true
+        return imageName
     }
 
     fun getImageFile(bookId: Long, imageName: String): Any{
+        Log.e(Const.TAG, "get $bookId >> $imageName")
+
         val file = File(path, Const.FILE_PREFIX_BOOK+ bookId + File.separator+imageName)
         if(imageName != "" && file.exists()){
             return file

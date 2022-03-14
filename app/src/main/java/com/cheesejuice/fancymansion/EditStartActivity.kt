@@ -92,6 +92,8 @@ class EditStartActivity : AppCompatActivity() {
         util.checkRequestPermissions()
 
         CoroutineScope(Default).launch {
+            createSampleFiles()
+
             isCreate = intent.getBooleanExtra(Const.KEY_BOOK_CREATE, false)
             var bookId = 12345L //intent.getLongExtra(Const.KEY_BOOK_ID, KEY_BOOK_ID_NOT_FOUND)
 
@@ -149,8 +151,8 @@ class EditStartActivity : AppCompatActivity() {
             illustrator = binding.etConfigIllustrator.text.toString()
             description = binding.etConfigDescription.text.toString()
 
-            if(updateImage && !fileUtil.saveImageFile(binding.imageViewShowMain.drawable, id, defaultImage)){
-                this.defaultImage = ""
+            if(updateImage){
+                defaultImage = fileUtil.saveImageFile(binding.imageViewShowMain.drawable, id, defaultImage)
             }
             fileUtil.makeConfigFile(this)
         }
@@ -160,13 +162,24 @@ class EditStartActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_edit_config, menu)
-        return true;
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
         when(item.itemId) {
             android.R.id.home -> finish()
+
+            R.id.menu_save -> {
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+                CoroutineScope(IO).launch {
+                    saveConfigFile(config!!)
+                    withContext(Main) {
+                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+                    }
+                }
+            }
+
             R.id.menu_play -> {
                 if(config != null){
                     util.getAlertDailog(

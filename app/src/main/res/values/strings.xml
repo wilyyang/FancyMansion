@@ -7,6 +7,7 @@
     <string name="toolbar_title_update">Edit Book</string>
 
     <string name="menu_play">Play</string>
+    <string name="menu_save">Save</string>
 
     <string name="start_book">START</string>
     <string name="create_book">CREATE</string>
