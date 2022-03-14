@@ -21,7 +21,7 @@ class BookPrefUtil @Inject constructor(@ActivityContext private val context: Con
         return pref.getLong(Const.KEY_PREF_BOOK_COUNT, 0L)
     }
 
-    fun checkConditions(bookId: Long, conditions: ArrayList<Condition>): Boolean{
+    fun checkConditions(bookId: Long, conditions: MutableList<Condition>): Boolean{
         var result = true
         var nextLogic = CondNext.AND
         for(condition in conditions){

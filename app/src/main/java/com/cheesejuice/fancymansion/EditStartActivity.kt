@@ -95,7 +95,7 @@ class EditStartActivity : AppCompatActivity() {
         util.checkRequestPermissions()
 
         CoroutineScope(Default).launch {
-//            createSampleFiles()
+            createSampleFiles()
 
             isCreate = intent.getBooleanExtra(Const.KEY_BOOK_CREATE, false)
             var bookId = 12345L //intent.getLongExtra(Const.KEY_BOOK_ID, KEY_BOOK_ID_NOT_FOUND)
