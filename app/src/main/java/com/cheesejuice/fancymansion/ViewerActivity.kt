@@ -6,6 +6,7 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityViewerBinding
+import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.*
 import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.view.ChoiceAdapter
@@ -32,8 +33,9 @@ class ViewerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityViewerBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
@@ -89,8 +91,7 @@ class ViewerActivity : AppCompatActivity() {
 
         if(isCount){ bookPrefUtil.incrementIdCount(config.id, slide.id) }
 
-        binding.layoutLoading.root.visibility = View.GONE
-        binding.layoutMain.visibility = View.VISIBLE
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
         with(slide){
             Glide.with(applicationContext).load(fileUtil.getImageFile(config.id, slide.slideImage)).into(binding.imageViewShowMain)
             binding.tvSlideTitle.text = title
@@ -115,8 +116,7 @@ class ViewerActivity : AppCompatActivity() {
     }
 
     private fun enterNextSlide(choiceItem: ChoiceItem){
-        binding.layoutLoading.root.visibility = View.VISIBLE
-        binding.layoutMain.visibility = View.GONE
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
 
         CoroutineScope(Dispatchers.Default).launch {
             var enterSlideId = Const.END_SLIDE_ID

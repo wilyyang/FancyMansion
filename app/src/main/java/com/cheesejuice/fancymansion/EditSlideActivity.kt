@@ -16,6 +16,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityEditSlideBinding
+import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.ChoiceItem
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.model.Slide
@@ -71,6 +72,7 @@ class EditSlideActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityEditSlideBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -83,11 +85,11 @@ class EditSlideActivity : AppCompatActivity() {
         }
 
         binding.btnSaveSlide.setOnClickListener {
-            bringLoading(true)
+            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
             CoroutineScope(IO).launch {
                 saveSlideFile(slide!!)
                 withContext(Main) {
-                    bringLoading(false)
+                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
                 }
             }
         }
@@ -111,8 +113,7 @@ class EditSlideActivity : AppCompatActivity() {
     }
 
     private fun makeEditSlideScreen(_slide: Slide) {
-        binding.layoutLoading.root.visibility = View.GONE
-        binding.layoutMain.visibility = View.VISIBLE
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
         with(_slide){
             binding.etSlideTitle.setText(title)
             binding.etSlideDescription.setText(description)
@@ -124,8 +125,7 @@ class EditSlideActivity : AppCompatActivity() {
         binding.recyclerNavEditSlide.layoutManager= LinearLayoutManager(baseContext)
         binding.recyclerNavEditSlide.adapter = BriefAdapter(config!!.briefs, object : OnBriefItemClickListener {
             override fun onItemClick(brief: SlideBrief) {
-                binding.layoutLoading.root.visibility = View.VISIBLE
-                binding.layoutMain.visibility = View.GONE
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
                 CoroutineScope(Default).launch {
                     config = fileUtil.getConfigFromFile(config!!.id)
                     slide = fileUtil.getSlideFromJson(config!!.id, brief.slideId)
@@ -139,22 +139,6 @@ class EditSlideActivity : AppCompatActivity() {
 
         toggle = ActionBarDrawerToggle(this@EditSlideActivity, binding.drawerEditSlide, R.string.drawer_opened, R.string.drawer_closed)
         toggle.syncState()
-    }
-
-    private fun bringLoading(isLoading: Boolean){
-        if(isLoading){
-            val view = this.currentFocus
-            if (view != null) {
-                view.clearFocus()
-                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(view.windowToken, 0)
-            }
-            binding.layoutLoading.root.visibility = View.VISIBLE
-            binding.layoutMain.visibility = View.GONE
-        }else{
-            binding.layoutLoading.root.visibility = View.GONE
-            binding.layoutMain.visibility = View.VISIBLE
-        }
     }
 
     private fun saveSlideFile(slide: Slide){
@@ -192,11 +176,11 @@ class EditSlideActivity : AppCompatActivity() {
                         getString(R.string.save_dialog_question),
                         getString(R.string.save_dialog_ok)
                     ) { _, _ ->
-                        bringLoading(true)
+                        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
                         CoroutineScope(IO).launch {
                             saveSlideFile(slide!!)
                             withContext(Main) {
-                                bringLoading(false)
+                                showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
                                 val intent = Intent(this@EditSlideActivity, ViewerActivity::class.java)
                                 intent.putExtra(Const.KEY_CURRENT_BOOK_ID, config!!.id)
                                 intent.putExtra(Const.KEY_EDIT_PLAY, true)

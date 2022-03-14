@@ -8,8 +8,6 @@ import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
@@ -26,10 +24,8 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
 import javax.inject.Inject
+import com.cheesejuice.fancymansion.extension.*
 
 @AndroidEntryPoint
 class EditStartActivity : AppCompatActivity() {
@@ -66,6 +62,7 @@ class EditStartActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityEditStartBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -78,11 +75,11 @@ class EditStartActivity : AppCompatActivity() {
         }
 
         binding.btnEditBook.setOnClickListener {
-            bringLoading(true)
+            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
             CoroutineScope(IO).launch {
                 saveConfigFile(config!!)
                 withContext(Main) {
-                    bringLoading(false)
+                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
 
                     val intent = Intent(this@EditStartActivity, EditSlideActivity::class.java)
                     intent.putExtra(Const.KEY_BOOK_ID, config!!.id)
@@ -95,8 +92,6 @@ class EditStartActivity : AppCompatActivity() {
         util.checkRequestPermissions()
 
         CoroutineScope(Default).launch {
-            createSampleFiles()
-
             isCreate = intent.getBooleanExtra(Const.KEY_BOOK_CREATE, false)
             var bookId = 12345L //intent.getLongExtra(Const.KEY_BOOK_ID, KEY_BOOK_ID_NOT_FOUND)
 
@@ -123,8 +118,8 @@ class EditStartActivity : AppCompatActivity() {
     }
 
     private fun makeEditReadyScreen(config: Config) {
-        binding.layoutLoading.root.visibility = View.GONE
-        binding.layoutMain.visibility = View.VISIBLE
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+
         with(config){
             binding.tvConfigId.text = "#$id (v $version)"
             binding.tvConfigTime.text = util.longToTimeFormatss(updateDate)
@@ -136,22 +131,6 @@ class EditStartActivity : AppCompatActivity() {
         }
         Glide.with(applicationContext).load(fileUtil.getImageFile(config.id, config.defaultImage)).into(binding.imageViewShowMain)
         binding.btnEditBook.isEnabled = true
-    }
-
-    private fun bringLoading(isLoading: Boolean){
-        if(isLoading){
-            val view = this.currentFocus
-            if (view != null) {
-                view.clearFocus()
-                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(view.windowToken, 0)
-            }
-            binding.layoutLoading.root.visibility = View.VISIBLE
-            binding.layoutMain.visibility = View.GONE
-        }else{
-            binding.layoutLoading.root.visibility = View.GONE
-            binding.layoutMain.visibility = View.VISIBLE
-        }
     }
 
     private fun saveConfigFile(config : Config): Boolean {
@@ -196,11 +175,11 @@ class EditStartActivity : AppCompatActivity() {
                         getString(R.string.save_dialog_question),
                         getString(R.string.save_dialog_ok)
                     ) { _, _ ->
-                        bringLoading(true)
+                        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
                         CoroutineScope(IO).launch {
                             saveConfigFile(config!!)
                             withContext(Main) {
-                                bringLoading(false)
+                                showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
                                 val intent = Intent(this@EditStartActivity, ViewStartActivity::class.java)
                                 intent.putExtra(Const.KEY_BOOK_ID, config!!.id)
                                 startActivity(intent)
@@ -217,33 +196,5 @@ class EditStartActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun createSampleFiles(){
-        val tempConfig = Sample.extractConfigFromJson(-1)!!
-        fileUtil.makeBookFolder(tempConfig)
-        fileUtil.makeConfigFile(tempConfig)
-        for(i in 1 .. 9){
-            val slide = Sample.extractSlideFromJson(-1, i*100000000L)
-            fileUtil.makeSlideJson(tempConfig.id, slide!!)
-        }
-
-        val array = arrayOf("image_1.gif", "image_2.gif", "image_3.gif", "image_4.gif", "image_5.gif", "image_6.gif", "fish_cat.jpg", "game_end.jpg")
-        for (fileName in array){
-            val file = File(getExternalFilesDir(null), Const.FILE_PREFIX_BOOK+ tempConfig.id + File.separator+fileName)
-            val input: InputStream = resources.openRawResource(Sample.getSampleImageId(fileName))
-            val out = FileOutputStream(file)
-            val buff = ByteArray(1024)
-            var read = 0
-
-            try {
-                while (input.read(buff).also { read = it } > 0) {
-                    out.write(buff, 0, read)
-                }
-            } finally {
-                input.close()
-                out.close()
-            }
-        }
     }
 }

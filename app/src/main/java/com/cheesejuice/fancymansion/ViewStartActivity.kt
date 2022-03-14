@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityViewStartBinding
+import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.Const
@@ -35,13 +36,13 @@ class ViewStartActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityViewStartBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
         binding.btnStartBook.setOnClickListener {
-
             val intent = Intent(this, ViewerActivity::class.java)
             intent.putExtra(Const.KEY_CURRENT_BOOK_ID, config!!.id)
             intent.putExtra(Const.KEY_FIRST_READ, true)
@@ -49,8 +50,6 @@ class ViewStartActivity : AppCompatActivity() {
         }
 
         CoroutineScope(Default).launch {
-//            createSampleFiles()
-
             val bookId = intent.getLongExtra(Const.KEY_BOOK_ID, ID_NOT_FOUND)
             config = fileUtil.getConfigFromFile(bookId)
             config?.also {  configInfo ->
@@ -66,8 +65,7 @@ class ViewStartActivity : AppCompatActivity() {
     }
 
     private fun makeViewReadyScreen(config: Config) {
-        binding.layoutLoading.root.visibility = View.GONE
-        binding.layoutMain.visibility = View.VISIBLE
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
         with(config){
             binding.toolbar.title = title
             binding.tvConfigTitle.text = title
@@ -89,33 +87,5 @@ class ViewStartActivity : AppCompatActivity() {
             android.R.id.home -> finish()
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun createSampleFiles(){
-        val tempConfig = Sample.extractConfigFromJson(-1)!!
-        fileUtil.makeBookFolder(tempConfig)
-        fileUtil.makeConfigFile(tempConfig)
-        for(i in 1 .. 9){
-            val slide = Sample.extractSlideFromJson(-1, i*100000000L)
-            fileUtil.makeSlideJson(tempConfig.id, slide!!)
-        }
-
-        val array = arrayOf("image_1.gif", "image_2.gif", "image_3.gif", "image_4.gif", "image_5.gif", "image_6.gif", "fish_cat.jpg", "game_end.jpg")
-        for (fileName in array){
-            val file = File(getExternalFilesDir(null), Const.FILE_PREFIX_BOOK+ tempConfig.id + File.separator+fileName)
-            val input: InputStream = resources.openRawResource(Sample.getSampleImageId(fileName))
-            val out = FileOutputStream(file)
-            val buff = ByteArray(1024)
-            var read = 0
-
-            try {
-                while (input.read(buff).also { read = it } > 0) {
-                    out.write(buff, 0, read)
-                }
-            } finally {
-                input.close()
-                out.close()
-            }
-        }
     }
 }
