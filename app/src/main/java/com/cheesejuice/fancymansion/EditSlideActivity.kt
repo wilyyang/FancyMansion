@@ -140,7 +140,6 @@ class EditSlideActivity : AppCompatActivity() {
 
             if(updateImage){
                 slideImage = fileUtil.saveImageFile(binding.imageViewShowMain.drawable, config!!.id, slideImage)
-                Log.e(Const.TAG, "save ${config!!.id} >> $slideImage")
             }
             fileUtil.makeSlideJson(config!!.id, this)
         }

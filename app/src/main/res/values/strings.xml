@@ -15,7 +15,7 @@
     <string name="save_slide">SAVE</string>
 
     <string name="drawer_opened" translatable="false">open</string>
-    <string name="drawer_closed" translatable="false">open</string>
+    <string name="drawer_closed" translatable="false">close</string>
 
     <string name="save_dialog_title">Save Edits</string>
     <string name="save_dialog_question">Save your edits before playing?</string>

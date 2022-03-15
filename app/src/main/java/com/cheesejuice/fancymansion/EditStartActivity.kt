@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import com.cheesejuice.fancymansion.extension.*
+import com.cheesejuice.fancymansion.view.RoundEditText
 
 @AndroidEntryPoint
 class EditStartActivity : AppCompatActivity() {
@@ -80,38 +81,36 @@ class EditStartActivity : AppCompatActivity() {
                 saveConfigFile(config!!)
                 withContext(Main) {
                     showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
-
-                    val intent = Intent(this@EditStartActivity, EditSlideActivity::class.java)
-                    intent.putExtra(Const.KEY_BOOK_ID, config!!.id)
-                    intent.putExtra((Const.KEY_PREFIX_EDIT_SLIDE+config!!.id), config!!.startId)
-                    startActivity(intent)
+                    startEditSlideActivity()
                 }
             }
         }
 
+        // temp code
         util.checkRequestPermissions()
 
         CoroutineScope(Default).launch {
+            // temp code
             createSampleFiles()
-
-            isCreate = intent.getBooleanExtra(Const.KEY_BOOK_CREATE, false)
+            isCreate = false //intent.getBooleanExtra(Const.KEY_BOOK_CREATE, false)
             var bookId = 12345L //intent.getLongExtra(Const.KEY_BOOK_ID, KEY_BOOK_ID_NOT_FOUND)
 
-            // if(!isCreate && bookId != KEY_BOOK_ID_NOT_FOUND && config != null){
-            if(isCreate || bookId == ID_NOT_FOUND){
+            if(isCreate || bookId == ID_NOT_FOUND || config == null){
                 isCreate = true
                 val count = bookPrefUtil.incrementBookCount()
                 config = Config(id = count, title = "${getString(R.string.book_default_title)} $count")
                 bookId = count
             }
+
             config = fileUtil.getConfigFromFile(bookId)
             withContext(Main) {
                 if(isCreate){
-                    binding.btnEditBook.text = getString(R.string.create_book)
                     binding.toolbar.title = getString(R.string.toolbar_title_create)
+                    binding.btnEditBook.text = getString(R.string.create_book)
+
                 }else{
-                    binding.btnEditBook.text = getString(R.string.edit_book)
                     binding.toolbar.title = getString(R.string.toolbar_title_update)
+                    binding.btnEditBook.text = getString(R.string.edit_book)
                 }
                 config!!.updateDate = System.currentTimeMillis()
                 makeEditReadyScreen(config!!)
@@ -119,10 +118,10 @@ class EditStartActivity : AppCompatActivity() {
         }
     }
 
-    private fun makeEditReadyScreen(config: Config) {
+    private fun makeEditReadyScreen(_config: Config) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
 
-        with(config){
+        with(_config){
             binding.tvConfigId.text = "#$id (v $version)"
             binding.tvConfigTime.text = util.longToTimeFormatss(updateDate)
 
@@ -131,11 +130,11 @@ class EditStartActivity : AppCompatActivity() {
             binding.etConfigIllustrator.setText(illustrator)
             binding.etConfigDescription.setText(description)
         }
-        Glide.with(applicationContext).load(fileUtil.getImageFile(config.id, config.defaultImage)).into(binding.imageViewShowMain)
+        Glide.with(applicationContext).load(fileUtil.getImageFile(_config.id, _config.defaultImage)).into(binding.imageViewShowMain)
         binding.btnEditBook.isEnabled = true
     }
 
-    private fun saveConfigFile(config : Config): Boolean {
+    private fun saveConfigFile(config : Config) {
         with(config){
             if(isCreate){
                 fileUtil.makeBookFolder(this)
@@ -156,7 +155,8 @@ class EditStartActivity : AppCompatActivity() {
             }
             fileUtil.makeConfigFile(this)
         }
-        return true
+        RoundEditText.onceFocus = false
+        updateImage = false
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -173,6 +173,7 @@ class EditStartActivity : AppCompatActivity() {
             R.id.menu_save -> {
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
                 CoroutineScope(IO).launch {
+                    this@EditStartActivity.currentFocus?.let { it.clearFocus() }
                     saveConfigFile(config!!)
                     withContext(Main) {
                         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
@@ -182,32 +183,51 @@ class EditStartActivity : AppCompatActivity() {
 
             R.id.menu_play -> {
                 if(config != null){
-                    util.getAlertDailog(
-                        this@EditStartActivity,
-                        getString(R.string.save_dialog_title),
-                        getString(R.string.save_dialog_question),
-                        getString(R.string.save_dialog_ok)
-                    ) { _, _ ->
-                        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
-                        CoroutineScope(IO).launch {
-                            saveConfigFile(config!!)
-                            withContext(Main) {
-                                showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
-                                val intent = Intent(this@EditStartActivity, ViewStartActivity::class.java)
-                                intent.putExtra(Const.KEY_BOOK_ID, config!!.id)
-                                startActivity(intent)
-                            }
-                        }
-                    }.apply {
-                        setNegativeButton(getString(R.string.save_dialog_no)) { _, _ ->
-                            val intent = Intent(this@EditStartActivity, ViewStartActivity::class.java)
-                            intent.putExtra(Const.KEY_BOOK_ID, config!!.id)
-                            startActivity(intent)
-                        }
-                    }.show()
+                    startAfterSaveEdits { startViewStartActivity() }
                 }
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun startAfterSaveEdits(start:()->Unit){
+        if(RoundEditText.onceFocus || updateImage){
+            this@EditStartActivity.currentFocus?.let { it.clearFocus() }
+
+            util.getAlertDailog(
+                this@EditStartActivity,
+                getString(R.string.save_dialog_title),
+                getString(R.string.save_dialog_question),
+                getString(R.string.save_dialog_ok)
+            ) { _, _ ->
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+                CoroutineScope(IO).launch {
+                    saveConfigFile(config!!)
+                    withContext(Main) {
+                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+                        start()
+                    }
+                }
+            }.apply {
+                setNegativeButton(getString(R.string.save_dialog_no)) { _, _ ->
+                    start()
+                }
+            }.show()
+        }else{
+            start()
+        }
+    }
+
+    private fun startViewStartActivity(){
+        val intent = Intent(this@EditStartActivity, ViewStartActivity::class.java)
+        intent.putExtra(Const.KEY_BOOK_ID, config!!.id)
+        startActivity(intent)
+    }
+
+    private fun startEditSlideActivity(){
+        val intent = Intent(this@EditStartActivity, EditSlideActivity::class.java)
+        intent.putExtra(Const.KEY_BOOK_ID, config!!.id)
+        intent.putExtra((Const.KEY_PREFIX_EDIT_SLIDE+config!!.id), config!!.startId)
+        startActivity(intent)
     }
 }
