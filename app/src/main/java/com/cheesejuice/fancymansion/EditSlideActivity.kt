@@ -1,5 +1,6 @@
 package com.cheesejuice.fancymansion
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -9,8 +10,6 @@ import android.provider.OpenableColumns
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -18,7 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityEditSlideBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
-import com.cheesejuice.fancymansion.model.ChoiceItem
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.model.Slide
 import com.cheesejuice.fancymansion.model.SlideBrief
@@ -42,13 +40,13 @@ class EditSlideActivity : AppCompatActivity() {
     @Inject
     lateinit var util: CommonUtil
     @Inject
-    lateinit var bookPrefUtil: BookPrefUtil
+    lateinit var bookUtil: BookUtil
     @Inject
     lateinit var fileUtil: FileUtil
 
-    private var updateImage = false
-
+    lateinit var adapter:BriefAdapter
     lateinit var toggle: ActionBarDrawerToggle
+    private var updateImage = false
 
     private val gallaryForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -83,8 +81,8 @@ class EditSlideActivity : AppCompatActivity() {
         }
 
         CoroutineScope(Default).launch {
-            var bookId = intent.getLongExtra(Const.KEY_BOOK_ID, ID_NOT_FOUND)
-            var slideId = intent.getLongExtra(Const.KEY_PREFIX_EDIT_SLIDE+bookId, ID_NOT_FOUND)
+            val bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
+            val slideId = intent.getLongExtra(Const.INTENT_SLIDE_ID, ID_NOT_FOUND)
 
             if(bookId == ID_NOT_FOUND || slideId == ID_NOT_FOUND){
                 util.getAlertDailog(this@EditSlideActivity)
@@ -95,6 +93,30 @@ class EditSlideActivity : AppCompatActivity() {
             slide = fileUtil.getSlideFromJson(bookId, slideId)
             withContext(Main) {
                 binding.toolbar.title = "# ${slide!!.id}"
+
+                binding.recyclerNavEditSlide.layoutManager= LinearLayoutManager(baseContext)
+                adapter = BriefAdapter(config!!.briefs, object : OnBriefItemClickListener {
+                    override fun onItemClick(brief: SlideBrief) {
+                        startAfterSaveEdits {
+                            CoroutineScope(IO).launch {
+                                RoundEditText.onceFocus = false
+                                updateImage = false
+
+                                config = fileUtil.getConfigFromFile(config!!.id)
+                                slide = fileUtil.getSlideFromJson(config!!.id, brief.slideId)
+                                withContext(Main) {
+                                    binding.toolbar.title = "# ${slide!!.id}"
+                                    makeEditSlideScreen(slide!!)
+                                }
+                            }
+                        }
+                    }
+                })
+                binding.recyclerNavEditSlide.adapter = adapter
+
+                toggle = ActionBarDrawerToggle(this@EditSlideActivity, binding.drawerEditSlide, R.string.drawer_opened, R.string.drawer_closed)
+                toggle.syncState()
+
                 makeEditSlideScreen(slide!!)
             }
         }
@@ -108,28 +130,6 @@ class EditSlideActivity : AppCompatActivity() {
             binding.etSlideQuestion.setText(question)
         }
         Glide.with(applicationContext).load(fileUtil.getImageFile(config!!.id, _slide.slideImage)).into(binding.imageViewShowMain)
-
-        binding.recyclerNavEditSlide.layoutManager= LinearLayoutManager(baseContext)
-        binding.recyclerNavEditSlide.adapter = BriefAdapter(config!!.briefs, object : OnBriefItemClickListener {
-            override fun onItemClick(brief: SlideBrief) {
-                startAfterSaveEdits {
-                    CoroutineScope(IO).launch {
-                        RoundEditText.onceFocus = false
-                        updateImage = false
-
-                        config = fileUtil.getConfigFromFile(config!!.id)
-                        slide = fileUtil.getSlideFromJson(config!!.id, brief.slideId)
-                        withContext(Main) {
-                            binding.toolbar.title = "# ${slide!!.id}"
-                            makeEditSlideScreen(slide!!)
-                        }
-                    }
-                }
-            }
-        })
-
-        toggle = ActionBarDrawerToggle(this@EditSlideActivity, binding.drawerEditSlide, R.string.drawer_opened, R.string.drawer_closed)
-        toggle.syncState()
     }
 
     private fun saveSlideFile(slide: Slide){
@@ -143,6 +143,10 @@ class EditSlideActivity : AppCompatActivity() {
             }
             fileUtil.makeSlideJson(config!!.id, this)
         }
+
+        config!!.briefs.find { it.slideId == slide.id }!!.slideTitle = slide.title
+        fileUtil.makeConfigFile(config!!)
+
         RoundEditText.onceFocus = false
         updateImage = false
     }
@@ -163,12 +167,14 @@ class EditSlideActivity : AppCompatActivity() {
             android.R.id.home -> finish()
 
             R.id.menu_save -> {
+                this@EditSlideActivity.currentFocus?.let { it.clearFocus() }
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
                 CoroutineScope(IO).launch {
-                    this@EditSlideActivity.currentFocus?.let { it.clearFocus() }
-
                     saveSlideFile(slide!!)
                     withContext(Main) {
+                        adapter.setBriefList(config!!.briefs)
+                        adapter.notifyDataSetChanged()
+
                         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
                     }
                 }
@@ -191,18 +197,20 @@ class EditSlideActivity : AppCompatActivity() {
                 this@EditSlideActivity,
                 getString(R.string.save_dialog_title),
                 getString(R.string.save_dialog_question),
-                getString(R.string.save_dialog_ok)
+                getString(R.string.dialog_ok)
             ) { _, _ ->
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
                 CoroutineScope(IO).launch {
                     saveSlideFile(slide!!)
                     withContext(Main) {
+                        adapter.setBriefList(config!!.briefs)
+                        adapter.notifyDataSetChanged()
                         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
                         start()
                     }
                 }
             }.apply {
-                setNegativeButton(getString(R.string.save_dialog_no)) { _, _ ->
+                setNegativeButton(getString(R.string.dialog_no)) { _, _ ->
                     start()
                 }
             }.show()
@@ -212,10 +220,16 @@ class EditSlideActivity : AppCompatActivity() {
     }
 
     private fun startViewerActivity(){
+        bookUtil.setOnlyPlay(true)
+        bookUtil.deleteBookPref(config!!.id, Const.MODE_PLAY)
+
         val intent = Intent(this@EditSlideActivity, ViewerActivity::class.java)
-        intent.putExtra(Const.KEY_CURRENT_BOOK_ID, config!!.id)
-        intent.putExtra(Const.KEY_EDIT_PLAY, true)
-        intent.putExtra(Const.KEY_PLAY_SLIDE_ID, slide!!.id)
+        intent.putExtra(Const.INTENT_BOOK_ID, config!!.id)
+        intent.putExtra(Const.INTENT_SLIDE_ID, slide!!.id)
         startActivity(intent)
+    }
+
+    override fun onBackPressed() {
+        startAfterSaveEdits { finish() }
     }
 }

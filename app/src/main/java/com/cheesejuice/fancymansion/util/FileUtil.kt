@@ -11,6 +11,7 @@ import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.model.Book
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.model.Slide
+import com.cheesejuice.fancymansion.model.SlideBrief
 import dagger.hilt.android.qualifiers.ActivityContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -23,6 +24,14 @@ import javax.inject.Inject
 
 class FileUtil @Inject constructor(@ActivityContext private val context: Context){
     private val path = context.getExternalFilesDir(null)
+
+    fun initBook(bookId: Long): Boolean{
+        val config = Config(id = bookId, title = "${context.getString(R.string.book_default_title)} $bookId")
+        val slide = Slide(id = Const.FIRST_SLIDE, title = context.getString(R.string.name_slide_prefix)+1, question = context.getString(R.string.text_question_default))
+        config.briefs.add(SlideBrief(slide.id, slide.title))
+
+        return (makeBookFolder(config) && makeConfigFile(config) && makeSlideJson(bookId, slide))
+    }
 
     fun makeBookFolder(config: Config): Boolean{
         try{

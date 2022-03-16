@@ -1,11 +1,11 @@
-package com.cheesejuice.fancymansion.util
+package com.cheesejuice.fancymansion.etc
 
 import android.util.Log
-import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.R.*
 import com.cheesejuice.fancymansion.model.Book
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.model.Slide
+import com.cheesejuice.fancymansion.util.Const
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
@@ -13,7 +13,7 @@ class Sample {
     companion object {
         // 00 / 00 / 00 / 00 / 00 = slide / choice / showCondition / enterId / enterCondition
         fun extractConfigFromJson(bookId: Long): Config?{
-            val configJson = Sample.getSampleConfig(bookId)
+            val configJson = getSampleConfig(bookId)
             var result: Config? = null
             try{
                 result = Json.decodeFromString<Config>(configJson)
@@ -26,7 +26,7 @@ class Sample {
         }
 
         fun extractSlideFromJson(bookId: Long, slideId: Long): Slide?{
-            val slideJson = Sample.getSlideJson(bookId, slideId)
+            val slideJson = getSlideJson(bookId, slideId)
             var result: Slide? = null
             try{
                 result = Json.decodeFromString<Slide>(slideJson)
@@ -39,7 +39,7 @@ class Sample {
         }
 
         fun extractBookFromJson(bookId: Long): Book?{
-            val bookJson = Sample.getSampleJson()
+            val bookJson = getSampleJson()
             var result: Book? = null
             try{
                 result = Json.decodeFromString<Book>(bookJson)

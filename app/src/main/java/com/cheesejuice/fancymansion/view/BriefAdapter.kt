@@ -12,7 +12,7 @@ interface OnBriefItemClickListener{
     fun onItemClick(brief: SlideBrief)
 }
 
-class BriefAdapter(val datas: MutableList<SlideBrief>, val adapterListener: OnBriefItemClickListener): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class BriefAdapter(var datas: MutableList<SlideBrief>, val adapterListener: OnBriefItemClickListener): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     override fun getItemCount(): Int{
         return datas.size
@@ -25,6 +25,10 @@ class BriefAdapter(val datas: MutableList<SlideBrief>, val adapterListener: OnBr
         val binding=(holder as BriefViewHolder).binding
         binding.tvItemText.text= datas[position].slideTitle
         holder.brief = datas[position]
+    }
+
+    fun setBriefList(_datas: MutableList<SlideBrief>){
+        datas = _datas
     }
 
     inner class BriefViewHolder(val binding: ItemBriefBinding): RecyclerView.ViewHolder(binding.root){

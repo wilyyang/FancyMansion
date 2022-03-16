@@ -6,7 +6,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import com.cheesejuice.fancymansion.util.Const
 import com.cheesejuice.fancymansion.util.FileUtil
-import com.cheesejuice.fancymansion.util.Sample
+import com.cheesejuice.fancymansion.etc.Sample
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream

@@ -19,8 +19,12 @@
 
     <string name="save_dialog_title">Save Edits</string>
     <string name="save_dialog_question">Save your edits before playing?</string>
-    <string name="save_dialog_ok">OK</string>
-    <string name="save_dialog_no">NO</string>
+
+    <string name="record_dialog_title">Load Record</string>
+    <string name="record_dialog_question">Load your last book record?</string>
+
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_no">NO</string>
 
     <string name="name_book_prefix">Book&#160;</string>
     <string name="name_slide_prefix">Slide&#160;</string>

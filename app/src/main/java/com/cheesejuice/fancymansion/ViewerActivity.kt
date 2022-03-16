@@ -2,7 +2,6 @@ package com.cheesejuice.fancymansion
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityViewerBinding
@@ -19,16 +18,16 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ViewerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityViewerBinding
-    private lateinit var config: Config
+    lateinit var config: Config
+    private var slide: Slide? = null
+    var mode: String = ""
+
     @Inject
     lateinit var util: CommonUtil
     @Inject
-    lateinit var bookPrefUtil: BookPrefUtil
+    lateinit var bookUtil: BookUtil
     @Inject
     lateinit var fileUtil: FileUtil
-    private var currentSlide: Slide? = null
-
-    var onlyPlay: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,81 +37,57 @@ class ViewerActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
+        if(bookUtil.getOnlyPlay()) { mode = Const.MODE_PLAY}
 
-        initConfigObject()
-    }
-
-    private fun initConfigObject(){
-        val bookId = intent.getLongExtra(Const.KEY_CURRENT_BOOK_ID, 0)
-        if(bookId == 0L) finish()
+        // init config & slide object
+        val bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, Const.ID_NOT_FOUND)
+        val slideId = intent.getLongExtra(Const.INTENT_SLIDE_ID, Const.ID_NOT_FOUND)
+        if(bookId == Const.ID_NOT_FOUND || slideId == Const.ID_NOT_FOUND) finish()
         CoroutineScope(Dispatchers.Default).launch {
-            fileUtil.getConfigFromFile(bookId)?.also { conf ->
-                config = conf
+            val tempConfig = fileUtil.getConfigFromFile(bookId)
+            slide = fileUtil.getSlideFromJson(bookId, slideId)
 
-                onlyPlay = intent.getBooleanExtra(Const.KEY_EDIT_PLAY, false)
-
-                var firstRead = intent.getBooleanExtra(Const.KEY_FIRST_READ, true)
-                val isReading = bookPrefUtil.isBookReading(config.id)
-                var slideId = bookPrefUtil.getReadingSlideId(config.id)
-
-                if(onlyPlay){
-                    val playId = intent.getLongExtra(Const.KEY_PLAY_SLIDE_ID, Const.ID_NOT_FOUND)
-                    if(playId != Const.ID_NOT_FOUND){
-                        slideId = playId
-                    }else{
-                        withContext(Main){
-                            util.getAlertDailog(this@ViewerActivity).show()
-                        }
-                    }
-                }else if(firstRead || !isReading || slideId == Const.BOOK_FIRST_READ){
-                    firstRead = true
-                    slideId = config.startId
-                    bookPrefUtil.initReadingBookInfo(config.id, slideId)
-                    bookPrefUtil.setReadingSlideId(config.id, slideId)
-                }
-
-                currentSlide = fileUtil.getSlideFromJson(bookId, slideId)
-                withContext(Dispatchers.Main){
-                    makeSlideScreen(currentSlide, firstRead)
-                }
-            }?: also{
-                withContext(Dispatchers.Main){
+            withContext(Main) {
+                if(tempConfig == null || slide == null) {
                     util.getAlertDailog(this@ViewerActivity).show()
+                }else{
+                    config = tempConfig
+
+                    // if not play mode and save slide, not count
+                    val isSave = ((mode == "") && slideId == bookUtil.getSaveSlideId(config.id))
+                    makeSlideScreen(slide!!, !isSave)
                 }
             }
         }
     }
 
-    private fun makeSlideScreen(slide: Slide?, isCount: Boolean) {
-        slide?:let {
-            util.getAlertDailog(this@ViewerActivity).show()
-            return
-        }
-
-        if(isCount){ bookPrefUtil.incrementIdCount(config.id, slide.id) }
+    private fun makeSlideScreen(slide: Slide, isCount: Boolean) {
+        if(isCount){ bookUtil.incrementIdCount(config.id, slide.id, mode) }
 
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
         with(slide){
+            // Make Main Content
             Glide.with(applicationContext).load(fileUtil.getImageFile(config.id, slide.slideImage)).into(binding.imageViewShowMain)
             binding.tvSlideTitle.text = title
             binding.tvSlideDescription.text = description
             binding.tvSlideQuestion.text = question
 
+            // Make Choice Item
             val passChoiceItems: ArrayList<ChoiceItem> = arrayListOf()
             for(choiceItem in choiceItems){
-                if(bookPrefUtil.checkConditions(config.id, choiceItem.showConditions)){
+                if(bookUtil.checkConditions(config.id, choiceItem.showConditions, mode)){
                     passChoiceItems.add(choiceItem)
                 }
             }
-
             binding.recyclerChoice.layoutManager=LinearLayoutManager(baseContext)
             binding.recyclerChoice.adapter = ChoiceAdapter(passChoiceItems, object : OnChoiceItemClickListener {
                 override fun onItemClick(choiceItem: ChoiceItem) {
-                    bookPrefUtil.incrementIdCount(config.id, choiceItem.id)
+                    bookUtil.incrementIdCount(config.id, choiceItem.id, mode)
                     enterNextSlide(choiceItem)
                 }
             })
         }
+        bookUtil.setSaveSlideId(config.id, slide.id)
     }
 
     private fun enterNextSlide(choiceItem: ChoiceItem){
@@ -122,22 +97,26 @@ class ViewerActivity : AppCompatActivity() {
             var enterSlideId = Const.END_SLIDE_ID
 
             for(enterItem in choiceItem.enterItems) {
-                if(bookPrefUtil.checkConditions(config.id, enterItem.enterConditions)){
-                    bookPrefUtil.incrementIdCount(config.id, enterItem.id)
+                if(bookUtil.checkConditions(config.id, enterItem.enterConditions, mode)){
+                    bookUtil.incrementIdCount(config.id, enterItem.id, mode)
                     enterSlideId = enterItem.enterSlideId
                     break
                 }
             }
 
             if(enterSlideId != Const.END_SLIDE_ID){
-                currentSlide = fileUtil.getSlideFromJson(config.id, enterSlideId)
+                slide = fileUtil.getSlideFromJson(config.id, enterSlideId)
             }else{
-                currentSlide = fileUtil.getSlideFromJson(config.id, config.defaultEndId)
+                slide = fileUtil.getSlideFromJson(config.id, config.defaultEndId)
             }
 
             delay(100)
             withContext(Dispatchers.Main){
-                makeSlideScreen(currentSlide, true)
+                slide?.also {
+                    makeSlideScreen(slide!!, true)
+                }?:also {
+                    util.getAlertDailog(this@ViewerActivity).show()
+                }
             }
         }
     }

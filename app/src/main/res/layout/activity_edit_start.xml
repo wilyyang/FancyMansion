@@ -208,6 +208,7 @@
             <Button
                 android:enabled="false"
                 android:id="@+id/btnEditBook"
+                android:text="@string/edit_book"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"/>

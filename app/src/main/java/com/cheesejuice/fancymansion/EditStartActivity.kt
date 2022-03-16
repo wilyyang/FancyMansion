@@ -13,8 +13,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityEditStartBinding
 import com.cheesejuice.fancymansion.model.Config
-import com.cheesejuice.fancymansion.model.Slide
-import com.cheesejuice.fancymansion.model.SlideBrief
 import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.util.Const.Companion.ID_NOT_FOUND
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,11 +29,12 @@ import com.cheesejuice.fancymansion.view.RoundEditText
 @AndroidEntryPoint
 class EditStartActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEditStartBinding
+    private var bookId: Long = ID_NOT_FOUND
     private var config: Config? = null
     @Inject
     lateinit var util: CommonUtil
     @Inject
-    lateinit var bookPrefUtil: BookPrefUtil
+    lateinit var bookUtil: BookUtil
     @Inject
     lateinit var fileUtil: FileUtil
 
@@ -68,6 +67,7 @@ class EditStartActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
+        binding.toolbar.title = getString(R.string.toolbar_title_update)
 
         binding.imageViewConfigAdd.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
@@ -89,29 +89,23 @@ class EditStartActivity : AppCompatActivity() {
         // temp code
         util.checkRequestPermissions()
 
+//        createSampleFiles()
+        isCreate = false //intent.getBooleanExtra(Const.KEY_BOOK_CREATE, false)
+        bookId = 12345L //intent.getLongExtra(Const.KEY_BOOK_ID, KEY_BOOK_ID_NOT_FOUND)
+        if(isCreate || bookId == ID_NOT_FOUND){
+            isCreate = true
+            bookId = bookUtil.incrementBookCount()
+
+            fileUtil.initBook(bookId)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
         CoroutineScope(Default).launch {
-            // temp code
-            createSampleFiles()
-            isCreate = false //intent.getBooleanExtra(Const.KEY_BOOK_CREATE, false)
-            var bookId = 12345L //intent.getLongExtra(Const.KEY_BOOK_ID, KEY_BOOK_ID_NOT_FOUND)
-
-            if(isCreate || bookId == ID_NOT_FOUND || config == null){
-                isCreate = true
-                val count = bookPrefUtil.incrementBookCount()
-                config = Config(id = count, title = "${getString(R.string.book_default_title)} $count")
-                bookId = count
-            }
-
             config = fileUtil.getConfigFromFile(bookId)
             withContext(Main) {
-                if(isCreate){
-                    binding.toolbar.title = getString(R.string.toolbar_title_create)
-                    binding.btnEditBook.text = getString(R.string.create_book)
-
-                }else{
-                    binding.toolbar.title = getString(R.string.toolbar_title_update)
-                    binding.btnEditBook.text = getString(R.string.edit_book)
-                }
                 config!!.updateDate = System.currentTimeMillis()
                 makeEditReadyScreen(config!!)
             }
@@ -136,13 +130,6 @@ class EditStartActivity : AppCompatActivity() {
 
     private fun saveConfigFile(config : Config) {
         with(config){
-            if(isCreate){
-                fileUtil.makeBookFolder(this)
-                val slide = Slide(id = Const.FIRST_SLIDE, title = getString(R.string.name_slide_prefix)+1, question = getString(R.string.text_question_default))
-                briefs.add(SlideBrief(slide.id, slide.title))
-                fileUtil.makeSlideJson(id, slide)
-            }
-
             updateDate = System.currentTimeMillis()
             version += 1
             title = binding.etConfigTitle.text.toString()
@@ -171,9 +158,9 @@ class EditStartActivity : AppCompatActivity() {
             android.R.id.home -> finish()
 
             R.id.menu_save -> {
+                this@EditStartActivity.currentFocus?.let { it.clearFocus() }
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
                 CoroutineScope(IO).launch {
-                    this@EditStartActivity.currentFocus?.let { it.clearFocus() }
                     saveConfigFile(config!!)
                     withContext(Main) {
                         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
@@ -198,7 +185,7 @@ class EditStartActivity : AppCompatActivity() {
                 this@EditStartActivity,
                 getString(R.string.save_dialog_title),
                 getString(R.string.save_dialog_question),
-                getString(R.string.save_dialog_ok)
+                getString(R.string.dialog_ok)
             ) { _, _ ->
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
                 CoroutineScope(IO).launch {
@@ -209,7 +196,7 @@ class EditStartActivity : AppCompatActivity() {
                     }
                 }
             }.apply {
-                setNegativeButton(getString(R.string.save_dialog_no)) { _, _ ->
+                setNegativeButton(getString(R.string.dialog_no)) { _, _ ->
                     start()
                 }
             }.show()
@@ -219,15 +206,18 @@ class EditStartActivity : AppCompatActivity() {
     }
 
     private fun startViewStartActivity(){
+        bookUtil.setOnlyPlay(true)
+        bookUtil.deleteBookPref(config!!.id, Const.MODE_PLAY)
+
         val intent = Intent(this@EditStartActivity, ViewStartActivity::class.java)
-        intent.putExtra(Const.KEY_BOOK_ID, config!!.id)
+        intent.putExtra(Const.INTENT_BOOK_ID, config!!.id)
         startActivity(intent)
     }
 
     private fun startEditSlideActivity(){
         val intent = Intent(this@EditStartActivity, EditSlideActivity::class.java)
-        intent.putExtra(Const.KEY_BOOK_ID, config!!.id)
-        intent.putExtra((Const.KEY_PREFIX_EDIT_SLIDE+config!!.id), config!!.startId)
+        intent.putExtra(Const.INTENT_BOOK_ID, config!!.id)
+        intent.putExtra(Const.INTENT_SLIDE_ID, config!!.startId)
         startActivity(intent)
     }
 }
