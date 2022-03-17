@@ -13,7 +13,9 @@ import android.view.MenuItem
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityEditSlideBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
@@ -45,8 +47,32 @@ class EditSlideActivity : AppCompatActivity() {
     lateinit var fileUtil: FileUtil
 
     lateinit var adapter:BriefAdapter
+    lateinit var touchHelper:ItemTouchHelper
+
     lateinit var toggle: ActionBarDrawerToggle
     private var updateImage = false
+
+    private val briefListener = object :BriefAdapter.OnBriefItemListener {
+        override fun onItemClick(brief: SlideBrief) {
+            startAfterSaveEdits {
+                CoroutineScope(IO).launch {
+                    RoundEditText.onceFocus = false
+                    updateImage = false
+
+                    config = fileUtil.getConfigFromFile(config!!.id)
+                    slide = fileUtil.getSlideFromJson(config!!.id, brief.slideId)
+                    withContext(Main) {
+                        binding.toolbar.title = "# ${slide!!.id}"
+                        makeEditSlideScreen(slide!!)
+                    }
+                }
+            }
+        }
+
+        override fun onItemDrag(viewHolder: BriefAdapter.BriefViewHolder) {
+            touchHelper.startDrag(viewHolder)
+        }
+    }
 
     private val gallaryForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -94,25 +120,17 @@ class EditSlideActivity : AppCompatActivity() {
             withContext(Main) {
                 binding.toolbar.title = "# ${slide!!.id}"
 
-                binding.recyclerNavEditSlide.layoutManager= LinearLayoutManager(baseContext)
-                adapter = BriefAdapter(config!!.briefs, object : OnBriefItemClickListener {
-                    override fun onItemClick(brief: SlideBrief) {
-                        startAfterSaveEdits {
-                            CoroutineScope(IO).launch {
-                                RoundEditText.onceFocus = false
-                                updateImage = false
+                adapter = BriefAdapter(config!!.briefs, briefListener)
+                adapter.startDrag(object: BriefAdapter.OnStartDragListener{
+                    override fun onStartDrag(viewHolder: BriefAdapter.BriefViewHolder) {
 
-                                config = fileUtil.getConfigFromFile(config!!.id)
-                                slide = fileUtil.getSlideFromJson(config!!.id, brief.slideId)
-                                withContext(Main) {
-                                    binding.toolbar.title = "# ${slide!!.id}"
-                                    makeEditSlideScreen(slide!!)
-                                }
-                            }
-                        }
                     }
+
                 })
+                binding.recyclerNavEditSlide.layoutManager = LinearLayoutManager(baseContext)
                 binding.recyclerNavEditSlide.adapter = adapter
+                touchHelper = ItemTouchHelper(BriefItemCallback(adapter))
+                touchHelper.attachToRecyclerView(binding.recyclerNavEditSlide)
 
                 toggle = ActionBarDrawerToggle(this@EditSlideActivity, binding.drawerEditSlide, R.string.drawer_opened, R.string.drawer_closed)
                 toggle.syncState()
@@ -172,9 +190,7 @@ class EditSlideActivity : AppCompatActivity() {
                 CoroutineScope(IO).launch {
                     saveSlideFile(slide!!)
                     withContext(Main) {
-                        adapter.setBriefList(config!!.briefs)
-                        adapter.notifyDataSetChanged()
-
+                        adapter.updateBriefTitle(slide!!.id, slide!!.title)
                         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
                     }
                 }
@@ -203,8 +219,7 @@ class EditSlideActivity : AppCompatActivity() {
                 CoroutineScope(IO).launch {
                     saveSlideFile(slide!!)
                     withContext(Main) {
-                        adapter.setBriefList(config!!.briefs)
-                        adapter.notifyDataSetChanged()
+                        adapter.updateBriefTitle(slide!!.id, slide!!.title)
                         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
                         start()
                     }
