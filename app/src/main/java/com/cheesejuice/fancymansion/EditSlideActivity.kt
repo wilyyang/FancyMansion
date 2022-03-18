@@ -91,30 +91,27 @@ class EditSlideActivity : AppCompatActivity() {
             }
 
             config = fileUtil.getConfigFromFile(bookId)
-            slide = fileUtil.getSlideFromJson(bookId, slideId)
-            withContext(Main) {
-                binding.toolbar.title = "# ${slide!!.id}"
+            adapter = BriefAdapter(config!!.briefs)
+            adapter.setItemClickListener(object: BriefAdapter.OnItemClickListener{
+                override fun onClick(v: View, position: Int) {
+                    startAfterSaveEdits {
+                        CoroutineScope(IO).launch {
+                            config = fileUtil.getConfigFromFile(config!!.id)
+                            adapter.datas = config!!.briefs
 
-                adapter = BriefAdapter(config!!.briefs)
-                adapter.setItemClickListener(object: BriefAdapter.OnItemClickListener{
-                    override fun onClick(v: View, position: Int) {
-                        startAfterSaveEdits {
-                            CoroutineScope(IO).launch {
-                                RoundEditText.onceFocus = false
-                                updateImage = false
-                                adapter.onceMove = false
-
-                                config = fileUtil.getConfigFromFile(config!!.id)
-                                slide = fileUtil.getSlideFromJson(config!!.id, config!!.briefs[position].slideId)
-                                Log.d(Const.TAG, "$position ${config!!.briefs[position].slideId} ${config!!.briefs[position].slideTitle}")
-                                withContext(Main) {
-                                    binding.toolbar.title = "# ${slide!!.id}"
-                                    makeEditSlideScreen(slide!!)
-                                }
+                            slide = fileUtil.getSlideFromJson(config!!.id, config!!.briefs[position].slideId)
+                            withContext(Main) {
+                                binding.toolbar.title = "# ${slide!!.id}"
+                                makeEditSlideScreen(slide!!)
                             }
                         }
                     }
-                })
+                }
+            })
+
+            slide = fileUtil.getSlideFromJson(bookId, slideId)
+            withContext(Main) {
+                binding.toolbar.title = "# ${slide!!.id}"
                 binding.recyclerNavEditSlide.layoutManager = LinearLayoutManager(baseContext)
                 binding.recyclerNavEditSlide.adapter = adapter
 
@@ -198,6 +195,10 @@ class EditSlideActivity : AppCompatActivity() {
     private fun startAfterSaveEdits(start:()->Unit){
         if(RoundEditText.onceFocus || updateImage || adapter.onceMove){
             this@EditSlideActivity.currentFocus?.let { it.clearFocus() }
+
+            RoundEditText.onceFocus = false
+            updateImage = false
+            adapter.onceMove = false
 
             util.getAlertDailog(
                 this@EditSlideActivity,

@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.cheesejuice.fancymansion.util.Const
 import com.cheesejuice.fancymansion.util.FileUtil
 import com.cheesejuice.fancymansion.etc.Sample
+import com.cheesejuice.fancymansion.model.SlideBrief
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -31,11 +32,19 @@ fun Activity.createSampleFiles(){
     val fileUtil = FileUtil(this)
     val tempConfig = Sample.extractConfigFromJson(-1)!!
     fileUtil.makeBookFolder(tempConfig)
-    fileUtil.makeConfigFile(tempConfig)
     for(i in 1 .. 9){
         val slide = Sample.extractSlideFromJson(-1, i*100000000L)
         fileUtil.makeSlideJson(tempConfig.id, slide!!)
     }
+
+    for(i in 10 .. 99){
+        val slide = Sample.extractSlideFromJson(-1, i*100000000L)
+        fileUtil.makeSlideJson(tempConfig.id, slide!!)
+
+        tempConfig.briefs.add(i-1, SlideBrief(i*100000000L, "${i*100000000L}"))
+    }
+
+    fileUtil.makeConfigFile(tempConfig)
 
     val array = arrayOf("image_1.gif", "image_2.gif", "image_3.gif", "image_4.gif", "image_5.gif", "image_6.gif", "fish_cat.jpg", "game_end.jpg")
     for (fileName in array){

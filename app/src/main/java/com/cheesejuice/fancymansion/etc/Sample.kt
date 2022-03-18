@@ -460,6 +460,15 @@ class Sample {
                     """.trimIndent()
                 else  ->
                     """ 
+                    {
+                      "id":$slideId,
+                      "slideImage":"image_4.gif",
+                      "title":"$slideId",
+                      "description":"$slideId",
+                      "count":0,
+                      "question":"",
+                      "choiceItems":[]
+                    } 
                     """.trimIndent()
             }
 

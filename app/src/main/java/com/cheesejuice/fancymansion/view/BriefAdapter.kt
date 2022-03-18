@@ -34,15 +34,16 @@ class BriefAdapter(var datas: MutableList<SlideBrief>):
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val binding=(holder as BriefViewHolder).binding
         binding.tvItemText.text = "$position ${datas[position].slideTitle}"
-        holder.itemView.setOnClickListener {
-            itemClickListener.onClick(it, position)
+        holder.apply {
+            itemView.setOnClickListener {
+                itemClickListener.onClick(it, this.bindingAdapterPosition)
+            }
         }
     }
 
     // Custom
     fun updateBriefTitle(id: Long, title: String) {
         val idx = datas.indexOfFirst { slideBrief -> slideBrief.slideId == id }
-        datas[idx].slideTitle = title
         notifyItemChanged(idx)
     }
 
@@ -73,7 +74,7 @@ class BriefDragCallback(
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
     ): Boolean {
-        itemMoveListener.onItemMove(viewHolder.absoluteAdapterPosition, target.absoluteAdapterPosition)
+        itemMoveListener.onItemMove(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
         return true
     }
 

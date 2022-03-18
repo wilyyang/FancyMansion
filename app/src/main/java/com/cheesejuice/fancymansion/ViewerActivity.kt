@@ -2,6 +2,7 @@ package com.cheesejuice.fancymansion
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityViewerBinding
@@ -9,7 +10,6 @@ import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.*
 import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.view.ChoiceAdapter
-import com.cheesejuice.fancymansion.view.OnChoiceItemClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
@@ -79,13 +79,15 @@ class ViewerActivity : AppCompatActivity() {
                     passChoiceItems.add(choiceItem)
                 }
             }
-            binding.recyclerChoice.layoutManager=LinearLayoutManager(baseContext)
-            binding.recyclerChoice.adapter = ChoiceAdapter(passChoiceItems, object : OnChoiceItemClickListener {
-                override fun onItemClick(choiceItem: ChoiceItem) {
+            binding.recyclerChoice.layoutManager = LinearLayoutManager(baseContext)
+            val adapter = ChoiceAdapter(passChoiceItems)
+            adapter.setItemClickListener(object : ChoiceAdapter.OnItemClickListener {
+                override fun onClick(v: View, choiceItem: ChoiceItem) {
                     bookUtil.incrementIdCount(config.id, choiceItem.id, mode)
                     enterNextSlide(choiceItem)
                 }
             })
+            binding.recyclerChoice.adapter = adapter
         }
         bookUtil.setSaveSlideId(config.id, slide.id)
     }
