@@ -1,6 +1,5 @@
 package com.cheesejuice.fancymansion
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -10,18 +9,17 @@ import android.provider.OpenableColumns
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityEditSlideBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.model.Slide
-import com.cheesejuice.fancymansion.model.SlideBrief
 import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.util.Const.Companion.ID_NOT_FOUND
 import com.cheesejuice.fancymansion.view.*
@@ -47,32 +45,9 @@ class EditSlideActivity : AppCompatActivity() {
     lateinit var fileUtil: FileUtil
 
     lateinit var adapter:BriefAdapter
-    lateinit var touchHelper:ItemTouchHelper
 
     lateinit var toggle: ActionBarDrawerToggle
     private var updateImage = false
-
-    private val briefListener = object :BriefAdapter.OnBriefItemListener {
-        override fun onItemClick(brief: SlideBrief) {
-            startAfterSaveEdits {
-                CoroutineScope(IO).launch {
-                    RoundEditText.onceFocus = false
-                    updateImage = false
-
-                    config = fileUtil.getConfigFromFile(config!!.id)
-                    slide = fileUtil.getSlideFromJson(config!!.id, brief.slideId)
-                    withContext(Main) {
-                        binding.toolbar.title = "# ${slide!!.id}"
-                        makeEditSlideScreen(slide!!)
-                    }
-                }
-            }
-        }
-
-        override fun onItemDrag(viewHolder: BriefAdapter.BriefViewHolder) {
-            touchHelper.startDrag(viewHolder)
-        }
-    }
 
     private val gallaryForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -120,16 +95,30 @@ class EditSlideActivity : AppCompatActivity() {
             withContext(Main) {
                 binding.toolbar.title = "# ${slide!!.id}"
 
-                adapter = BriefAdapter(config!!.briefs, briefListener)
-                adapter.startDrag(object: BriefAdapter.OnStartDragListener{
-                    override fun onStartDrag(viewHolder: BriefAdapter.BriefViewHolder) {
+                adapter = BriefAdapter(config!!.briefs)
+                adapter.setItemClickListener(object: BriefAdapter.OnItemClickListener{
+                    override fun onClick(v: View, position: Int) {
+                        startAfterSaveEdits {
+                            CoroutineScope(IO).launch {
+                                RoundEditText.onceFocus = false
+                                updateImage = false
+                                adapter.onceMove = false
 
+                                config = fileUtil.getConfigFromFile(config!!.id)
+                                slide = fileUtil.getSlideFromJson(config!!.id, config!!.briefs[position].slideId)
+                                Log.d(Const.TAG, "$position ${config!!.briefs[position].slideId} ${config!!.briefs[position].slideTitle}")
+                                withContext(Main) {
+                                    binding.toolbar.title = "# ${slide!!.id}"
+                                    makeEditSlideScreen(slide!!)
+                                }
+                            }
+                        }
                     }
-
                 })
                 binding.recyclerNavEditSlide.layoutManager = LinearLayoutManager(baseContext)
                 binding.recyclerNavEditSlide.adapter = adapter
-                touchHelper = ItemTouchHelper(BriefItemCallback(adapter))
+
+                val touchHelper = ItemTouchHelper(BriefDragCallback(adapter))
                 touchHelper.attachToRecyclerView(binding.recyclerNavEditSlide)
 
                 toggle = ActionBarDrawerToggle(this@EditSlideActivity, binding.drawerEditSlide, R.string.drawer_opened, R.string.drawer_closed)
@@ -167,6 +156,7 @@ class EditSlideActivity : AppCompatActivity() {
 
         RoundEditText.onceFocus = false
         updateImage = false
+        adapter.onceMove = false
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -206,7 +196,7 @@ class EditSlideActivity : AppCompatActivity() {
     }
 
     private fun startAfterSaveEdits(start:()->Unit){
-        if(RoundEditText.onceFocus || updateImage){
+        if(RoundEditText.onceFocus || updateImage || adapter.onceMove){
             this@EditSlideActivity.currentFocus?.let { it.clearFocus() }
 
             util.getAlertDailog(

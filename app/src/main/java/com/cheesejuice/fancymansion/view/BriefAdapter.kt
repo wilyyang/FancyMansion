@@ -1,6 +1,7 @@
 package com.cheesejuice.fancymansion.view
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -8,58 +9,71 @@ import com.cheesejuice.fancymansion.databinding.ItemBriefBinding
 import com.cheesejuice.fancymansion.model.SlideBrief
 import java.util.*
 
-class BriefAdapter(var datas: MutableList<SlideBrief>, val adapterListener: OnBriefItemListener):
-    RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class BriefAdapter(var datas: MutableList<SlideBrief>):
+    RecyclerView.Adapter<RecyclerView.ViewHolder>(), BriefDragCallback.OnItemMoveListener{
 
+    var onceMove = false
+
+    // OnItemClickListener
+    private lateinit var itemClickListener : OnItemClickListener
+
+    interface OnItemClickListener {
+        fun onClick(v: View, position: Int)
+    }
+
+    fun setItemClickListener(onItemClickListener: OnItemClickListener) {
+        this.itemClickListener = onItemClickListener
+    }
+
+    // Override
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
             = BriefViewHolder(ItemBriefBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
+    override fun getItemCount() = datas.size
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val binding=(holder as BriefViewHolder).binding
-        binding.tvItemText.text= datas[position].slideTitle
-        holder.brief = datas[position]
+        binding.tvItemText.text = "$position ${datas[position].slideTitle}"
+        holder.itemView.setOnClickListener {
+            itemClickListener.onClick(it, position)
+        }
     }
 
-    override fun getItemCount(): Int{
-        return datas.size
+    // Custom
+    fun updateBriefTitle(id: Long, title: String) {
+        val idx = datas.indexOfFirst { slideBrief -> slideBrief.slideId == id }
+        datas[idx].slideTitle = title
+        notifyItemChanged(idx)
     }
 
-    interface OnBriefItemListener{
-        fun onItemClick(brief: SlideBrief)
-        fun onItemDrag(viewHolder: BriefViewHolder)
-        fun onItemMove(fromPosition: Int, toPosition: Int)
-    }
+    // ViewHolder
+    inner class BriefViewHolder(val binding: ItemBriefBinding): RecyclerView.ViewHolder(binding.root)
 
-    fun onItemMove(fromPosition: Int, toPosition: Int) {
+    // BriefDragCallback
+    override fun onItemMove(fromPosition: Int, toPosition: Int) {
+        onceMove = true
         Collections.swap(datas, fromPosition, toPosition)
         notifyItemMoved(fromPosition, toPosition)
     }
-
-    fun updateBriefTitle(id:Long, title:String){
-        datas.find { it.slideId == id }!!.slideTitle = title
-        notifyDataSetChanged()
-    }
-
-    inner class BriefViewHolder(val binding: ItemBriefBinding): RecyclerView.ViewHolder(binding.root){
-        var brief : SlideBrief? = null
-        init {
-            binding.root.setOnClickListener {
-                adapterListener.onItemClick(brief!!)
-            }
-        }
-    }
 }
 
-class BriefItemCallback(private val itemMoveListener: BriefAdapter.OnBriefItemListener) : ItemTouchHelper.Callback() {
-    override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int
-        = makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0)
+class BriefDragCallback(
+    private val itemMoveListener: OnItemMoveListener
+) : ItemTouchHelper.Callback() {
+
+    interface OnItemMoveListener {
+        fun onItemMove(fromPosition: Int, toPosition: Int)
+    }
+
+    override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder)
+    = makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0)
 
     override fun onMove(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
     ): Boolean {
-        itemMoveListener.onItemMove(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
+        itemMoveListener.onItemMove(viewHolder.absoluteAdapterPosition, target.absoluteAdapterPosition)
         return true
     }
 
