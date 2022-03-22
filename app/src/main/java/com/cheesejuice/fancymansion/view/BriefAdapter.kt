@@ -43,9 +43,13 @@ class BriefAdapter(var datas: MutableList<SlideBrief>):
     }
 
     // Custom
-    fun updateBriefTitle(id: Long, title: String) {
+    fun notifyUpdateBrief(id: Long, title: String) {
         val idx = datas.indexOfFirst { slideBrief -> slideBrief.slideId == id }
         notifyItemChanged(idx)
+    }
+
+    fun notifyDeleteBrief(position: Int) {
+        notifyItemRemoved(position)
     }
 
     // ViewHolder

@@ -104,6 +104,19 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         return true
     }
 
+    fun deleteSlideJson(bookId: Long, slide: Slide): Boolean{
+        try{
+            val file = File(path, Const.FILE_PREFIX_BOOK+bookId+File.separator+Const.FILE_PREFIX_SLIDE+slide.id+".json")
+            if(file.exists()){
+                file.delete()
+            }
+        }catch (e: Exception){
+            Log.d(Const.TAG, ""+e.printStackTrace())
+            return false
+        }
+        return true
+    }
+
     fun getSlideFromJson(bookId: Long, slideId: Long): Slide?{
         var slide: Slide? = null
         try{

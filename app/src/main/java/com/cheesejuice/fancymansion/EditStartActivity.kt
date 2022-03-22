@@ -25,6 +25,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import com.cheesejuice.fancymansion.extension.*
 import com.cheesejuice.fancymansion.view.RoundEditText
+import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
 class EditStartActivity : AppCompatActivity() {
@@ -217,11 +218,13 @@ class EditStartActivity : AppCompatActivity() {
     }
 
     private fun startEditSlideActivity(){
+        val intent = Intent(this@EditStartActivity, EditSlideActivity::class.java)
+        intent.putExtra(Const.INTENT_BOOK_ID, config!!.id)
         if(config!!.briefs.size > 0){
-            val intent = Intent(this@EditStartActivity, EditSlideActivity::class.java)
-            intent.putExtra(Const.INTENT_BOOK_ID, config!!.id)
             intent.putExtra(Const.INTENT_SLIDE_ID, config!!.briefs[0].slideId)
-            startActivity(intent)
         }
+        startActivity(intent)
+
+
     }
 }

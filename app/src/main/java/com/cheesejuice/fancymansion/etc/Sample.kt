@@ -65,8 +65,8 @@ class Sample {
             "defaultEndId":100000000,
             "readMode":"edit",
             "briefs":[
-                { "slideId":100000000, "slideTitle":"더 이상 존 크리스탈을 찾을 수 없습니다..." },
                 { "slideId":200000000, "slideTitle":"대체 어딨는거야!" },
+                { "slideId":100000000, "slideTitle":"더 이상 존 크리스탈을 찾을 수 없습니다..." },
                 { "slideId":300000000, "slideTitle":"하얀 고양이 모야!" },
                 { "slideId":400000000, "slideTitle":"모야가 가져다준 물고기!" },
                 { "slideId":500000000, "slideTitle":"응꼬를 핥으려는 고양이 웬디!" },
@@ -488,8 +488,8 @@ class Sample {
             "defaultEndId":100000000,
             "readMode":"edit",
             "briefs":[
-                { "slideId":100000000, "slideTitle":"더 이상 존 크리스탈을 찾을 수 없습니다..." },
                 { "slideId":200000000, "slideTitle":"대체 어딨는거야!" },
+                { "slideId":100000000, "slideTitle":"더 이상 존 크리스탈을 찾을 수 없습니다..." },
                 { "slideId":300000000, "slideTitle":"하얀 고양이 모야!" },
                 { "slideId":400000000, "slideTitle":"모야가 가져다준 물고기!" },
                 { "slideId":500000000, "slideTitle":"응꼬를 핥으려는 고양이 웬디!" },

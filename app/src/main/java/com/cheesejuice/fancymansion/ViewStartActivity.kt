@@ -40,6 +40,7 @@ class ViewStartActivity : AppCompatActivity() {
         if(bookUtil.getOnlyPlay()) { mode = Const.MODE_PLAY}
 
         binding.btnStartBook.setOnClickListener {
+            if(config!!.briefs.size < 1) return@setOnClickListener
             // Only Play
             if(mode != ""){
                 bookUtil.deleteBookPref(config!!.id, Const.MODE_PLAY)

@@ -22,9 +22,11 @@ fun Activity.showLoadingScreen(isLoading: Boolean, loading: View, main: View){
         }
         loading.visibility = View.VISIBLE
         main.visibility = View.GONE
+
     }else{
         loading.visibility = View.GONE
         main.visibility = View.VISIBLE
+
     }
 }
 

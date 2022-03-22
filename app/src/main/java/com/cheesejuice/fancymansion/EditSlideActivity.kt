@@ -19,6 +19,7 @@ import com.cheesejuice.fancymansion.databinding.ActivityEditSlideBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.model.Slide
+import com.cheesejuice.fancymansion.model.SlideBrief
 import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.util.Const.Companion.ID_NOT_FOUND
 import com.cheesejuice.fancymansion.view.*
@@ -27,6 +28,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -85,7 +87,7 @@ class EditSlideActivity : AppCompatActivity() {
             val bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
             val slideId = intent.getLongExtra(Const.INTENT_SLIDE_ID, ID_NOT_FOUND)
 
-            if(bookId == ID_NOT_FOUND || slideId == ID_NOT_FOUND){
+            if(bookId == ID_NOT_FOUND){
                 util.getAlertDailog(this@EditSlideActivity)
                 return@launch
             }
@@ -120,7 +122,13 @@ class EditSlideActivity : AppCompatActivity() {
                 toggle = ActionBarDrawerToggle(this@EditSlideActivity, binding.drawerEditSlide, R.string.drawer_opened, R.string.drawer_closed)
                 toggle.syncState()
 
-                makeEditSlideScreen(slide!!)
+                if(slide == null){
+                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+                    binding.layoutEmptySlide.root.visibility = View.VISIBLE
+                    binding.scrollEditSlide.visibility = View.GONE
+                }else{
+                    makeEditSlideScreen(slide!!)
+                }
             }
         }
     }
@@ -169,46 +177,86 @@ class EditSlideActivity : AppCompatActivity() {
         }
 
         this@EditSlideActivity.currentFocus?.let { it.clearFocus() }
-        when(item.itemId) {
-            android.R.id.home -> finish()
+        config?.let {  con ->
+            when(item.itemId) {
+                R.id.menu_add -> {
+                    showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+                    CoroutineScope(IO).launch {
+                        val nextId = bookUtil.nextSlideId(con.briefs)
 
-            R.id.menu_add -> {
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
-                CoroutineScope(IO).launch {
-                    //
-                    withContext(Main) {
-                        //
-                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+                        slide = Slide(id = nextId, title = getString(R.string.name_slide_prefix), question = getString(R.string.text_question_default))
+                        con.briefs.add(SlideBrief(slide!!.id, slide!!.title))
+
+                        fileUtil.makeSlideJson(con.id, slide!!)
+                        fileUtil.makeConfigFile(con)
+
+                        RoundEditText.onceFocus = false
+                        updateImage = false
+                        adapter.onceMove = false
+
+                        withContext(Main) {
+                            if(binding.layoutEmptySlide.root.visibility == View.VISIBLE){
+                                binding.layoutEmptySlide.root.visibility = View.GONE
+                                binding.scrollEditSlide.visibility = View.VISIBLE
+                            }
+
+                            adapter.notifyUpdateBrief(slide!!.id, slide!!.title)
+                            makeEditSlideScreen(slide!!)
+                            showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+                        }
                     }
                 }
-            }
+                R.id.menu_delete -> {
+                    if(slide == null){ return true }
+                    showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+                    CoroutineScope(IO).launch {
+                        val position = con.briefs.indexOfFirst { it.slideId == slide!!.id  }
+                        con.briefs.removeAt(position)
 
-            R.id.menu_delete -> {
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
-                CoroutineScope(IO).launch {
-                    //
-                    withContext(Main) {
-                        //
-                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+                        fileUtil.deleteSlideJson(con.id, slide!!)
+                        fileUtil.makeConfigFile(con)
+
+                        RoundEditText.onceFocus = false
+                        updateImage = false
+                        adapter.onceMove = false
+
+                        if(con.briefs.size < 1){
+                            slide = null
+                        }else if(position > 0){
+                            slide = fileUtil.getSlideFromJson(con.id, con.briefs[position-1].slideId)
+                        }else{
+                            slide = fileUtil.getSlideFromJson(con.id, con.briefs[0].slideId)
+                        }
+
+                        withContext(Main) {
+                            adapter.notifyDeleteBrief(position)
+                            slide?.also { makeEditSlideScreen(it) }?:also {
+                                binding.layoutEmptySlide.root.visibility = View.VISIBLE
+                                binding.scrollEditSlide.visibility = View.GONE
+                            }
+
+                            showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+                        }
                     }
                 }
-            }
 
-            R.id.menu_save -> {
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
-                CoroutineScope(IO).launch {
-                    saveSlideFile(slide!!)
-                    withContext(Main) {
-                        adapter.updateBriefTitle(slide!!.id, slide!!.title)
-                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+                R.id.menu_save -> {
+                    if(slide == null){ return true }
+                    showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+                    CoroutineScope(IO).launch {
+                        saveSlideFile(slide!!)
+                        withContext(Main) {
+                            adapter.notifyUpdateBrief(slide!!.id, slide!!.title)
+                            showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+                        }
                     }
                 }
-            }
 
-            R.id.menu_play -> {
-                if(config != null){
+                R.id.menu_play -> {
+                    if(slide == null){ return true }
                     startAfterSaveEdits { startViewerActivity() }
                 }
+                else -> {}
             }
         }
         return super.onOptionsItemSelected(item)
@@ -227,7 +275,7 @@ class EditSlideActivity : AppCompatActivity() {
                 CoroutineScope(IO).launch {
                     saveSlideFile(slide!!)
                     withContext(Main) {
-                        adapter.updateBriefTitle(slide!!.id, slide!!.title)
+                        adapter.notifyUpdateBrief(slide!!.id, slide!!.title)
                         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
                         start()
                     }

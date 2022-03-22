@@ -101,16 +101,11 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
 
     // 00 / 00 / 00 / 00 / 00 = slide / choice / showCondition / enterId / enterCondition
     fun nextSlideId(briefs: List<SlideBrief>): Long{
-        val size = briefs.size
-        var idx = 0
-        for (i in 1 ..99){
-            i*Const.COUNT_SLIDE
-            briefs[idx]
+        var idMap = Array(100){ i -> false }
+        idMap[0] = true
+        briefs.map { (it.slideId / Const.COUNT_SLIDE).toInt() }.forEach { idMap[it] = true }
 
-            // same -> i++
-            // small -> idx++ ->
-        }
-
-        return -1L
+        val result = idMap.indexOf(false)
+        return if(result != -1)(result*Const.COUNT_SLIDE) else { -1 }
     }
 }
