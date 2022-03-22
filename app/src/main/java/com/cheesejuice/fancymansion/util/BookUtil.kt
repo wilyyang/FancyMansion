@@ -3,6 +3,7 @@ package com.cheesejuice.fancymansion.util
 import android.content.Context
 import android.util.Log
 import com.cheesejuice.fancymansion.model.Condition
+import com.cheesejuice.fancymansion.model.SlideBrief
 import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
 
@@ -96,5 +97,20 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
     fun incrementIdCount(bookId: Long, id: Long, mode: String){
         val count = getIdCount(bookId, id, mode) + 1
         setIdCount(bookId, id, count, mode)
+    }
+
+    // 00 / 00 / 00 / 00 / 00 = slide / choice / showCondition / enterId / enterCondition
+    fun nextSlideId(briefs: List<SlideBrief>): Long{
+        val size = briefs.size
+        var idx = 0
+        for (i in 1 ..99){
+            i*Const.COUNT_SLIDE
+            briefs[idx]
+
+            // same -> i++
+            // small -> idx++ ->
+        }
+
+        return -1L
     }
 }

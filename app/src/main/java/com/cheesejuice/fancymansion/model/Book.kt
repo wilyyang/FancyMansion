@@ -1,6 +1,6 @@
 package com.cheesejuice.fancymansion.model
 
-import com.cheesejuice.fancymansion.util.Const.Companion.FIRST_SLIDE
+import com.cheesejuice.fancymansion.util.Const.Companion.ID_1_SLIDE
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -8,7 +8,7 @@ data class Book(var config: Config, var slides: MutableList<Slide>)
 
 // 1
 @Serializable
-data class Config(var id: Long, var version: Long = 0L, var updateDate: Long = System.currentTimeMillis(), var publish: Long = 0, var title: String, var writer: String = "", var illustrator: String = "", var description: String = "", var defaultImage: String = "", var startId: Long = FIRST_SLIDE, var defaultEndId: Long = FIRST_SLIDE, var readMode: String = "edit", var briefs: MutableList<SlideBrief> = mutableListOf())
+data class Config(var id: Long, var version: Long = 0L, var updateDate: Long = System.currentTimeMillis(), var publish: Long = 0, var title: String, var writer: String = "", var illustrator: String = "", var description: String = "", var defaultImage: String = "", var defaultEndId: Long = ID_1_SLIDE, var readMode: String = "edit", var briefs: MutableList<SlideBrief> = mutableListOf())
 
 // 1.2 <SlideBrief>
 @Serializable

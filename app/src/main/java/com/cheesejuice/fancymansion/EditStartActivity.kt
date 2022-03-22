@@ -197,6 +197,8 @@ class EditStartActivity : AppCompatActivity() {
                 }
             }.apply {
                 setNegativeButton(getString(R.string.dialog_no)) { _, _ ->
+                    RoundEditText.onceFocus = false
+                    updateImage = false
                     start()
                 }
             }.show()
@@ -215,9 +217,11 @@ class EditStartActivity : AppCompatActivity() {
     }
 
     private fun startEditSlideActivity(){
-        val intent = Intent(this@EditStartActivity, EditSlideActivity::class.java)
-        intent.putExtra(Const.INTENT_BOOK_ID, config!!.id)
-        intent.putExtra(Const.INTENT_SLIDE_ID, config!!.startId)
-        startActivity(intent)
+        if(config!!.briefs.size > 0){
+            val intent = Intent(this@EditStartActivity, EditSlideActivity::class.java)
+            intent.putExtra(Const.INTENT_BOOK_ID, config!!.id)
+            intent.putExtra(Const.INTENT_SLIDE_ID, config!!.briefs[0].slideId)
+            startActivity(intent)
+        }
     }
 }

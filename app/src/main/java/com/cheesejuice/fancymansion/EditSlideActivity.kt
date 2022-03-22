@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.OpenableColumns
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -74,6 +73,7 @@ class EditSlideActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
+        binding.toolbar.title = getString(R.string.toolbar_edit_slide)
 
         binding.imageViewSlideAdd.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
@@ -101,8 +101,8 @@ class EditSlideActivity : AppCompatActivity() {
 
                             slide = fileUtil.getSlideFromJson(config!!.id, config!!.briefs[position].slideId)
                             withContext(Main) {
-                                binding.toolbar.title = "# ${slide!!.id}"
                                 makeEditSlideScreen(slide!!)
+                                binding.drawerEditSlide.closeDrawers()
                             }
                         }
                     }
@@ -111,7 +111,6 @@ class EditSlideActivity : AppCompatActivity() {
 
             slide = fileUtil.getSlideFromJson(bookId, slideId)
             withContext(Main) {
-                binding.toolbar.title = "# ${slide!!.id}"
                 binding.recyclerNavEditSlide.layoutManager = LinearLayoutManager(baseContext)
                 binding.recyclerNavEditSlide.adapter = adapter
 
@@ -129,6 +128,7 @@ class EditSlideActivity : AppCompatActivity() {
     private fun makeEditSlideScreen(_slide: Slide) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
         with(_slide){
+            binding.toolbar.subtitle = "# $id"
             binding.etSlideTitle.setText(title)
             binding.etSlideDescription.setText(description)
             binding.etSlideQuestion.setText(question)
@@ -168,11 +168,33 @@ class EditSlideActivity : AppCompatActivity() {
             return true
         }
 
+        this@EditSlideActivity.currentFocus?.let { it.clearFocus() }
         when(item.itemId) {
             android.R.id.home -> finish()
 
+            R.id.menu_add -> {
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+                CoroutineScope(IO).launch {
+                    //
+                    withContext(Main) {
+                        //
+                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+                    }
+                }
+            }
+
+            R.id.menu_delete -> {
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+                CoroutineScope(IO).launch {
+                    //
+                    withContext(Main) {
+                        //
+                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+                    }
+                }
+            }
+
             R.id.menu_save -> {
-                this@EditSlideActivity.currentFocus?.let { it.clearFocus() }
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
                 CoroutineScope(IO).launch {
                     saveSlideFile(slide!!)
@@ -195,11 +217,6 @@ class EditSlideActivity : AppCompatActivity() {
     private fun startAfterSaveEdits(start:()->Unit){
         if(RoundEditText.onceFocus || updateImage || adapter.onceMove){
             this@EditSlideActivity.currentFocus?.let { it.clearFocus() }
-
-            RoundEditText.onceFocus = false
-            updateImage = false
-            adapter.onceMove = false
-
             util.getAlertDailog(
                 this@EditSlideActivity,
                 getString(R.string.save_dialog_title),
@@ -217,6 +234,9 @@ class EditSlideActivity : AppCompatActivity() {
                 }
             }.apply {
                 setNegativeButton(getString(R.string.dialog_no)) { _, _ ->
+                    RoundEditText.onceFocus = false
+                    updateImage = false
+                    adapter.onceMove = false
                     start()
                 }
             }.show()

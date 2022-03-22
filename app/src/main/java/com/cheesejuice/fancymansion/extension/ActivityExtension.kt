@@ -37,12 +37,12 @@ fun Activity.createSampleFiles(){
         fileUtil.makeSlideJson(tempConfig.id, slide!!)
     }
 
-    for(i in 10 .. 99){
-        val slide = Sample.extractSlideFromJson(-1, i*100000000L)
-        fileUtil.makeSlideJson(tempConfig.id, slide!!)
-
-        tempConfig.briefs.add(i-1, SlideBrief(i*100000000L, "${i*100000000L}"))
-    }
+//    for(i in 10 .. 99){
+//        val slide = Sample.extractSlideFromJson(-1, i*100000000L)
+//        fileUtil.makeSlideJson(tempConfig.id, slide!!)
+//
+//        tempConfig.briefs.add(i-1, SlideBrief(i*100000000L, "${i*100000000L}"))
+//    }
 
     fileUtil.makeConfigFile(tempConfig)
 

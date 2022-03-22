@@ -42,7 +42,8 @@ class ViewStartActivity : AppCompatActivity() {
         binding.btnStartBook.setOnClickListener {
             // Only Play
             if(mode != ""){
-                startViewerActivity(config!!.id, config!!.startId)
+                bookUtil.deleteBookPref(config!!.id, Const.MODE_PLAY)
+                startViewerActivity(config!!.id, config!!.briefs[0].slideId)
             }else{
                 // Save Point
                 val saveSlide = bookUtil.getSaveSlideId(config!!.id)
@@ -57,11 +58,11 @@ class ViewStartActivity : AppCompatActivity() {
                     }.apply {
                         setNegativeButton(getString(R.string.dialog_no)) { _, _ ->
                             bookUtil.deleteBookPref(config!!.id, "")
-                            startViewerActivity(config!!.id, config!!.startId)
+                            startViewerActivity(config!!.id, config!!.briefs[0].slideId)
                         }
                     }.show()
                 }else{
-                    startViewerActivity(config!!.id, config!!.startId)
+                    startViewerActivity(config!!.id, config!!.briefs[0].slideId)
                 }
             }
         }
@@ -108,6 +109,8 @@ class ViewStartActivity : AppCompatActivity() {
         val intent = Intent(this, ViewerActivity::class.java)
         intent.putExtra(Const.INTENT_BOOK_ID, configId)
         intent.putExtra(Const.INTENT_SLIDE_ID, slideId)
+
+        intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
         startActivity(intent)
     }
 }

@@ -33,7 +33,8 @@ class BriefAdapter(var datas: MutableList<SlideBrief>):
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val binding=(holder as BriefViewHolder).binding
-        binding.tvItemText.text = "$position ${datas[position].slideTitle}"
+        binding.tvItemId.text = datas[position].slideId.toString()
+        binding.tvItemText.text = datas[position].slideTitle
         holder.apply {
             itemView.setOnClickListener {
                 itemClickListener.onClick(it, this.bindingAdapterPosition)

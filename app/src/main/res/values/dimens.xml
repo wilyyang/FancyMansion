@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="size_title">21sp</dimen>
+    <dimen name="size_semi_title">18sp</dimen>
+
     <dimen name="size_detail">14sp</dimen>
     <dimen name="size_question">16sp</dimen>
     <dimen name="size_item">15sp</dimen>
+    <dimen name="size_small_brief_id">10sp</dimen>
 
     <dimen name="size_config">13sp</dimen>
 

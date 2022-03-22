@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
         android:id="@+id/menu_save"
         android:icon="@android:drawable/ic_menu_save"
-        android:title="@string/menu_save"
+        android:title="@string/menu_slide_save"
         app:showAsAction="always"/>
 
     <item
+        android:id="@+id/menu_add"
+        android:icon="@android:drawable/ic_menu_add"
+        android:title="@string/menu_slide_add" />
+
+    <item
+        android:id="@+id/menu_delete"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="@string/menu_slide_delete" />
+
+    <item
         android:id="@+id/menu_play"
-        android:title="@string/menu_play"
         android:icon="@android:drawable/ic_media_play"
-        app:showAsAction="always">
-    </item>
+        android:title="@string/menu_slide_play"/>
 </menu>

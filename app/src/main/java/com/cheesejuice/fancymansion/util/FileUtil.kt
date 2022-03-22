@@ -5,10 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
-import android.widget.ImageView
 import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.cheesejuice.fancymansion.R
-import com.cheesejuice.fancymansion.model.Book
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.model.Slide
 import com.cheesejuice.fancymansion.model.SlideBrief
@@ -27,7 +25,7 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
 
     fun initBook(bookId: Long): Boolean{
         val config = Config(id = bookId, title = "${context.getString(R.string.book_default_title)} $bookId")
-        val slide = Slide(id = Const.FIRST_SLIDE, title = context.getString(R.string.name_slide_prefix)+1, question = context.getString(R.string.text_question_default))
+        val slide = Slide(id = Const.ID_1_SLIDE, title = context.getString(R.string.name_slide_prefix)+1, question = context.getString(R.string.text_question_default))
         config.briefs.add(SlideBrief(slide.id, slide.title))
 
         return (makeBookFolder(config) && makeConfigFile(config) && makeSlideJson(bookId, slide))
@@ -122,6 +120,7 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
     }
 
     fun saveImageFile(drawable: Drawable?, bookId: Long, imageName: String): String{
+        Log.d(Const.TAG, "saveImageFile >> $bookId $imageName $drawable")
         if(drawable == null || imageName == ""){
             return ""
         }
@@ -131,7 +130,7 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
             val ext = imageName.split(".").last()
 
             val output = FileOutputStream(file)
-            if(drawable is GifDrawable && ext == "gif"){
+            if(drawable is GifDrawable){
                 val byteBuffer = drawable.buffer
                 val bytes = ByteArray(byteBuffer.capacity())
                 (byteBuffer.duplicate().clear() as ByteBuffer).get(bytes)
