@@ -18,18 +18,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityEditSlideBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
-import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.model.Slide
-import com.cheesejuice.fancymansion.model.SlideBrief
+import com.cheesejuice.fancymansion.model.SlideLogic
+import com.cheesejuice.fancymansion.model.Logic
 import com.cheesejuice.fancymansion.util.*
-import com.cheesejuice.fancymansion.util.Const.Companion.ID_NOT_FOUND
+import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
 import com.cheesejuice.fancymansion.view.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -37,7 +36,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class EditSlideActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEditSlideBinding
-    private var config: Config? = null
+    private lateinit var logic: Logic
     private var slide: Slide? = null
     @Inject
     lateinit var util: CommonUtil
@@ -93,16 +92,16 @@ class EditSlideActivity : AppCompatActivity() {
                 return@launch
             }
 
-            config = fileUtil.getConfigFromFile(bookId)
-            adapter = BriefAdapter(config!!.briefs)
+            logic = fileUtil.getLogicFromFile(bookId)!!
+            adapter = BriefAdapter(logic!!.logics)
             adapter.setItemClickListener(object: BriefAdapter.OnItemClickListener{
                 override fun onClick(v: View, position: Int) {
                     startAfterSaveEdits {
                         CoroutineScope(IO).launch {
-                            config = fileUtil.getConfigFromFile(config!!.id)
-                            adapter.datas = config!!.briefs
+                            logic = fileUtil.getLogicFromFile(bookId)!!
+                            adapter.data = logic!!.logics
 
-                            slide = fileUtil.getSlideFromJson(config!!.id, config!!.briefs[position].slideId)
+                            slide = fileUtil.getSlideFromFile(logic!!.bookId, logic!!.logics[position].slideId)
                             withContext(Main) {
                                 makeEditSlideScreen(slide!!)
                                 binding.drawerEditSlide.closeDrawers()
@@ -112,7 +111,7 @@ class EditSlideActivity : AppCompatActivity() {
                 }
             })
 
-            slide = fileUtil.getSlideFromJson(bookId, slideId)
+            slide = fileUtil.getSlideFromFile(bookId, slideId)
             withContext(Main) {
                 binding.recyclerNavEditSlide.layoutManager = LinearLayoutManager(baseContext)
                 binding.recyclerNavEditSlide.adapter = adapter
@@ -137,28 +136,28 @@ class EditSlideActivity : AppCompatActivity() {
     private fun makeEditSlideScreen(_slide: Slide) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
         with(_slide){
-            binding.toolbar.subtitle = "# $id"
-            binding.etSlideTitle.setText(title)
+            binding.toolbar.subtitle = "# $slideId"
+            binding.etSlideTitle.setText(slideTitle)
             binding.etSlideDescription.setText(description)
             binding.etSlideQuestion.setText(question)
         }
-        Glide.with(applicationContext).load(fileUtil.getImageFile(config!!.id, _slide.slideImage)).into(binding.imageViewShowMain)
+        Glide.with(applicationContext).load(fileUtil.getImageFile(logic!!.bookId, _slide.slideImage)).into(binding.imageViewShowMain)
     }
 
     private fun saveSlideFile(slide: Slide){
         with(slide){
-            title = binding.etSlideTitle.text.toString()
+            slideTitle = binding.etSlideTitle.text.toString()
             description = binding.etSlideDescription.text.toString()
             question = binding.etSlideQuestion.text.toString()
 
             if(updateImage){
-                slideImage = fileUtil.saveImageFile(binding.imageViewShowMain.drawable, config!!.id, slideImage)
+                slideImage = fileUtil.makeImageFile(binding.imageViewShowMain.drawable, logic!!.bookId, slideImage)
             }
-            fileUtil.makeSlideJson(config!!.id, this)
+            fileUtil.makeSlideFile(logic!!.bookId, this)
         }
 
-        config!!.briefs.find { it.slideId == slide.id }!!.slideTitle = slide.title
-        fileUtil.makeConfigFile(config!!)
+        logic!!.logics.find { it.slideId == slide.slideId }!!.slideTitle = slide.slideTitle
+        fileUtil.makeLogicFile(logic!!)
 
         RoundEditText.onceFocus = false
         updateImage = false
@@ -178,10 +177,10 @@ class EditSlideActivity : AppCompatActivity() {
         }
 
         this@EditSlideActivity.currentFocus?.let { it.clearFocus() }
-        config?.let {  con ->
+        logic?.let { briefs ->
             when(item.itemId) {
                 R.id.menu_add -> {
-                    val nextId = bookUtil.nextSlideId(con.briefs)
+                    val nextId = bookUtil.nextSlideId(briefs.logics)
                     if(nextId < 0){
                         Toast.makeText(this@EditSlideActivity, R.string.alert_max_count, Toast.LENGTH_SHORT).show()
                         return true
@@ -190,11 +189,11 @@ class EditSlideActivity : AppCompatActivity() {
                     showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
                     CoroutineScope(IO).launch {
 
-                        slide = Slide(id = nextId, title = getString(R.string.name_slide_prefix), question = getString(R.string.text_question_default))
-                        con.briefs.add(SlideBrief(slide!!.id, slide!!.title))
+                        slide = Slide(slideId = nextId, slideTitle = getString(R.string.name_slide_prefix), question = getString(R.string.text_question_default))
+                        briefs.logics.add(SlideLogic(slide!!.slideId, slide!!.slideTitle))
 
-                        fileUtil.makeSlideJson(con.id, slide!!)
-                        fileUtil.makeConfigFile(con)
+                        fileUtil.makeSlideFile(briefs.bookId, slide!!)
+                        fileUtil.makeLogicFile(briefs)
 
                         RoundEditText.onceFocus = false
                         updateImage = false
@@ -206,7 +205,7 @@ class EditSlideActivity : AppCompatActivity() {
                                 binding.scrollEditSlide.visibility = View.VISIBLE
                             }
 
-                            adapter.notifyUpdateBrief(slide!!.id, slide!!.title)
+                            adapter.notifyUpdateBrief(slide!!.slideId, slide!!.slideTitle)
                             makeEditSlideScreen(slide!!)
                             showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
                         }
@@ -216,22 +215,22 @@ class EditSlideActivity : AppCompatActivity() {
                     if(slide == null){ return true }
                     showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
                     CoroutineScope(IO).launch {
-                        val position = con.briefs.indexOfFirst { it.slideId == slide!!.id  }
-                        con.briefs.removeAt(position)
+                        val position = briefs.logics.indexOfFirst { it.slideId == slide!!.slideId  }
+                        briefs.logics.removeAt(position)
 
-                        fileUtil.deleteSlideJson(con.id, slide!!)
-                        fileUtil.makeConfigFile(con)
+                        fileUtil.deleteSlideFile(briefs.bookId, slide!!)
+                        fileUtil.makeLogicFile(briefs)
 
                         RoundEditText.onceFocus = false
                         updateImage = false
                         adapter.onceMove = false
 
-                        if(con.briefs.size < 1){
+                        if(briefs.logics.size < 1){
                             slide = null
                         }else if(position > 0){
-                            slide = fileUtil.getSlideFromJson(con.id, con.briefs[position-1].slideId)
+                            slide = fileUtil.getSlideFromFile(briefs.bookId, briefs.logics[position-1].slideId)
                         }else{
-                            slide = fileUtil.getSlideFromJson(con.id, con.briefs[0].slideId)
+                            slide = fileUtil.getSlideFromFile(briefs.bookId, briefs.logics[0].slideId)
                         }
 
                         withContext(Main) {
@@ -252,7 +251,7 @@ class EditSlideActivity : AppCompatActivity() {
                     CoroutineScope(IO).launch {
                         saveSlideFile(slide!!)
                         withContext(Main) {
-                            adapter.notifyUpdateBrief(slide!!.id, slide!!.title)
+                            adapter.notifyUpdateBrief(slide!!.slideId, slide!!.slideTitle)
                             showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
                         }
                     }
@@ -281,7 +280,7 @@ class EditSlideActivity : AppCompatActivity() {
                 CoroutineScope(IO).launch {
                     saveSlideFile(slide!!)
                     withContext(Main) {
-                        adapter.notifyUpdateBrief(slide!!.id, slide!!.title)
+                        adapter.notifyUpdateBrief(slide!!.slideId, slide!!.slideTitle)
                         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
                         start()
                     }
@@ -301,11 +300,11 @@ class EditSlideActivity : AppCompatActivity() {
 
     private fun startViewerActivity(){
         bookUtil.setOnlyPlay(true)
-        bookUtil.deleteBookPref(config!!.id, Const.MODE_PLAY)
+        bookUtil.deleteBookPref(logic!!.bookId, Const.MODE_PLAY)
 
         val intent = Intent(this@EditSlideActivity, ViewerActivity::class.java)
-        intent.putExtra(Const.INTENT_BOOK_ID, config!!.id)
-        intent.putExtra(Const.INTENT_SLIDE_ID, slide!!.id)
+        intent.putExtra(Const.INTENT_BOOK_ID, logic!!.bookId)
+        intent.putExtra(Const.INTENT_SLIDE_ID, slide!!.slideId)
         startActivity(intent)
     }
 

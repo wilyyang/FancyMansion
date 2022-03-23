@@ -9,7 +9,8 @@ import com.cheesejuice.fancymansion.databinding.ActivityViewStartBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.*
-import com.cheesejuice.fancymansion.util.Const.Companion.ID_NOT_FOUND
+import com.cheesejuice.fancymansion.Const.Companion.FIRST_SLIDE
+import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Default
@@ -40,14 +41,13 @@ class ViewStartActivity : AppCompatActivity() {
         if(bookUtil.getOnlyPlay()) { mode = Const.MODE_PLAY}
 
         binding.btnStartBook.setOnClickListener {
-            if(config!!.briefs.size < 1) return@setOnClickListener
             // Only Play
             if(mode != ""){
-                bookUtil.deleteBookPref(config!!.id, Const.MODE_PLAY)
-                startViewerActivity(config!!.id, config!!.briefs[0].slideId)
+                bookUtil.deleteBookPref(config!!.bookId, Const.MODE_PLAY)
+                startViewerActivity(config!!.bookId, FIRST_SLIDE)
             }else{
                 // Save Point
-                val saveSlide = bookUtil.getSaveSlideId(config!!.id)
+                val saveSlide = bookUtil.getSaveSlideId(config!!.bookId)
                 if(saveSlide != ID_NOT_FOUND){
                     util.getAlertDailog(
                         this@ViewStartActivity,
@@ -55,15 +55,15 @@ class ViewStartActivity : AppCompatActivity() {
                         getString(R.string.record_dialog_question),
                         getString(R.string.dialog_ok)
                     ) { _, _ ->
-                        startViewerActivity(config!!.id, saveSlide)
+                        startViewerActivity(config!!.bookId, saveSlide)
                     }.apply {
                         setNegativeButton(getString(R.string.dialog_no)) { _, _ ->
-                            bookUtil.deleteBookPref(config!!.id, "")
-                            startViewerActivity(config!!.id, config!!.briefs[0].slideId)
+                            bookUtil.deleteBookPref(config!!.bookId, "")
+                            startViewerActivity(config!!.bookId, FIRST_SLIDE)
                         }
                     }.show()
                 }else{
-                    startViewerActivity(config!!.id, config!!.briefs[0].slideId)
+                    startViewerActivity(config!!.bookId, FIRST_SLIDE)
                 }
             }
         }
@@ -88,13 +88,13 @@ class ViewStartActivity : AppCompatActivity() {
             binding.tvConfigTitle.text = title
             binding.tvConfigDescription.text = description
 
-            binding.tvConfigId.text = "#$id"
-            binding.tvConfigTime.text = util.longToTimeFormatss(updateDate)
+            binding.tvConfigId.text = "#$bookId"
+            binding.tvConfigTime.text = util.longToTimeFormatss(updateTime)
             binding.tvConfigWriter.text = writer
             binding.tvConfigIllustrator.text = illustrator
 
         }
-        Glide.with(applicationContext).load(fileUtil.getImageFile(config.id, config.defaultImage)).into(binding.imageViewShowMain)
+        Glide.with(applicationContext).load(fileUtil.getImageFile(config.bookId, config.coverImage)).into(binding.imageViewShowMain)
         binding.btnStartBook.isEnabled = true
     }
 

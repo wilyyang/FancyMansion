@@ -18,7 +18,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ViewerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityViewerBinding
-    lateinit var config: Config
+    private lateinit var logic: Logic
     private var slide: Slide? = null
     var mode: String = ""
 
@@ -41,55 +41,69 @@ class ViewerActivity : AppCompatActivity() {
 
         // init config & slide object
         val bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, Const.ID_NOT_FOUND)
-        val slideId = intent.getLongExtra(Const.INTENT_SLIDE_ID, Const.ID_NOT_FOUND)
+        var slideId = intent.getLongExtra(Const.INTENT_SLIDE_ID, Const.ID_NOT_FOUND)
         if(bookId == Const.ID_NOT_FOUND || slideId == Const.ID_NOT_FOUND) finish()
         CoroutineScope(Dispatchers.Default).launch {
-            val tempConfig = fileUtil.getConfigFromFile(bookId)
-            slide = fileUtil.getSlideFromJson(bookId, slideId)
+            logic = fileUtil.getLogicFromFile(bookId)!!
 
-            withContext(Main) {
-                if(tempConfig == null || slide == null) {
-                    util.getAlertDailog(this@ViewerActivity).show()
-                }else{
-                    config = tempConfig
+            if(logic.logics.size < 1) {
+                withContext(Main) {
+                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+                    binding.layoutEmptySlide.root.visibility = View.VISIBLE
+                    binding.layoutMain.visibility = View.GONE
+                }
+            }else{
+                if(slideId == Const.FIRST_SLIDE){
+                    slideId = logic!!.logics[0].slideId
+                }
+                slide = fileUtil.getSlideFromFile(bookId, slideId)
 
-                    // if not play mode and save slide, not count
-                    val isSave = ((mode == "") && slideId == bookUtil.getSaveSlideId(config.id))
-                    makeSlideScreen(slide!!, !isSave)
+                withContext(Main) {
+                    if(logic == null || slide == null) {
+                        util.getAlertDailog(this@ViewerActivity).show()
+                    }else{
+
+                        // if not play mode and save slide, not count
+                        val isSave = ((mode == "") && slideId == bookUtil.getSaveSlideId(logic.bookId))
+                        makeSlideScreen(slide!!, !isSave)
+                    }
                 }
             }
         }
     }
 
     private fun makeSlideScreen(slide: Slide, isCount: Boolean) {
-        if(isCount){ bookUtil.incrementIdCount(config.id, slide.id, mode) }
+        if(isCount){ bookUtil.incrementIdCount(logic.bookId, slide.slideId, mode) }
 
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
         with(slide){
             // Make Main Content
-            Glide.with(applicationContext).load(fileUtil.getImageFile(config.id, slide.slideImage)).into(binding.imageViewShowMain)
-            binding.tvSlideTitle.text = title
+            Glide.with(applicationContext).load(fileUtil.getImageFile(logic.bookId, slide.slideImage)).into(binding.imageViewShowMain)
+            binding.tvSlideTitle.text = slideTitle
             binding.tvSlideDescription.text = description
             binding.tvSlideQuestion.text = question
 
             // Make Choice Item
             val passChoiceItems: ArrayList<ChoiceItem> = arrayListOf()
-            for(choiceItem in choiceItems){
-                if(bookUtil.checkConditions(config.id, choiceItem.showConditions, mode)){
-                    passChoiceItems.add(choiceItem)
+            logic.logics.find { it.slideId == slideId }?.let {
+                for(choiceItem in it.choiceItems){
+                    if(bookUtil.checkConditions(logic.bookId, choiceItem.showConditions, mode)){
+                        passChoiceItems.add(choiceItem)
+                    }
                 }
             }
+
             binding.recyclerChoice.layoutManager = LinearLayoutManager(baseContext)
             val adapter = ChoiceAdapter(passChoiceItems)
             adapter.setItemClickListener(object : ChoiceAdapter.OnItemClickListener {
                 override fun onClick(v: View, choiceItem: ChoiceItem) {
-                    bookUtil.incrementIdCount(config.id, choiceItem.id, mode)
+                    bookUtil.incrementIdCount(logic.bookId, choiceItem.id, mode)
                     enterNextSlide(choiceItem)
                 }
             })
             binding.recyclerChoice.adapter = adapter
         }
-        bookUtil.setSaveSlideId(config.id, slide.id)
+        bookUtil.setSaveSlideId(logic.bookId, slide.slideId)
     }
 
     private fun enterNextSlide(choiceItem: ChoiceItem){
@@ -99,25 +113,27 @@ class ViewerActivity : AppCompatActivity() {
             var enterSlideId = Const.END_SLIDE_ID
 
             for(enterItem in choiceItem.enterItems) {
-                if(bookUtil.checkConditions(config.id, enterItem.enterConditions, mode)){
-                    bookUtil.incrementIdCount(config.id, enterItem.id, mode)
+                if(bookUtil.checkConditions(logic.bookId, enterItem.enterConditions, mode)){
+                    bookUtil.incrementIdCount(logic.bookId, enterItem.id, mode)
                     enterSlideId = enterItem.enterSlideId
                     break
                 }
             }
 
             if(enterSlideId != Const.END_SLIDE_ID){
-                slide = fileUtil.getSlideFromJson(config.id, enterSlideId)
+                slide = fileUtil.getSlideFromFile(logic.bookId, enterSlideId)
             }else{
-                slide = fileUtil.getSlideFromJson(config.id, config.defaultEndId)
+                slide = null
             }
 
             delay(100)
             withContext(Dispatchers.Main){
                 slide?.also {
-                    makeSlideScreen(slide!!, true)
+                    makeSlideScreen(it, true)
                 }?:also {
-                    util.getAlertDailog(this@ViewerActivity).show()
+                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+                    binding.layoutEmptySlide.root.visibility = View.VISIBLE
+                    binding.layoutMain.visibility = View.GONE
                 }
             }
         }

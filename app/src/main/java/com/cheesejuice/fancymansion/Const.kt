@@ -1,4 +1,4 @@
-package com.cheesejuice.fancymansion.util
+package com.cheesejuice.fancymansion
 
 class Const {
     companion object{
@@ -9,6 +9,7 @@ class Const {
         const val MODE_PLAY = "play"
         const val NOT_SUPPORT_COND_ID_2 = -1L
         const val ID_1_SLIDE = 1_00_00_00_00L
+        const val FIRST_SLIDE = 1L
 
         const val COUNT_SLIDE = 1_00_00_00_00L
         const val COUNT_CHOICE = 1_00_00_00L
@@ -33,6 +34,7 @@ class Const {
         // File
         const val FILE_PREFIX_BOOK = "book_"
         const val FILE_PREFIX_CONFIG = "config_"
+        const val FILE_PREFIX_LOGIC = "logic_"
         const val FILE_PREFIX_SLIDE = "slide_"
         const val FILE_PREFIX_IMAGE = "image_"
     }

@@ -2,8 +2,11 @@ package com.cheesejuice.fancymansion.util
 
 import android.content.Context
 import android.util.Log
+import com.cheesejuice.fancymansion.CondNext
+import com.cheesejuice.fancymansion.CondOp
+import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.model.Condition
-import com.cheesejuice.fancymansion.model.SlideBrief
+import com.cheesejuice.fancymansion.model.SlideLogic
 import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
 
@@ -14,7 +17,7 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
         var nextLogic = CondNext.AND
         for(condition in conditions){
             result = nextLogic.check(result, checkCondition(bookId, condition, mode))
-            nextLogic = CondNext.from(condition.nextLogic)
+            nextLogic = CondNext.from(condition.conditionNext)
             if(result && nextLogic == CondNext.OR) break
         }
         return result
@@ -23,7 +26,7 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
     fun checkCondition(bookId: Long, condition: Condition, mode: String): Boolean =
         condition.run{
             val count1 = getIdCount(bookId, conditionId1, mode)
-            val count2 = if(conditionId2==Const.NOT_SUPPORT_COND_ID_2) conditionCount else getIdCount(bookId, conditionId2, mode)
+            val count2 = if(conditionId2== Const.NOT_SUPPORT_COND_ID_2) conditionCount else getIdCount(bookId, conditionId2, mode)
             Log.d(Const.TAG, "mode - $mode check : $conditionId1 ($count1) $conditionOp $conditionId2 ($count2)")
             CondOp.from(conditionOp).check(count1, count2)
         }
@@ -58,14 +61,16 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
 
     // Reading Book Info
     fun getSaveSlideId(bookId: Long): Long{
-        val pref = context.getSharedPreferences(Const.PREF_PREFIX_BOOK+bookId,
+        val pref = context.getSharedPreferences(
+            Const.PREF_PREFIX_BOOK+bookId,
             Context.MODE_PRIVATE
         )
         return pref.getLong(Const.PREF_SAVE_SLIDE_ID, Const.ID_NOT_FOUND)
     }
 
     fun setSaveSlideId(bookId: Long, slideId: Long){
-        val pref = context.getSharedPreferences(Const.PREF_PREFIX_BOOK+bookId,
+        val pref = context.getSharedPreferences(
+            Const.PREF_PREFIX_BOOK+bookId,
             Context.MODE_PRIVATE
         )
         val editor = pref.edit()
@@ -74,19 +79,19 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
     }
 
     fun deleteBookPref(bookId: Long, mode: String){
-        context.deleteSharedPreferences(mode+Const.PREF_PREFIX_BOOK+bookId)
+        context.deleteSharedPreferences(mode+ Const.PREF_PREFIX_BOOK+bookId)
     }
 
     // Book Count
     private fun getIdCount(bookId: Long, slideId: Long, mode: String):Int{
-        val pref = context.getSharedPreferences(mode+Const.PREF_PREFIX_BOOK+bookId,
+        val pref = context.getSharedPreferences(mode+ Const.PREF_PREFIX_BOOK+bookId,
             Context.MODE_PRIVATE
         )
         return pref.getInt(Const.PREF_PREFIX_COUNT+slideId, 0)
     }
 
     private fun setIdCount(bookId: Long, slideId: Long, count: Int, mode: String){
-        val pref = context.getSharedPreferences(mode+Const.PREF_PREFIX_BOOK+bookId,
+        val pref = context.getSharedPreferences(mode+ Const.PREF_PREFIX_BOOK+bookId,
             Context.MODE_PRIVATE
         )
         val editor = pref.edit()
@@ -100,12 +105,12 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
     }
 
     // 00 / 00 / 00 / 00 / 00 = slide / choice / showCondition / enterId / enterCondition
-    fun nextSlideId(briefs: List<SlideBrief>): Long{
+    fun nextSlideId(logics: List<SlideLogic>): Long{
         var idMap = Array(100){ i -> false }
         idMap[0] = true
-        briefs.map { (it.slideId / Const.COUNT_SLIDE).toInt() }.forEach { idMap[it] = true }
+        logics.map { (it.slideId / Const.COUNT_SLIDE).toInt() }.forEach { idMap[it] = true }
 
         val result = idMap.indexOf(false)
-        return if(result != -1)(result*Const.COUNT_SLIDE) else { -1 }
+        return if(result != -1)(result* Const.COUNT_SLIDE) else { -1 }
     }
 }

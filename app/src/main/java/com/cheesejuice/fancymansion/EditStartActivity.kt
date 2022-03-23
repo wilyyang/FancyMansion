@@ -14,7 +14,7 @@ import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityEditStartBinding
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.*
-import com.cheesejuice.fancymansion.util.Const.Companion.ID_NOT_FOUND
+import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
@@ -25,7 +25,6 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import com.cheesejuice.fancymansion.extension.*
 import com.cheesejuice.fancymansion.view.RoundEditText
-import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
 class EditStartActivity : AppCompatActivity() {
@@ -53,7 +52,7 @@ class EditStartActivity : AppCompatActivity() {
                 }?.use { cursor ->
                     val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
                     cursor.moveToFirst()
-                    config!!.defaultImage = cursor.getString(nameIndex)
+                    config!!.coverImage = cursor.getString(nameIndex)
                     updateImage = true
                 }
             }
@@ -90,21 +89,21 @@ class EditStartActivity : AppCompatActivity() {
         // temp code
         util.checkRequestPermissions()
 
-//        createSampleFiles()
+        createSampleFiles()
         isCreate = false //intent.getBooleanExtra(Const.KEY_BOOK_CREATE, false)
         bookId = 12345L //intent.getLongExtra(Const.KEY_BOOK_ID, KEY_BOOK_ID_NOT_FOUND)
         if(isCreate || bookId == ID_NOT_FOUND){
             isCreate = true
             bookId = bookUtil.incrementBookCount()
 
-            fileUtil.initBook(bookId)
+            fileUtil.makeEmptyBook(bookId)
         }
 
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
         CoroutineScope(Default).launch {
             config = fileUtil.getConfigFromFile(bookId)
             withContext(Main) {
-                config!!.updateDate = System.currentTimeMillis()
+                config!!.updateTime = System.currentTimeMillis()
                 makeEditReadyScreen(config!!)
             }
         }
@@ -114,21 +113,21 @@ class EditStartActivity : AppCompatActivity() {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
 
         with(_config){
-            binding.tvConfigId.text = "#$id (v $version)"
-            binding.tvConfigTime.text = util.longToTimeFormatss(updateDate)
+            binding.tvConfigId.text = "#$bookId (v $version)"
+            binding.tvConfigTime.text = util.longToTimeFormatss(updateTime)
 
             binding.etConfigTitle.setText(title)
             binding.etConfigWriter.setText(writer)
             binding.etConfigIllustrator.setText(illustrator)
             binding.etConfigDescription.setText(description)
         }
-        Glide.with(applicationContext).load(fileUtil.getImageFile(_config.id, _config.defaultImage)).into(binding.imageViewShowMain)
+        Glide.with(applicationContext).load(fileUtil.getImageFile(_config.bookId, _config.coverImage)).into(binding.imageViewShowMain)
         binding.btnEditBook.isEnabled = true
     }
 
     private fun saveConfigFile(config : Config) {
         with(config){
-            updateDate = System.currentTimeMillis()
+            updateTime = System.currentTimeMillis()
             version += 1
             title = binding.etConfigTitle.text.toString()
             writer = binding.etConfigWriter.text.toString()
@@ -136,7 +135,8 @@ class EditStartActivity : AppCompatActivity() {
             description = binding.etConfigDescription.text.toString()
 
             if(updateImage){
-                defaultImage = fileUtil.saveImageFile(binding.imageViewShowMain.drawable, id, defaultImage)
+                coverImage = fileUtil.makeImageFile(binding.imageViewShowMain.drawable,
+                    bookId, coverImage)
             }
             fileUtil.makeConfigFile(this)
         }
@@ -207,21 +207,17 @@ class EditStartActivity : AppCompatActivity() {
 
     private fun startViewStartActivity(){
         bookUtil.setOnlyPlay(true)
-        bookUtil.deleteBookPref(config!!.id, Const.MODE_PLAY)
+        bookUtil.deleteBookPref(config!!.bookId, Const.MODE_PLAY)
 
         val intent = Intent(this@EditStartActivity, ViewStartActivity::class.java)
-        intent.putExtra(Const.INTENT_BOOK_ID, config!!.id)
+        intent.putExtra(Const.INTENT_BOOK_ID, config!!.bookId)
         startActivity(intent)
     }
 
     private fun startEditSlideActivity(){
         val intent = Intent(this@EditStartActivity, EditSlideActivity::class.java)
-        intent.putExtra(Const.INTENT_BOOK_ID, config!!.id)
-        if(config!!.briefs.size > 0){
-            intent.putExtra(Const.INTENT_SLIDE_ID, config!!.briefs[0].slideId)
-        }
+        intent.putExtra(Const.INTENT_BOOK_ID, config!!.bookId)
+        intent.putExtra(Const.INTENT_SLIDE_ID, Const.FIRST_SLIDE)
         startActivity(intent)
-
-
     }
 }
