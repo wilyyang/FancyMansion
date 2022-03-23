@@ -39,6 +39,8 @@ class ViewerActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         if(bookUtil.getOnlyPlay()) { mode = Const.MODE_PLAY}
 
+        ////
+
         // init config & slide object
         val bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, Const.ID_NOT_FOUND)
         var slideId = intent.getLongExtra(Const.INTENT_SLIDE_ID, Const.ID_NOT_FOUND)

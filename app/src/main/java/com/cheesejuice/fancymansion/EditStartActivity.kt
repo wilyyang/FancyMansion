@@ -29,18 +29,15 @@ import com.cheesejuice.fancymansion.view.RoundEditText
 @AndroidEntryPoint
 class EditStartActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEditStartBinding
-    private var bookId: Long = ID_NOT_FOUND
     private var config: Config? = null
+    private var updateImage = false
+
     @Inject
     lateinit var util: CommonUtil
     @Inject
     lateinit var bookUtil: BookUtil
     @Inject
     lateinit var fileUtil: FileUtil
-
-    private var updateImage = false
-
-    private var isCreate = false
 
     private val gallaryForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -69,6 +66,8 @@ class EditStartActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.toolbar.title = getString(R.string.toolbar_title_update)
 
+        ////
+
         binding.imageViewConfigAdd.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             intent.type = "image/*"
@@ -89,9 +88,9 @@ class EditStartActivity : AppCompatActivity() {
         // temp code
         util.checkRequestPermissions()
 
-        createSampleFiles()
-        isCreate = false //intent.getBooleanExtra(Const.KEY_BOOK_CREATE, false)
-        bookId = 12345L //intent.getLongExtra(Const.KEY_BOOK_ID, KEY_BOOK_ID_NOT_FOUND)
+//        createSampleFiles()
+        var isCreate = false //intent.getBooleanExtra(Const.KEY_BOOK_CREATE, false)
+        var bookId = 12345L //intent.getLongExtra(Const.KEY_BOOK_ID, KEY_BOOK_ID_NOT_FOUND)
         if(isCreate || bookId == ID_NOT_FOUND){
             isCreate = true
             bookId = bookUtil.incrementBookCount()

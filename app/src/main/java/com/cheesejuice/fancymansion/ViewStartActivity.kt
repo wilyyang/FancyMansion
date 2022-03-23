@@ -22,6 +22,7 @@ class ViewStartActivity : AppCompatActivity() {
     private lateinit var binding: ActivityViewStartBinding
     private var config: Config? = null
     var mode: String = ""
+
     @Inject
     lateinit var util: CommonUtil
     @Inject
@@ -39,6 +40,8 @@ class ViewStartActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         if(bookUtil.getOnlyPlay()) { mode = Const.MODE_PLAY}
+
+        ////
 
         binding.btnStartBook.setOnClickListener {
             // Only Play

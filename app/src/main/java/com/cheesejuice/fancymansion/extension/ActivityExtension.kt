@@ -43,7 +43,7 @@ fun Activity.createSampleFiles(){
     fileUtil.makeConfigFile(config)
 
     for(i in 1 .. 9){
-        val slide = Json.decodeFromString<Slide>(Sample.getLogicSample(i * 1_00_00_00_00L))
+        val slide = Json.decodeFromString<Slide>(Sample.getSlideSample(i * 1_00_00_00_00L))
         fileUtil.makeSlideFile(config.bookId, slide!!)
     }
 

@@ -37,6 +37,7 @@
     <string name="alert_default_message">데이터 처리 중에 문제가 발생했습니다. 이전 화면으로 이동합니다.</string>
     <string name="alert_default_button">확인</string>
     <string name="alert_max_count">더이상 생성할 수 없습니다.</string>
+    <string name="alert_not_found_file">해당 파일을 찾을 수 없습니다.</string>
 
     <string name="book_config_title">제목 :&#160;</string>
     <string name="book_config_description">설명 :&#160;</string>
