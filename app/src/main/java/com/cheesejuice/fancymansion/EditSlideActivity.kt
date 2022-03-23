@@ -9,6 +9,7 @@ import android.provider.OpenableColumns
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -180,9 +181,14 @@ class EditSlideActivity : AppCompatActivity() {
         config?.let {  con ->
             when(item.itemId) {
                 R.id.menu_add -> {
+                    val nextId = bookUtil.nextSlideId(con.briefs)
+                    if(nextId < 0){
+                        Toast.makeText(this@EditSlideActivity, R.string.alert_max_count, Toast.LENGTH_SHORT).show()
+                        return true
+                    }
+
                     showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
                     CoroutineScope(IO).launch {
-                        val nextId = bookUtil.nextSlideId(con.briefs)
 
                         slide = Slide(id = nextId, title = getString(R.string.name_slide_prefix), question = getString(R.string.text_question_default))
                         con.briefs.add(SlideBrief(slide!!.id, slide!!.title))

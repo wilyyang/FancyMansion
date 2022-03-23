@@ -99,10 +99,7 @@ class EditStartActivity : AppCompatActivity() {
 
             fileUtil.initBook(bookId)
         }
-    }
 
-    override fun onResume() {
-        super.onResume()
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
         CoroutineScope(Default).launch {
             config = fileUtil.getConfigFromFile(bookId)

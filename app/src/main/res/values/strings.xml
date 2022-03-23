@@ -39,6 +39,7 @@
     <string name="alert_default_title">ERROR</string>
     <string name="alert_default_message">A problem occurred while processing the data. Go to the previous screen.</string>
     <string name="alert_default_button">OK</string>
+    <string name="alert_max_count">Can\'t create any more</string>
 
     <string name="book_config_title">title :&#160;</string>
     <string name="book_config_description">description :&#160;</string>
