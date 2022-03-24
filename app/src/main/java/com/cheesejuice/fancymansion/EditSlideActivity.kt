@@ -20,7 +20,6 @@ import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
 import com.cheesejuice.fancymansion.databinding.ActivityEditSlideBinding
 import com.cheesejuice.fancymansion.extension.*
-import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.view.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -38,8 +37,10 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     private lateinit var slide: Slide
     private var updateImage = false
 
-    lateinit var listAdapterSlide:SlideTitleListAdapter
+    lateinit var slideTitleListAdapter:SlideTitleListAdapter
     lateinit var toggle: ActionBarDrawerToggle
+    var optionMenu: Menu? = null
+    var isMenuItemEnabled = true
 
     @Inject
     lateinit var util: CommonUtil
@@ -72,50 +73,67 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         var slideId = intent.getLongExtra(Const.INTENT_SLIDE_ID, ID_NOT_FOUND)
         if(bookId == ID_NOT_FOUND){
             makeNotHaveSlide()
+            return
         }
 
-        //// CoroutineScope
         CoroutineScope(Default).launch {
-            logic = fileUtil.getLogicFromFile(bookId)!!
-            listAdapterSlide = SlideTitleListAdapter(logic!!.logics)
-            listAdapterSlide.setItemClickListener(object: SlideTitleListAdapter.OnItemClickListener{
-                override fun onClick(v: View, position: Int) {
-
-                    startAfterSaveEdits {
-                        CoroutineScope(IO).launch {
-                            logic = fileUtil.getLogicFromFile(bookId)!!
-                            listAdapterSlide.datas = logic!!.logics
-
-                            slide = fileUtil.getSlideFromFile(logic!!.bookId, logic!!.logics[position].slideId)
-                            withContext(Main) {
-                                makeEditSlideScreen(slide!!)
-                                binding.drawerEditSlide.closeDrawers()
-                            }
-                        }
-                    }
+            val logicTemp = fileUtil.getLogicFromFile(bookId)
+            val slideTemp = logicTemp?.let {
+                if(slideId == Const.FIRST_SLIDE && it.logics.size > 0){
+                    slideId = it.logics[0].slideId
                 }
-            })
-
-            if(slideId == Const.FIRST_SLIDE && logic.logics.size > 0){
-                slideId = logic.logics[0].slideId
+                fileUtil.getSlideFromFile(bookId, slideId)
             }
-            slide = fileUtil.getSlideFromFile(bookId, slideId)
+
             withContext(Main) {
-                binding.recyclerNavEditSlide.layoutManager = LinearLayoutManager(baseContext)
-                binding.recyclerNavEditSlide.adapter = listAdapterSlide
+                if(logicTemp != null && slideTemp != null) {
+                    logic = logicTemp
+                    slide = slideTemp
 
-                val touchHelper = ItemTouchHelper(SlideTitleListDragCallback(listAdapterSlide))
-                touchHelper.attachToRecyclerView(binding.recyclerNavEditSlide)
-
-                toggle = ActionBarDrawerToggle(this@EditSlideActivity, binding.drawerEditSlide, R.string.drawer_opened, R.string.drawer_closed)
-                toggle.syncState()
-
-                if(slide == null){
-                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
-                    binding.layoutEmptySlide.root.visibility = View.VISIBLE
-                    binding.scrollEditSlide.visibility = View.GONE
+                    initNavigationView(logic)
+                    makeEditSlideScreen(logic, slide)
                 }else{
-                    makeEditSlideScreen(slide!!)
+                    makeNotHaveSlide()
+                }
+            }
+        }
+    }
+
+    private fun initNavigationView(logic: Logic){
+        slideTitleListAdapter = SlideTitleListAdapter(logic.logics)
+        slideTitleListAdapter.setItemClickListener(object: SlideTitleListAdapter.OnItemClickListener{
+            override fun onClick(v: View, position: Int) {
+                selectSlideItem(position)
+            }
+        })
+
+        binding.recyclerNavEditSlide.layoutManager = LinearLayoutManager(baseContext)
+        binding.recyclerNavEditSlide.adapter = slideTitleListAdapter
+
+        val touchHelper = ItemTouchHelper(SlideTitleListDragCallback(slideTitleListAdapter))
+        touchHelper.attachToRecyclerView(binding.recyclerNavEditSlide)
+
+        toggle = ActionBarDrawerToggle(this@EditSlideActivity, binding.drawerEditSlide, R.string.drawer_opened, R.string.drawer_closed)
+        toggle.syncState()
+    }
+
+    private fun selectSlideItem(position: Int){
+        startAfterSaveEdits {
+            CoroutineScope(IO).launch {
+                val slideId = logic.logics[position].slideId
+                val tempLogic = fileUtil.getLogicFromFile(logic.bookId)
+                val tempSlide = fileUtil.getSlideFromFile(logic.bookId, slideId)
+
+                withContext(Main) {
+                    binding.drawerEditSlide.closeDrawers()
+                    if(tempLogic != null && tempSlide != null ){
+                        logic = tempLogic
+                        slide = tempSlide
+                        slideTitleListAdapter.datas = logic.logics
+                        makeEditSlideScreen(logic, slide)
+                    }else{
+                        makeNotHaveSlide()
+                    }
                 }
             }
         }
@@ -130,12 +148,16 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             binding.etSlideQuestion.setText(question)
         }
         Glide.with(applicationContext).load(fileUtil.getImageFile(logic.bookId, slide.slideImage)).into(binding.imageViewShowMain)
+
+        isMenuItemEnabled = true
     }
 
     private fun makeNotHaveSlide() {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
         binding.layoutEmptySlide.root.visibility = View.VISIBLE
         binding.layoutMain.visibility = View.GONE
+
+        isMenuItemEnabled = false
     }
 
     private fun saveSlideFile(logic: Logic, slide: Slide){
@@ -154,7 +176,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
 
         RoundEditText.onceFocus = false
         updateImage = false
-        listAdapterSlide.onceMove = false
+        slideTitleListAdapter.onceMove = false
     }
 
     override fun onClick(view: View?) {
@@ -170,10 +192,10 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_edit_slide, menu)
+        optionMenu = menu
         return true
     }
 
-    //// onOptionsItemSelected
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
         if(toggle.onOptionsItemSelected(item)){
@@ -181,97 +203,101 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         }
 
         this@EditSlideActivity.currentFocus?.let { it.clearFocus() }
-        logic?.let { briefs ->
-            when(item.itemId) {
-                R.id.menu_add -> {
-                    val nextId = bookUtil.nextSlideId(briefs.logics)
-                    if(nextId < 0){
-                        Toast.makeText(this@EditSlideActivity, R.string.alert_max_count, Toast.LENGTH_SHORT).show()
-                        return true
-                    }
+        if(!isMenuItemEnabled){
+            return true
+        }
 
-                    showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
-                    CoroutineScope(IO).launch {
-
-                        slide = Slide(slideId = nextId, slideTitle = getString(R.string.name_slide_prefix), question = getString(R.string.text_question_default))
-                        briefs.logics.add(SlideLogic(slide!!.slideId, slide!!.slideTitle))
-
-                        fileUtil.makeSlideFile(briefs.bookId, slide!!)
-                        fileUtil.makeLogicFile(briefs)
-
-                        RoundEditText.onceFocus = false
-                        updateImage = false
-                        listAdapterSlide.onceMove = false
-
-                        withContext(Main) {
-                            if(binding.layoutEmptySlide.root.visibility == View.VISIBLE){
-                                binding.layoutEmptySlide.root.visibility = View.GONE
-                                binding.scrollEditSlide.visibility = View.VISIBLE
-                            }
-
-                            listAdapterSlide.notifyUpdateBrief(slide!!.slideId, slide!!.slideTitle)
-                            makeEditSlideScreen(slide!!)
-                            showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
-                        }
+        when(item.itemId) {
+            R.id.menu_add -> addNewSlide()
+            R.id.menu_delete -> deleteSelectedSlide()
+            R.id.menu_save -> {
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+                CoroutineScope(IO).launch {
+                    saveSlideFile(logic, slide)
+                    withContext(Main) {
+                        slideTitleListAdapter.notifyUpdateSlideTitle(slide.slideId)
+                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
                     }
                 }
-                R.id.menu_delete -> {
-                    if(slide == null){ return true }
-                    showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
-                    CoroutineScope(IO).launch {
-                        val position = briefs.logics.indexOfFirst { it.slideId == slide!!.slideId  }
-                        briefs.logics.removeAt(position)
-
-                        fileUtil.deleteSlideFile(briefs.bookId, slide!!.slideId)
-                        fileUtil.makeLogicFile(briefs)
-
-                        RoundEditText.onceFocus = false
-                        updateImage = false
-                        listAdapterSlide.onceMove = false
-
-                        if(briefs.logics.size < 1){
-                            slide = null
-                        }else if(position > 0){
-                            slide = fileUtil.getSlideFromFile(briefs.bookId, briefs.logics[position-1].slideId)
-                        }else{
-                            slide = fileUtil.getSlideFromFile(briefs.bookId, briefs.logics[0].slideId)
-                        }
-
-                        withContext(Main) {
-                            listAdapterSlide.notifyDeleteBrief(position)
-                            slide?.also { makeEditSlideScreen(it) }?:also {
-                                binding.layoutEmptySlide.root.visibility = View.VISIBLE
-                                binding.scrollEditSlide.visibility = View.GONE
-                            }
-
-                            showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
-                        }
-                    }
-                }
-
-                R.id.menu_save -> {
-                    if(slide == null){ return true }
-                    showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
-                    CoroutineScope(IO).launch {
-                        saveSlideFile(slide!!)
-                        withContext(Main) {
-                            listAdapterSlide.notifyUpdateBrief(slide!!.slideId, slide!!.slideTitle)
-                            showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
-                        }
-                    }
-                }
-
-                R.id.menu_play -> {
-                    if(slide == null){ return true }
-                    startAfterSaveEdits {
-                        bookUtil.setOnlyPlay(true)
-                        bookUtil.deleteBookPref(logic!!.bookId, Const.MODE_PLAY)
-                        startViewerActivity(logic!!.bookId, slide!!.slideId) }
-                }
-                else -> {}
+            }
+            R.id.menu_play -> {
+                startAfterSaveEdits {
+                    bookUtil.setOnlyPlay(true)
+                    bookUtil.deleteBookPref(logic.bookId, Const.MODE_PLAY)
+                    startViewerActivity(logic.bookId, slide.slideId) }
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun addNewSlide(){
+        // Get new slide id
+        val nextId = bookUtil.nextSlideId(logic.logics)
+        if(nextId < 0){
+            Toast.makeText(this@EditSlideActivity, R.string.alert_max_count, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+        CoroutineScope(IO).launch {
+            // Make new Slide object
+            slide = Slide(slideId = nextId, slideTitle = getString(R.string.name_slide_prefix), question = getString(R.string.text_question_default))
+            logic.logics.add(SlideLogic(slide.slideId, slide.slideTitle))
+
+            // Save file
+            fileUtil.makeSlideFile(logic.bookId, slide)
+            fileUtil.makeLogicFile(logic)
+
+            withContext(Main) {
+                if(binding.layoutEmptySlide.root.visibility == View.VISIBLE){
+                    binding.layoutEmptySlide.root.visibility = View.GONE
+                    binding.scrollEditSlide.visibility = View.VISIBLE
+                }
+
+                RoundEditText.onceFocus = false
+                updateImage = false
+                slideTitleListAdapter.onceMove = false
+
+                // Make Slide screen
+                slideTitleListAdapter.notifyUpdateSlideTitle(slide.slideId)
+                makeEditSlideScreen(logic, slide)
+                showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+            }
+        }
+    }
+
+    private fun deleteSelectedSlide(){
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+        CoroutineScope(IO).launch {
+            // File IO
+            val position = logic.logics.indexOfFirst { it.slideId == slide.slideId  }
+            logic.logics.removeAt(position)
+
+            fileUtil.deleteSlideFile(logic.bookId, slide.slideId)
+            fileUtil.makeLogicFile(logic)
+
+            val tempSlide:Slide? = if(logic.logics.size > 1){
+                if(position > 0){
+                    fileUtil.getSlideFromFile(logic.bookId, logic.logics[position-1].slideId)
+                }else{
+                    fileUtil.getSlideFromFile(logic.bookId, logic.logics[0].slideId)
+                }
+            }else { null }
+
+            withContext(Main) {
+                RoundEditText.onceFocus = false
+                updateImage = false
+                slideTitleListAdapter.onceMove = false
+
+                slideTitleListAdapter.notifyDeleteSlideTitle(position)
+                tempSlide?.also {
+                    slide = tempSlide
+                    makeEditSlideScreen(logic, slide)
+                }?:also {
+                    makeNotHaveSlide()
+                }
+            }
+        }
     }
 
     override fun onBackPressed() {
@@ -279,12 +305,12 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun startAfterSaveEdits(always:() ->Unit){
-        showDialogAndStart(isShow = (RoundEditText.onceFocus || updateImage || listAdapterSlide.onceMove),
+        showDialogAndStart(isShow = (RoundEditText.onceFocus || updateImage || slideTitleListAdapter.onceMove),
             loading = binding.layoutLoading.root, main = binding.layoutMain,
             title = getString(R.string.save_dialog_title), message = getString(R.string.save_dialog_question),
             onlyOkBackground = { saveSlideFile(logic, slide) },
-            onlyOk = {  listAdapterSlide.notifyUpdateBrief(slide.slideId, slide.slideTitle)},
-            onlyNo = {  RoundEditText.onceFocus = false; updateImage = false; listAdapterSlide.onceMove = false },
+            onlyOk = {  slideTitleListAdapter.notifyUpdateSlideTitle(slide.slideId)},
+            onlyNo = {  RoundEditText.onceFocus = false; updateImage = false; slideTitleListAdapter.onceMove = false },
             always = always
         )
     }

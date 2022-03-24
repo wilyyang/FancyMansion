@@ -1,17 +1,13 @@
 package com.cheesejuice.fancymansion
 
-import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
-import android.provider.OpenableColumns
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityEditStartBinding
 import com.cheesejuice.fancymansion.model.Config
@@ -76,6 +72,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             val conf = fileUtil.getConfigFromFile(bookId)
             withContext(Main) {
                 conf?.also{
+                    config = it
                     makeEditReadyScreen(config)
                 }?:also{
                     util.getAlertDailog(this@EditStartActivity).show()

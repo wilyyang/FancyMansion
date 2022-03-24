@@ -43,19 +43,19 @@ class SlideTitleListAdapter(var datas: MutableList<SlideLogic>):
     }
 
     // Custom
-    fun notifyUpdateBrief(id: Long, title: String) {
-        val idx = datas.indexOfFirst { slideBrief -> slideBrief.slideId == id }
+    fun notifyUpdateSlideTitle(slideId: Long) {
+        val idx = datas.indexOfFirst { it.slideId == slideId }
         notifyItemChanged(idx)
     }
 
-    fun notifyDeleteBrief(position: Int) {
+    fun notifyDeleteSlideTitle(position: Int) {
         notifyItemRemoved(position)
     }
 
     // ViewHolder
     inner class SlideTitleViewHolder(val binding: ItemSlideTitleBinding): RecyclerView.ViewHolder(binding.root)
 
-    // BriefDragCallback
+    // SlideTitleListDragCallback
     override fun onItemMove(fromPosition: Int, toPosition: Int) {
         onceMove = true
         Collections.swap(datas, fromPosition, toPosition)

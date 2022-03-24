@@ -45,10 +45,10 @@ class ViewerActivity : AppCompatActivity() {
         var slideId = intent.getLongExtra(Const.INTENT_SLIDE_ID, Const.ID_NOT_FOUND)
         CoroutineScope(Default).launch {
             val logicTemp = fileUtil.getLogicFromFile(bookId)
-            val slideTemp = logicTemp?.run {
+            val slideTemp = logicTemp?.let {
                 // Slide is First
-                if(slideId == Const.FIRST_SLIDE && logicTemp.logics.size > 0){
-                    slideId = logicTemp.logics[0].slideId
+                if(slideId == Const.FIRST_SLIDE && it.logics.size > 0){
+                    slideId = it.logics[0].slideId
                 }
                 fileUtil.getSlideFromFile(bookId, slideId)
             }
@@ -128,9 +128,9 @@ class ViewerActivity : AppCompatActivity() {
             val slideNext = fileUtil.getSlideFromFile(logic.bookId, nextSlideId)
 
             delay(100)
-            withContext(Dispatchers.Main){
+            withContext(Main){
                 slideNext?.also {
-                    slide = slideNext
+                    slide = it
                     bookUtil.incrementIdCount(logic.bookId, slide.slideId, mode)
                     makeSlideScreen(logic, slide)
                 }?:also {
