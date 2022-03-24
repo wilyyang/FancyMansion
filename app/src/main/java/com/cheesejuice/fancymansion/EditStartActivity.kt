@@ -8,7 +8,9 @@ import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityEditStartBinding
@@ -27,9 +29,9 @@ import com.cheesejuice.fancymansion.extension.*
 import com.cheesejuice.fancymansion.view.RoundEditText
 
 @AndroidEntryPoint
-class EditStartActivity : AppCompatActivity() {
+class EditStartActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityEditStartBinding
-    private var config: Config? = null
+    private lateinit var config: Config
     private var updateImage = false
 
     @Inject
@@ -39,21 +41,7 @@ class EditStartActivity : AppCompatActivity() {
     @Inject
     lateinit var fileUtil: FileUtil
 
-    private val gallaryForResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                Glide.with(applicationContext).load(result.data!!.data).into(binding.imageViewShowMain)
-
-                result.data!!.data?.let { returnUri ->
-                    contentResolver.query(returnUri, null, null, null, null)
-                }?.use { cursor ->
-                    val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                    cursor.moveToFirst()
-                    config!!.coverImage = cursor.getString(nameIndex)
-                    updateImage = true
-                }
-            }
-        }
+    private lateinit var gallaryForResult: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,57 +49,45 @@ class EditStartActivity : AppCompatActivity() {
         setContentView(binding.root)
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
 
+        // temp code
+        util.checkRequestPermissions()
+//        createSampleFiles()
+
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.toolbar.title = getString(R.string.toolbar_title_update)
 
-        ////
-
-        binding.imageViewConfigAdd.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            intent.type = "image/*"
-            gallaryForResult.launch(intent)
+        gallaryForResult = registerGallaryResultName(binding.imageViewShowMain) { imageName ->
+            config.coverImage = imageName; updateImage = true
         }
 
-        binding.btnEditBook.setOnClickListener {
-            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
-            CoroutineScope(IO).launch {
-                saveConfigFile(config!!)
-                withContext(Main) {
-                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
-                    startEditSlideActivity()
-                }
-            }
-        }
+        binding.imageViewConfigAdd.setOnClickListener(this)
+        binding.btnEditBook.setOnClickListener(this)
 
-        // temp code
-        util.checkRequestPermissions()
-
-//        createSampleFiles()
-        var isCreate = false //intent.getBooleanExtra(Const.KEY_BOOK_CREATE, false)
+        val isCreate = false //intent.getBooleanExtra(Const.KEY_BOOK_CREATE, false)
         var bookId = 12345L //intent.getLongExtra(Const.KEY_BOOK_ID, KEY_BOOK_ID_NOT_FOUND)
         if(isCreate || bookId == ID_NOT_FOUND){
-            isCreate = true
             bookId = bookUtil.incrementBookCount()
-
             fileUtil.makeEmptyBook(bookId)
         }
 
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
         CoroutineScope(Default).launch {
-            config = fileUtil.getConfigFromFile(bookId)
+            val conf = fileUtil.getConfigFromFile(bookId)
             withContext(Main) {
-                config!!.updateTime = System.currentTimeMillis()
-                makeEditReadyScreen(config!!)
+                conf?.also{
+                    makeEditReadyScreen(config)
+                }?:also{
+                    util.getAlertDailog(this@EditStartActivity).show()
+                }
             }
         }
     }
 
-    private fun makeEditReadyScreen(_config: Config) {
+    private fun makeEditReadyScreen(conf: Config) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
 
-        with(_config){
+        with(conf){
             binding.tvConfigId.text = "#$bookId (v $version)"
             binding.tvConfigTime.text = util.longToTimeFormatss(updateTime)
 
@@ -120,12 +96,12 @@ class EditStartActivity : AppCompatActivity() {
             binding.etConfigIllustrator.setText(illustrator)
             binding.etConfigDescription.setText(description)
         }
-        Glide.with(applicationContext).load(fileUtil.getImageFile(_config.bookId, _config.coverImage)).into(binding.imageViewShowMain)
+        Glide.with(applicationContext).load(fileUtil.getImageFile(conf.bookId, conf.coverImage)).into(binding.imageViewShowMain)
         binding.btnEditBook.isEnabled = true
     }
 
-    private fun saveConfigFile(config : Config) {
-        with(config){
+    private fun saveConfigFile(conf : Config) {
+        with(conf){
             updateTime = System.currentTimeMillis()
             version += 1
             title = binding.etConfigTitle.text.toString()
@@ -143,6 +119,27 @@ class EditStartActivity : AppCompatActivity() {
         updateImage = false
     }
 
+    override fun onClick(view: View?) {
+        when(view?.id){
+            R.id.imageViewConfigAdd -> {
+                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                intent.type = "image/*"
+                gallaryForResult.launch(intent)
+            }
+
+            R.id.btnEditBook -> {
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+                CoroutineScope(IO).launch {
+                    saveConfigFile(config)
+                    withContext(Main) {
+                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+                        startEditSlideActivity(config.bookId)
+                    }
+                }
+            }
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_edit_config, menu)
@@ -158,7 +155,7 @@ class EditStartActivity : AppCompatActivity() {
                 this@EditStartActivity.currentFocus?.let { it.clearFocus() }
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
                 CoroutineScope(IO).launch {
-                    saveConfigFile(config!!)
+                    saveConfigFile(config)
                     withContext(Main) {
                         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
                     }
@@ -166,57 +163,15 @@ class EditStartActivity : AppCompatActivity() {
             }
 
             R.id.menu_play -> {
-                if(config != null){
-                    startAfterSaveEdits { startViewStartActivity() }
-                }
+                showDialogAndStart(isShow = (RoundEditText.onceFocus || updateImage),
+                    loading = binding.layoutLoading.root, main = binding.layoutMain,
+                    title = getString(R.string.save_dialog_title), message = getString(R.string.save_dialog_question),
+                    onlyOkBackground = { saveConfigFile(config) },
+                    onlyNo = { RoundEditText.onceFocus = false; updateImage = false },
+                    always = { bookUtil.setOnlyPlay(true); bookUtil.deleteBookPref(config.bookId, Const.MODE_PLAY); startViewStartActivity(config.bookId)}
+                )
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun startAfterSaveEdits(start:()->Unit){
-        if(RoundEditText.onceFocus || updateImage){
-            this@EditStartActivity.currentFocus?.let { it.clearFocus() }
-
-            util.getAlertDailog(
-                this@EditStartActivity,
-                getString(R.string.save_dialog_title),
-                getString(R.string.save_dialog_question),
-                getString(R.string.dialog_ok)
-            ) { _, _ ->
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
-                CoroutineScope(IO).launch {
-                    saveConfigFile(config!!)
-                    withContext(Main) {
-                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
-                        start()
-                    }
-                }
-            }.apply {
-                setNegativeButton(getString(R.string.dialog_no)) { _, _ ->
-                    RoundEditText.onceFocus = false
-                    updateImage = false
-                    start()
-                }
-            }.show()
-        }else{
-            start()
-        }
-    }
-
-    private fun startViewStartActivity(){
-        bookUtil.setOnlyPlay(true)
-        bookUtil.deleteBookPref(config!!.bookId, Const.MODE_PLAY)
-
-        val intent = Intent(this@EditStartActivity, ViewStartActivity::class.java)
-        intent.putExtra(Const.INTENT_BOOK_ID, config!!.bookId)
-        startActivity(intent)
-    }
-
-    private fun startEditSlideActivity(){
-        val intent = Intent(this@EditStartActivity, EditSlideActivity::class.java)
-        intent.putExtra(Const.INTENT_BOOK_ID, config!!.bookId)
-        intent.putExtra(Const.INTENT_SLIDE_ID, Const.FIRST_SLIDE)
-        startActivity(intent)
     }
 }

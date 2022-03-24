@@ -9,7 +9,13 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.cheesejuice.fancymansion.R
+import com.cheesejuice.fancymansion.extension.showLoadingScreen
+import com.cheesejuice.fancymansion.view.RoundEditText
 import dagger.hilt.android.qualifiers.ActivityContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject

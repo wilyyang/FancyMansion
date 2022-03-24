@@ -12,6 +12,7 @@ import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.view.ChoiceAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.Main
 import javax.inject.Inject
 
@@ -19,7 +20,7 @@ import javax.inject.Inject
 class ViewerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityViewerBinding
     private lateinit var logic: Logic
-    private var slide: Slide? = null
+    private lateinit var slide: Slide
     var mode: String = ""
 
     @Inject
@@ -39,53 +40,46 @@ class ViewerActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         if(bookUtil.getOnlyPlay()) { mode = Const.MODE_PLAY}
 
-        ////
-
         // init config & slide object
         val bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, Const.ID_NOT_FOUND)
         var slideId = intent.getLongExtra(Const.INTENT_SLIDE_ID, Const.ID_NOT_FOUND)
-        if(bookId == Const.ID_NOT_FOUND || slideId == Const.ID_NOT_FOUND) finish()
-        CoroutineScope(Dispatchers.Default).launch {
-            logic = fileUtil.getLogicFromFile(bookId)!!
-
-            if(logic.logics.size < 1) {
-                withContext(Main) {
-                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
-                    binding.layoutEmptySlide.root.visibility = View.VISIBLE
-                    binding.layoutMain.visibility = View.GONE
+        CoroutineScope(Default).launch {
+            val logicTemp = fileUtil.getLogicFromFile(bookId)
+            val slideTemp = logicTemp?.run {
+                // Slide is First
+                if(slideId == Const.FIRST_SLIDE && logicTemp.logics.size > 0){
+                    slideId = logicTemp.logics[0].slideId
                 }
-            }else{
-                if(slideId == Const.FIRST_SLIDE){
-                    slideId = logic!!.logics[0].slideId
-                }
-                slide = fileUtil.getSlideFromFile(bookId, slideId)
+                fileUtil.getSlideFromFile(bookId, slideId)
+            }
 
-                withContext(Main) {
-                    if(logic == null || slide == null) {
-                        util.getAlertDailog(this@ViewerActivity).show()
-                    }else{
+            withContext(Main) {
+                if(logicTemp != null && slideTemp != null) {
+                    logic = logicTemp
+                    slide = slideTemp
 
-                        // if not play mode and save slide, not count
-                        val isSave = ((mode == "") && slideId == bookUtil.getSaveSlideId(logic.bookId))
-                        makeSlideScreen(slide!!, !isSave)
-                    }
+                    // if not play mode and have save, not count save
+                    val isSave = ((mode != Const.MODE_PLAY) && slideId == bookUtil.getSaveSlideId(logic.bookId))
+                    if(!isSave){ bookUtil.incrementIdCount(logic.bookId, slide.slideId, mode) }
+
+                    makeSlideScreen(logic, slide)
+                }else{
+                    makeNotHaveSlide()
                 }
             }
         }
     }
 
-    private fun makeSlideScreen(slide: Slide, isCount: Boolean) {
-        if(isCount){ bookUtil.incrementIdCount(logic.bookId, slide.slideId, mode) }
-
+    private fun makeSlideScreen(logic: Logic, slide: Slide) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
         with(slide){
             // Make Main Content
-            Glide.with(applicationContext).load(fileUtil.getImageFile(logic.bookId, slide.slideImage)).into(binding.imageViewShowMain)
+            Glide.with(applicationContext).load(fileUtil.getImageFile(logic.bookId, slideImage)).into(binding.imageViewShowMain)
             binding.tvSlideTitle.text = slideTitle
             binding.tvSlideDescription.text = description
             binding.tvSlideQuestion.text = question
 
-            // Make Choice Item
+            // Select Choice Item
             val passChoiceItems: ArrayList<ChoiceItem> = arrayListOf()
             logic.logics.find { it.slideId == slideId }?.let {
                 for(choiceItem in it.choiceItems){
@@ -95,43 +89,50 @@ class ViewerActivity : AppCompatActivity() {
                 }
             }
 
+            // Make Choice Item
             binding.recyclerChoice.layoutManager = LinearLayoutManager(baseContext)
             val adapter = ChoiceAdapter(passChoiceItems)
             adapter.setItemClickListener(object : ChoiceAdapter.OnItemClickListener {
                 override fun onClick(v: View, choiceItem: ChoiceItem) {
                     bookUtil.incrementIdCount(logic.bookId, choiceItem.id, mode)
-                    enterNextSlide(choiceItem)
+                    enterNextSlide(logic, choiceItem)
                 }
             })
             binding.recyclerChoice.adapter = adapter
         }
+
+        // Save read slide point
         bookUtil.setSaveSlideId(logic.bookId, slide.slideId)
     }
 
-    private fun enterNextSlide(choiceItem: ChoiceItem){
+    private fun makeNotHaveSlide() {
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+        binding.layoutEmptySlide.root.visibility = View.VISIBLE
+        binding.layoutMain.visibility = View.GONE
+    }
+
+    private fun enterNextSlide(logic: Logic, choiceItem: ChoiceItem){
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
 
-        CoroutineScope(Dispatchers.Default).launch {
-            var enterSlideId = Const.END_SLIDE_ID
-
+        CoroutineScope(Default).launch {
+            // Get Next Slide Id
+            var nextSlideId = Const.END_SLIDE_ID
             for(enterItem in choiceItem.enterItems) {
                 if(bookUtil.checkConditions(logic.bookId, enterItem.enterConditions, mode)){
                     bookUtil.incrementIdCount(logic.bookId, enterItem.id, mode)
-                    enterSlideId = enterItem.enterSlideId
+                    nextSlideId = enterItem.enterSlideId
                     break
                 }
             }
 
-            if(enterSlideId != Const.END_SLIDE_ID){
-                slide = fileUtil.getSlideFromFile(logic.bookId, enterSlideId)
-            }else{
-                slide = null
-            }
+            val slideNext = fileUtil.getSlideFromFile(logic.bookId, nextSlideId)
 
             delay(100)
             withContext(Dispatchers.Main){
-                slide?.also {
-                    makeSlideScreen(it, true)
+                slideNext?.also {
+                    slide = slideNext
+                    bookUtil.incrementIdCount(logic.bookId, slide.slideId, mode)
+                    makeSlideScreen(logic, slide)
                 }?:also {
                     showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
                     binding.layoutEmptySlide.root.visibility = View.VISIBLE

@@ -1,9 +1,9 @@
 package com.cheesejuice.fancymansion
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityViewStartBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
@@ -11,6 +11,10 @@ import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.Const.Companion.FIRST_SLIDE
 import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
+import com.cheesejuice.fancymansion.extension.showDialogAndStart
+import com.cheesejuice.fancymansion.extension.startViewStartActivity
+import com.cheesejuice.fancymansion.extension.startViewerActivity
+import com.cheesejuice.fancymansion.view.RoundEditText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Default
@@ -18,9 +22,9 @@ import kotlinx.coroutines.Dispatchers.Main
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ViewStartActivity : AppCompatActivity() {
+class ViewStartActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityViewStartBinding
-    private var config: Config? = null
+    private lateinit var config: Config
     var mode: String = ""
 
     @Inject
@@ -41,52 +45,26 @@ class ViewStartActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         if(bookUtil.getOnlyPlay()) { mode = Const.MODE_PLAY}
 
-        ////
+        binding.btnStartBook.setOnClickListener(this)
 
-        binding.btnStartBook.setOnClickListener {
-            // Only Play
-            if(mode != ""){
-                bookUtil.deleteBookPref(config!!.bookId, Const.MODE_PLAY)
-                startViewerActivity(config!!.bookId, FIRST_SLIDE)
-            }else{
-                // Save Point
-                val saveSlide = bookUtil.getSaveSlideId(config!!.bookId)
-                if(saveSlide != ID_NOT_FOUND){
-                    util.getAlertDailog(
-                        this@ViewStartActivity,
-                        getString(R.string.record_dialog_title),
-                        getString(R.string.record_dialog_question),
-                        getString(R.string.dialog_ok)
-                    ) { _, _ ->
-                        startViewerActivity(config!!.bookId, saveSlide)
-                    }.apply {
-                        setNegativeButton(getString(R.string.dialog_no)) { _, _ ->
-                            bookUtil.deleteBookPref(config!!.bookId, "")
-                            startViewerActivity(config!!.bookId, FIRST_SLIDE)
-                        }
-                    }.show()
-                }else{
-                    startViewerActivity(config!!.bookId, FIRST_SLIDE)
-                }
-            }
-        }
-
+        val bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
         CoroutineScope(Default).launch {
-            val bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
-            config = fileUtil.getConfigFromFile(bookId)
+            val conf = fileUtil.getConfigFromFile(bookId)
+
             withContext(Main) {
-                config?.also {  configInfo ->
-                    makeViewReadyScreen(configInfo)
-                } ?: also {
+                conf?.also{
+                    config = it
+                    makeViewReadyScreen(config)
+                }?:also{
                     util.getAlertDailog(this@ViewStartActivity).show()
                 }
             }
         }
     }
 
-    private fun makeViewReadyScreen(config: Config) {
+    private fun makeViewReadyScreen(conf: Config) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
-        with(config){
+        with(conf){
             binding.toolbar.title = title
             binding.tvConfigTitle.text = title
             binding.tvConfigDescription.text = description
@@ -97,8 +75,16 @@ class ViewStartActivity : AppCompatActivity() {
             binding.tvConfigIllustrator.text = illustrator
 
         }
-        Glide.with(applicationContext).load(fileUtil.getImageFile(config.bookId, config.coverImage)).into(binding.imageViewShowMain)
+        Glide.with(applicationContext).load(fileUtil.getImageFile(conf.bookId, conf.coverImage)).into(binding.imageViewShowMain)
         binding.btnStartBook.isEnabled = true
+    }
+
+    override fun onClick(view: View?) {
+        when(view?.id){
+            R.id.btnStartBook -> {
+                startBookWithSetting(mode, config)
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean
@@ -109,12 +95,14 @@ class ViewStartActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun startViewerActivity(configId:Long, slideId: Long){
-        val intent = Intent(this, ViewerActivity::class.java)
-        intent.putExtra(Const.INTENT_BOOK_ID, configId)
-        intent.putExtra(Const.INTENT_SLIDE_ID, slideId)
+    private fun startBookWithSetting(mod: String, con: Config){
+        val saveSlide = bookUtil.getSaveSlideId(con.bookId)
 
-        intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
-        startActivity(intent)
+        showDialogAndStart(isShow = (mod != Const.MODE_PLAY && saveSlide != ID_NOT_FOUND),
+            title = getString(R.string.record_dialog_title), message = getString(R.string.record_dialog_question),
+            onlyOk = { startViewerActivity(con.bookId, saveSlide) },  // Start Save Point
+            onlyNo = { bookUtil.deleteBookPref(con.bookId, ""); startViewerActivity(con.bookId, FIRST_SLIDE) },
+            noShow = { bookUtil.deleteBookPref(con.bookId, Const.MODE_PLAY); startViewerActivity(con.bookId, FIRST_SLIDE)}
+        )
     }
 }
