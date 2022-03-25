@@ -34,7 +34,7 @@ class ViewerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityViewerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -71,7 +71,7 @@ class ViewerActivity : AppCompatActivity() {
     }
 
     private fun makeSlideScreen(logic: Logic, slide: Slide) {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
         with(slide){
             // Make Main Content
             Glide.with(applicationContext).load(fileUtil.getImageFile(logic.bookId, slideImage)).into(binding.imageViewShowMain)
@@ -106,13 +106,13 @@ class ViewerActivity : AppCompatActivity() {
     }
 
     private fun makeNotHaveSlide() {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
-        binding.layoutEmptySlide.root.visibility = View.VISIBLE
-        binding.layoutMain.visibility = View.GONE
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        binding.layoutEmpty.root.visibility = View.VISIBLE
+        binding.layoutActive.visibility = View.GONE
     }
 
     private fun enterNextSlide(logic: Logic, choiceItem: ChoiceItem){
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
 
         CoroutineScope(Default).launch {
             // Get Next Slide Id
@@ -134,9 +134,9 @@ class ViewerActivity : AppCompatActivity() {
                     bookUtil.incrementIdCount(logic.bookId, slide.slideId, mode)
                     makeSlideScreen(logic, slide)
                 }?:also {
-                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
-                    binding.layoutEmptySlide.root.visibility = View.VISIBLE
-                    binding.layoutMain.visibility = View.GONE
+                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+                    binding.layoutEmpty.root.visibility = View.VISIBLE
+                    binding.layoutContain.visibility = View.GONE
                 }
             }
         }

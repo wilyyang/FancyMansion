@@ -38,7 +38,7 @@ class ViewStartActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         binding = ActivityViewStartBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -47,7 +47,7 @@ class ViewStartActivity : AppCompatActivity(), View.OnClickListener {
 
         binding.btnStartBook.setOnClickListener(this)
 
-        val bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
+        val bookId = 12345L//intent.getLongExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
         CoroutineScope(Default).launch {
             val conf = fileUtil.getConfigFromFile(bookId)
 
@@ -63,7 +63,7 @@ class ViewStartActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun makeViewReadyScreen(conf: Config) {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
         with(conf){
             binding.toolbar.title = title
             binding.tvConfigTitle.text = title

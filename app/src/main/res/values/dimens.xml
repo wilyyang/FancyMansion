@@ -12,9 +12,23 @@
 
     <dimen name="size_book">16sp</dimen>
 
+    <dimen name="size_ssub">10sp</dimen>
+    <dimen name="size_smain">12sp</dimen>
+    <dimen name="size_msub">14sp</dimen>
+    <dimen name="size_mmain">16sp</dimen>
+    <dimen name="size_bsub">18sp</dimen>
+    <dimen name="size_bmain">20sp</dimen>
+
     <dimen name="margin_default">10dp</dimen>
     <dimen name="margin_default_left">20dp</dimen>
     <dimen name="margin_default_right">20dp</dimen>
+
+    <dimen name="margin_ssub">10dp</dimen>
+    <dimen name="margin_smain">15dp</dimen>
+    <dimen name="margin_msub">20dp</dimen>
+    <dimen name="margin_mmain">25dp</dimen>
+    <dimen name="margin_bsub">30dp</dimen>
+    <dimen name="margin_bmain">35dp</dimen>
 
     <dimen name="margin_title">20dp</dimen>
     <dimen name="margin_detail">15dp</dimen>

@@ -26,6 +26,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -55,7 +56,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         super.onCreate(savedInstanceState)
         binding = ActivityEditSlideBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -86,12 +87,13 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             }
 
             withContext(Main) {
-                if(logicTemp != null && slideTemp != null) {
+                if(logicTemp !== null && slideTemp != null) {
                     logic = logicTemp
                     slide = slideTemp
 
                     initNavigationView(logic)
-                    makeEditSlideScreen(logic, slide)
+//                    makeEditSlideScreen(logic, slide)
+                    makeNotHaveSlide()
                 }else{
                     makeNotHaveSlide()
                 }
@@ -113,7 +115,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         val touchHelper = ItemTouchHelper(SlideTitleListDragCallback(slideTitleListAdapter))
         touchHelper.attachToRecyclerView(binding.recyclerNavEditSlide)
 
-        toggle = ActionBarDrawerToggle(this@EditSlideActivity, binding.drawerEditSlide, R.string.drawer_opened, R.string.drawer_closed)
+        toggle = ActionBarDrawerToggle(this@EditSlideActivity, binding.layoutActive, R.string.drawer_opened, R.string.drawer_closed)
         toggle.syncState()
     }
 
@@ -125,7 +127,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                 val tempSlide = fileUtil.getSlideFromFile(logic.bookId, slideId)
 
                 withContext(Main) {
-                    binding.drawerEditSlide.closeDrawers()
+                    binding.layoutActive.closeDrawers()
                     if(tempLogic != null && tempSlide != null ){
                         logic = tempLogic
                         slide = tempSlide
@@ -140,7 +142,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun makeEditSlideScreen(logic: Logic, slide: Slide) {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
         with(slide){
             binding.toolbar.subtitle = "# $slideId"
             binding.etSlideTitle.setText(slideTitle)
@@ -153,9 +155,9 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun makeNotHaveSlide() {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
-        binding.layoutEmptySlide.root.visibility = View.VISIBLE
-        binding.layoutMain.visibility = View.GONE
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        binding.layoutEmpty.root.visibility = View.VISIBLE
+        binding.layoutContain.visibility = View.GONE
 
         isMenuItemEnabled = false
     }
@@ -211,12 +213,12 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             R.id.menu_add -> addNewSlide()
             R.id.menu_delete -> deleteSelectedSlide()
             R.id.menu_save -> {
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
                 CoroutineScope(IO).launch {
                     saveSlideFile(logic, slide)
                     withContext(Main) {
                         slideTitleListAdapter.notifyUpdateSlideTitle(slide.slideId)
-                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
                     }
                 }
             }
@@ -238,7 +240,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             return
         }
 
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
         CoroutineScope(IO).launch {
             // Make new Slide object
             slide = Slide(slideId = nextId, slideTitle = getString(R.string.name_slide_prefix), question = getString(R.string.text_question_default))
@@ -249,8 +251,8 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             fileUtil.makeLogicFile(logic)
 
             withContext(Main) {
-                if(binding.layoutEmptySlide.root.visibility == View.VISIBLE){
-                    binding.layoutEmptySlide.root.visibility = View.GONE
+                if(binding.layoutEmpty.root.visibility == View.VISIBLE){
+                    binding.layoutEmpty.root.visibility = View.GONE
                     binding.scrollEditSlide.visibility = View.VISIBLE
                 }
 
@@ -261,13 +263,13 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                 // Make Slide screen
                 slideTitleListAdapter.notifyUpdateSlideTitle(slide.slideId)
                 makeEditSlideScreen(logic, slide)
-                showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+                showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
             }
         }
     }
 
     private fun deleteSelectedSlide(){
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
         CoroutineScope(IO).launch {
             // File IO
             val position = logic.logics.indexOfFirst { it.slideId == slide.slideId  }
@@ -306,7 +308,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
 
     private fun startAfterSaveEdits(always:() ->Unit){
         showDialogAndStart(isShow = (RoundEditText.onceFocus || updateImage || slideTitleListAdapter.onceMove),
-            loading = binding.layoutLoading.root, main = binding.layoutMain,
+            loading = binding.layoutLoading.root, main = binding.layoutActive,
             title = getString(R.string.save_dialog_title), message = getString(R.string.save_dialog_question),
             onlyOkBackground = { saveSlideFile(logic, slide) },
             onlyOk = {  slideTitleListAdapter.notifyUpdateSlideTitle(slide.slideId)},

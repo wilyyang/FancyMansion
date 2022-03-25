@@ -43,7 +43,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         binding = ActivityEditStartBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
 
         // temp code
         util.checkRequestPermissions()
@@ -82,7 +82,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun makeEditReadyScreen(conf: Config) {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
 
         with(conf){
             binding.tvConfigId.text = "#$bookId (v $version)"
@@ -125,11 +125,11 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.btnEditBook -> {
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
                 CoroutineScope(IO).launch {
                     saveConfigFile(config)
                     withContext(Main) {
-                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
                         startEditSlideActivity(config.bookId)
                     }
                 }
@@ -150,18 +150,18 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.menu_save -> {
                 this@EditStartActivity.currentFocus?.let { it.clearFocus() }
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutMain)
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
                 CoroutineScope(IO).launch {
                     saveConfigFile(config)
                     withContext(Main) {
-                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutMain)
+                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
                     }
                 }
             }
 
             R.id.menu_play -> {
                 showDialogAndStart(isShow = (RoundEditText.onceFocus || updateImage),
-                    loading = binding.layoutLoading.root, main = binding.layoutMain,
+                    loading = binding.layoutLoading.root, main = binding.layoutActive,
                     title = getString(R.string.save_dialog_title), message = getString(R.string.save_dialog_question),
                     onlyOkBackground = { saveConfigFile(config) },
                     onlyNo = { RoundEditText.onceFocus = false; updateImage = false },
