@@ -92,8 +92,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                     slide = slideTemp
 
                     initNavigationView(logic)
-//                    makeEditSlideScreen(logic, slide)
-                    makeNotHaveSlide()
+                    makeEditSlideScreen(logic, slide)
                 }else{
                     makeNotHaveSlide()
                 }

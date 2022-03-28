@@ -1,4 +1,4 @@
-package com.cheesejuice.fancymansion.ui.viewmodel.base
+package com.cheesejuice.fancymansion.ui.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel

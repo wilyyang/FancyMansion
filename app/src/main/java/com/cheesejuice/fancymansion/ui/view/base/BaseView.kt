@@ -5,7 +5,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
-import com.cheesejuice.fancymansion.ui.viewmodel.base.BaseViewModel
+import com.cheesejuice.fancymansion.ui.viewmodel.BaseViewModel
 
 @Composable
 fun baseView(
