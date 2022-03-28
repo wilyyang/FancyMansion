@@ -18,4 +18,13 @@
         <item name="endIconMode">clear_text</item>
         <item name="counterEnabled">true</item>
     </style>
+
+    <style name="Theme.FancyMansion.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.FancyMansion.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.FancyMansion.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

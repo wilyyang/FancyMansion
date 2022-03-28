@@ -56,4 +56,6 @@
     <string name="book_slide_description">description :&#160;</string>
     <string name="book_slide_question">question :&#160;</string>
     <string name="book_slide_choice">choice :&#160;</string>
+    <string name="title_activity_test_compose">TestComposeActivity</string>
+    <string name="title_activity_main">MainActivity</string>
 </resources>
