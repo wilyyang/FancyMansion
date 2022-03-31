@@ -206,14 +206,14 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         return imageName
     }
 
-    fun getImageFile(bookId: Long, imageName: String): Any{
+    fun getImageFile(bookId: Long, imageName: String): File?{
         Log.e(Const.TAG, "getImageFile $bookId >> $imageName")
 
         val file = File(path, Const.FILE_PREFIX_BOOK+ bookId + File.separator+imageName)
-        if(imageName != "" && file.exists()){
-            return file
+        return if(imageName != "" && file.exists()){
+            file
         }else{
-            return R.drawable.add_image
+            null
         }
     }
 }

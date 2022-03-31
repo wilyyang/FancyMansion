@@ -1,40 +1,40 @@
 package com.cheesejuice.fancymansion.ui.view
 
-import androidx.compose.foundation.Image
+import com.cheesejuice.fancymansion.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import coil.compose.rememberImagePainter
-import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.ui.view.base.baseView
 import com.cheesejuice.fancymansion.ui.viewmodel.BaseViewModel
-import java.io.File
+import com.cheesejuice.fancymansion.ui.viewmodel.ReadStartViewModel
+import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun readStartView(viewModel: BaseViewModel, config: Config){
-    baseView(viewModel, body = { readStartBodyView(config = config) })
+fun readStartView(viewModel: BaseViewModel, readStartViewModel: ReadStartViewModel){
+    baseView(viewModel, body = { readStartBodyView(readStartViewModel = readStartViewModel) })
 }
 
 @Composable
-fun readStartBodyView(config: Config){
+fun readStartBodyView(readStartViewModel: ReadStartViewModel){
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(painter = rememberImagePainter(data = File("")),
-            contentDescription = ""
-        )
+        readStartViewModel.imageFile.value?.also {
+            GlideImage(imageModel = readStartViewModel.imageFile.value)
+
+        }?:also{
+            GlideImage(imageModel = R.drawable.add_image)
+        }
     }
 }
 
 @Preview
 @Composable
 fun readStartPreview() {
-    baseView(BaseViewModel(loading = false, empty = false),
-        body = { readStartBodyView(config = Config(bookId = 123456L, title = "Title")) })
+    readStartView(BaseViewModel(loading = false, empty = false),
+        ReadStartViewModel())
 }

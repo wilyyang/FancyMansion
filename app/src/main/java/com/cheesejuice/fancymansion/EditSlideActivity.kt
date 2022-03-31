@@ -148,7 +148,13 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             binding.etSlideDescription.setText(description)
             binding.etSlideQuestion.setText(question)
         }
-        Glide.with(applicationContext).load(fileUtil.getImageFile(logic.bookId, slide.slideImage)).into(binding.imageViewShowMain)
+        Glide.with(applicationContext).load(
+            fileUtil.getImageFile(logic.bookId, slide.slideImage)?.apply{
+                this
+            }?:let {
+                R.drawable.add_image
+            }
+        ).into(binding.imageViewShowMain)
 
         isMenuItemEnabled = true
     }

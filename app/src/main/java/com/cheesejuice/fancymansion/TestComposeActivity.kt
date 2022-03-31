@@ -3,49 +3,53 @@ package com.cheesejuice.fancymansion
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.*
-import androidx.compose.ui.tooling.preview.Preview
-import com.cheesejuice.fancymansion.model.Config
-import com.cheesejuice.fancymansion.ui.view.readStartBodyView
+import androidx.lifecycle.ViewModelProvider
+import com.cheesejuice.fancymansion.extension.createSampleFiles
 import com.cheesejuice.fancymansion.ui.view.readStartView
 import com.cheesejuice.fancymansion.ui.viewmodel.BaseViewModel
-import com.cheesejuice.fancymansion.ui.viewmodel.ConfigViewModel
+import com.cheesejuice.fancymansion.ui.viewmodel.ReadStartViewModel
+import com.cheesejuice.fancymansion.util.BookUtil
+import com.cheesejuice.fancymansion.util.CommonUtil
+import com.cheesejuice.fancymansion.util.FileUtil
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class TestComposeActivity : ComponentActivity() {
-    private lateinit var viewModel: BaseViewModel
-    private lateinit var configViewModel: ConfigViewModel
-    private lateinit var config: Config
+    var mode: String = ""
+    @Inject
+    lateinit var util: CommonUtil
+    @Inject
+    lateinit var bookUtil: BookUtil
+    @Inject
+    lateinit var fileUtil: FileUtil
+
+    lateinit var base : BaseViewModel
+    lateinit var viewModel : ReadStartViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        base =  ViewModelProvider(this).get(BaseViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(ReadStartViewModel::class.java)
+        setContent {readStartView(base, viewModel)}
 
-        viewModel = BaseViewModel(loading = false, empty = false)
+        if(bookUtil.getOnlyPlay()) { viewModel.mode.value = Const.MODE_PLAY }
 
-        configViewModel = ConfigViewModel(Config(bookId = 123456L, title = "Title"))
-        configViewModel.config.value!!.title
-
-
-            setContent { readStartBodyView(configViewModel) }
+        val bookId = 12345L//intent.getLongExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
+        CoroutineScope(Dispatchers.Default).launch {
+            createSampleFiles()
+            val conf = fileUtil.getConfigFromFile(bookId)
+            base.isLoading.value = false
+            conf?.also{
+                base.isEmpty.value = false
+                viewModel.config.value = it
+                viewModel.imageFile.value = fileUtil.getImageFile(bookId, it.coverImage)
+            }?:also{
+                base.isEmpty.value = true
+            }
+        }
     }
-
-    override fun onBackPressed() {
-//        val loading = viewModel.isLoading.value
-//        val emtpy = viewModel.isEmpty.value
-//        viewModel.isLoading.value = emtpy
-//        viewModel.isEmpty.value = !loading
-
-        config = Config(346346L, title = "MAMAMAMA")
-        configViewModel.config.value!!.title = config.title
-//        configViewModel.config.value!!.title = config.title
-    }
-}
-
-@Preview
-@Composable
-fun preview(){
-    val viewModel = BaseViewModel(loading = false, empty = false)
-    val config = Config(bookId = 123456L, title = "Title")
-    val configViewModel = ConfigViewModel(config)
-
-    readStartView(viewModel, configViewModel)
 }
