@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId "com.cheesejuice.fancymansion"
-        minSdk 26
+        minSdk 28
         targetSdk 31
         versionCode 1
         versionName "1.0"
@@ -39,7 +39,7 @@ android {
     }
 
     buildFeatures{
-        viewBinding = true
+        compose true
     }
 
     buildTypes {
@@ -80,22 +80,31 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.google.android.material:material:1.5.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
-
-    implementation 'com.github.bumptech.glide:glide:4.11.0'
-    kapt 'com.github.bumptech.glide:compiler:4.11.0'
-
+    implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1'
 
-    // coroutine
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
+    // Compose
+    implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "androidx.compose.material:material:$compose_version"
+    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
+    implementation 'androidx.activity:activity-compose:1.4.0'
+    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
 
-    // hilt
+    implementation "androidx.navigation:navigation-compose:2.4.1"
+
+    // Compose - Glide
+    implementation "com.github.skydoves:landscapist-glide:1.5.0"
+
+    // Coroutine
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$compose_version"
+
+    // Hilt
     implementation 'com.google.dagger:hilt-android:2.41'
     kapt 'com.google.dagger:hilt-compiler:2.41'
+    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
 
-    // firebase
+    // FireBase
     implementation platform('com.google.firebase:firebase-bom:26.1.0')
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
     implementation 'com.google.firebase:firebase-analytics-ktx'
@@ -107,8 +116,10 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-messaging-ktx'
 
-    // test
-    testImplementation 'junit:junit:4.13.2'
+    // Test
+    testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
+
 }

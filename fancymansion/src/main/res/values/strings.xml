@@ -1,0 +1,61 @@
+<resources>
+    <string name="app_name">FancyMansion</string>
+
+    <string name="book_default_title">New Book</string>
+
+    <string name="toolbar_title_create">New CreateBook</string>
+    <string name="toolbar_title_update">Edit Book</string>
+
+    <string name="toolbar_edit_slide">Edit Slide</string>
+    <string name="nav_select_slide">Select Slide</string>
+
+    <string name="menu_slide_add">Slide Add</string>
+    <string name="menu_slide_delete">Slide Delete</string>
+    <string name="menu_slide_play">Slide Play</string>
+    <string name="menu_slide_save">Slide Save</string>
+
+    <string name="start_book">START</string>
+    <string name="create_book">CREATE</string>
+    <string name="edit_book">EDIT</string>
+    <string name="save_slide">SAVE</string>
+
+    <string name="drawer_opened" translatable="false">open</string>
+    <string name="drawer_closed" translatable="false">close</string>
+
+    <string name="save_dialog_title">Save Edits</string>
+    <string name="save_dialog_question">Save your edits before playing?</string>
+
+    <string name="record_dialog_title">Load Record</string>
+    <string name="record_dialog_question">Load your last book record?</string>
+
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_no">NO</string>
+
+    <string name="name_book_prefix">Book&#160;</string>
+    <string name="name_slide_prefix">Slide&#160;</string>
+    <string name="text_question_default">What to do?</string>
+
+    <string name="wait_make_object">Data Extract ... Please Wait ...</string>
+    <string name="alert_default_title">ERROR</string>
+    <string name="alert_default_message">A problem occurred while processing the data. Go to the previous screen.</string>
+    <string name="alert_default_button">OK</string>
+    <string name="alert_max_count">Can\'t create any more</string>
+    <string name="alert_not_found_file">The file could not be found.</string>
+
+    <string name="book_config_title">title :&#160;</string>
+    <string name="book_config_description">description :&#160;</string>
+    <string name="book_config_version">version :&#160;</string>
+    <string name="book_config_question">question :&#160;</string>
+
+    <string name="book_config_id">id :&#160;</string>
+    <string name="book_config_date">date :&#160;</string>
+    <string name="book_config_writer">writer :&#160;</string>
+    <string name="book_config_illustrator">illustrator :&#160;</string>
+
+    <string name="book_slide_title">title :&#160;</string>
+    <string name="book_slide_description">description :&#160;</string>
+    <string name="book_slide_question">question :&#160;</string>
+    <string name="book_slide_choice">choice :&#160;</string>
+    <string name="title_activity_test_compose">TestComposeActivity</string>
+    <string name="title_activity_main">MainActivity</string>
+</resources>
