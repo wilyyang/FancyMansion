@@ -26,10 +26,10 @@
             android:name=".EditSlideActivity"
             android:exported="true" />
         <activity
-            android:name=".ViewStartActivity"
+            android:name=".ReadStartActivity"
             android:exported="true" />
         <activity
-            android:name=".ViewerActivity"
+            android:name=".ReadSlideActivity"
             android:exported="true" />
     </application>
 

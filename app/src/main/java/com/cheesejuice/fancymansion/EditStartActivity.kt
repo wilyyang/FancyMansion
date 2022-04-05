@@ -165,7 +165,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                     title = getString(R.string.save_dialog_title), message = getString(R.string.save_dialog_question),
                     onlyOkBackground = { saveConfigFile(config) },
                     onlyNo = { RoundEditText.onceFocus = false; updateImage = false },
-                    always = { bookUtil.setOnlyPlay(true); bookUtil.deleteBookPref(config.bookId, Const.MODE_PLAY); startViewStartActivity(config.bookId)}
+                    always = { bookUtil.setOnlyPlay(true); bookUtil.deleteBookPref(config.bookId, Const.MODE_PLAY); startReadStartActivity(config.bookId)}
                 )
             }
         }

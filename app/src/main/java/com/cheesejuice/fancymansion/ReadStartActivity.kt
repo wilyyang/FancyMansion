@@ -5,15 +5,15 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import com.bumptech.glide.Glide
-import com.cheesejuice.fancymansion.databinding.ActivityViewStartBinding
+import com.cheesejuice.fancymansion.databinding.ActivityReadStartBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.Const.Companion.FIRST_SLIDE
 import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
 import com.cheesejuice.fancymansion.extension.showDialogAndStart
-import com.cheesejuice.fancymansion.extension.startViewStartActivity
-import com.cheesejuice.fancymansion.extension.startViewerActivity
+import com.cheesejuice.fancymansion.extension.startReadStartActivity
+import com.cheesejuice.fancymansion.extension.startReadSlideActivity
 import com.cheesejuice.fancymansion.view.RoundEditText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -22,8 +22,8 @@ import kotlinx.coroutines.Dispatchers.Main
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ViewStartActivity : AppCompatActivity(), View.OnClickListener {
-    private lateinit var binding: ActivityViewStartBinding
+class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
+    private lateinit var binding: ActivityReadStartBinding
     private lateinit var config: Config
     var mode: String = ""
 
@@ -36,7 +36,7 @@ class ViewStartActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityViewStartBinding.inflate(layoutInflater)
+        binding = ActivityReadStartBinding.inflate(layoutInflater)
         setContentView(binding.root)
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
 
@@ -56,7 +56,7 @@ class ViewStartActivity : AppCompatActivity(), View.OnClickListener {
                     config = it
                     makeViewReadyScreen(config)
                 }?:also{
-                    util.getAlertDailog(this@ViewStartActivity).show()
+                    util.getAlertDailog(this@ReadStartActivity).show()
                 }
             }
         }
@@ -100,9 +100,9 @@ class ViewStartActivity : AppCompatActivity(), View.OnClickListener {
 
         showDialogAndStart(isShow = (mod != Const.MODE_PLAY && saveSlide != ID_NOT_FOUND),
             title = getString(R.string.record_dialog_title), message = getString(R.string.record_dialog_question),
-            onlyOk = { startViewerActivity(con.bookId, saveSlide) },  // Start Save Point
-            onlyNo = { bookUtil.deleteBookPref(con.bookId, ""); startViewerActivity(con.bookId, FIRST_SLIDE) },
-            noShow = { bookUtil.deleteBookPref(con.bookId, Const.MODE_PLAY); startViewerActivity(con.bookId, FIRST_SLIDE)}
+            onlyOk = { startReadSlideActivity(con.bookId, saveSlide) },  // Start Save Point
+            onlyNo = { bookUtil.deleteBookPref(con.bookId, ""); startReadSlideActivity(con.bookId, FIRST_SLIDE) },
+            noShow = { bookUtil.deleteBookPref(con.bookId, Const.MODE_PLAY); startReadSlideActivity(con.bookId, FIRST_SLIDE)}
         )
     }
 }

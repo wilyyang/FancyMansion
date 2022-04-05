@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.cheesejuice.fancymansion.databinding.ActivityViewerBinding
+import com.cheesejuice.fancymansion.databinding.ActivityReadSlideBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.*
 import com.cheesejuice.fancymansion.util.*
@@ -17,8 +17,8 @@ import kotlinx.coroutines.Dispatchers.Main
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ViewerActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityViewerBinding
+class ReadSlideActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityReadSlideBinding
     private lateinit var logic: Logic
     private lateinit var slide: Slide
     var mode: String = ""
@@ -32,7 +32,7 @@ class ViewerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityViewerBinding.inflate(layoutInflater)
+        binding = ActivityReadSlideBinding.inflate(layoutInflater)
         setContentView(binding.root)
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
 

@@ -231,7 +231,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                 startAfterSaveEdits {
                     bookUtil.setOnlyPlay(true)
                     bookUtil.deleteBookPref(logic.bookId, Const.MODE_PLAY)
-                    startViewerActivity(logic.bookId, slide.slideId) }
+                    startReadSlideActivity(logic.bookId, slide.slideId) }
             }
         }
         return super.onOptionsItemSelected(item)

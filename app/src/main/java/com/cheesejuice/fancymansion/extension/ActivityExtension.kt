@@ -31,15 +31,15 @@ import java.io.FileOutputStream
 import java.io.InputStream
 
 // startActivity
-fun Activity.startViewerActivity(bookId:Long, slideId: Long){
-    val intent = Intent(this, ViewerActivity::class.java)
+fun Activity.startReadSlideActivity(bookId:Long, slideId: Long){
+    val intent = Intent(this, ReadSlideActivity::class.java)
     intent.putExtra(Const.INTENT_BOOK_ID, bookId)
     intent.putExtra(Const.INTENT_SLIDE_ID, slideId)
     startActivity(intent)
 }
 
-fun Activity.startViewStartActivity(bookId: Long){
-    val intent = Intent(this, ViewStartActivity::class.java)
+fun Activity.startReadStartActivity(bookId: Long){
+    val intent = Intent(this, ReadStartActivity::class.java)
     intent.putExtra(Const.INTENT_BOOK_ID, bookId)
     startActivity(intent)
 }
