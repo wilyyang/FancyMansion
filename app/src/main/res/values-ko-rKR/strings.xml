@@ -52,5 +52,7 @@
     <string name="book_slide_title">제목 :&#160;</string>
     <string name="book_slide_description">내용 :&#160;</string>
     <string name="book_slide_question">질문 :&#160;</string>
-    <string name="book_slide_choice">선택 :&#160;</string>
+    <string name="book_slide_choice">선택 수정 :&#160;</string>
+
+    <string name="book_edit_choice">선택항목 추가</string>
 </resources>

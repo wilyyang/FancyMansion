@@ -44,10 +44,18 @@ fun Activity.startReadStartActivity(bookId: Long){
     startActivity(intent)
 }
 
-fun Activity.startEditSlideActivity(bookId: Long){
+fun Activity.startEditSlideActivity(bookId: Long, slideId:Long = Const.FIRST_SLIDE){
     val intent = Intent(this, EditSlideActivity::class.java)
     intent.putExtra(Const.INTENT_BOOK_ID, bookId)
-    intent.putExtra(Const.INTENT_SLIDE_ID, Const.FIRST_SLIDE)
+    intent.putExtra(Const.INTENT_SLIDE_ID, slideId)
+    startActivity(intent)
+}
+
+fun Activity.startEditChoiceActivity(bookId: Long, slideId: Long, choiceId: Long){
+    val intent = Intent(this, EditChoiceActivity::class.java)
+    intent.putExtra(Const.INTENT_BOOK_ID, bookId)
+    intent.putExtra(Const.INTENT_SLIDE_ID, slideId)
+    intent.putExtra(Const.INTENT_CHOICE_ID, choiceId)
     startActivity(intent)
 }
 

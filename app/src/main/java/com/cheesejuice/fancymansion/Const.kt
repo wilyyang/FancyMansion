@@ -20,6 +20,9 @@ class Const {
         // Intent
         const val INTENT_BOOK_ID = "INTENT_BOOK_ID"
         const val INTENT_SLIDE_ID = "INTENT_SLIDE_ID"
+        const val INTENT_CHOICE_ID = "INTENT_CHOICE_ID"
+        const val INTENT_ENTER_ID = "INTENT_ENTER_ID"
+        const val INTENT_CONDITION_ID = "INTENT_CONDITION_ID"
 
         // Pref
         const val PREF_SETTING = "PREF_SETTING"

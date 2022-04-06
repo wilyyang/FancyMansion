@@ -113,4 +113,13 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
         val result = idMap.indexOf(false)
         return if(result != -1)(result* Const.COUNT_SLIDE) else { -1 }
     }
+
+    fun nextChoiceId(logic: SlideLogic): Long{
+        var idMap = Array(100){ i -> false }
+        idMap[0] = true
+        logic.choiceItems.map { ( (it.id - logic.slideId) / Const.COUNT_CHOICE ).toInt() }.forEach { idMap[it] = true }
+
+        val result = idMap.indexOf(false)
+        return if(result != -1)( result * Const.COUNT_CHOICE + logic.slideId ) else { -1 }
+    }
 }

@@ -9,5 +9,7 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="item_choice">#AACCCCCC</color>
+    <color name="item_choice_select">#AA999999</color>
+
     <color name="wait_background">#FFFFFFFF</color>
 </resources>

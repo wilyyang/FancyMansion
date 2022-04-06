@@ -20,13 +20,13 @@ import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
 import com.cheesejuice.fancymansion.databinding.ActivityEditSlideBinding
 import com.cheesejuice.fancymansion.extension.*
+import com.cheesejuice.fancymansion.model.ChoiceItem
 import com.cheesejuice.fancymansion.view.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -36,10 +36,14 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     private lateinit var binding: ActivityEditSlideBinding
     private lateinit var logic: Logic
     private lateinit var slide: Slide
+    private lateinit var slideLogic: SlideLogic
     private var updateImage = false
 
     lateinit var slideTitleListAdapter:SlideTitleListAdapter
-    lateinit var toggle: ActionBarDrawerToggle
+    lateinit var slideTitleToggle: ActionBarDrawerToggle
+
+    lateinit var editChoiceListAdapter:EditChoiceListAdapter
+
     var optionMenu: Menu? = null
     var isMenuItemEnabled = true
 
@@ -85,14 +89,18 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                 }
                 fileUtil.getSlideFromFile(bookId, slideId)
             }
+            val slideLogicTemp = logicTemp?.logics?.find { it.slideId == slideId }
 
             withContext(Main) {
-                if(logicTemp !== null && slideTemp != null) {
+                if(logicTemp !== null && slideTemp != null && slideLogicTemp != null) {
                     logic = logicTemp
                     slide = slideTemp
+                    slideLogic = slideLogicTemp
 
                     initNavigationView(logic)
-                    makeEditSlideScreen(logic, slide)
+                    initEditChoiceListView(slideLogic.choiceItems)
+                    makeEditSlideScreen(logic, slide, slideLogic.choiceItems)
+
                 }else{
                     makeNotHaveSlide()
                 }
@@ -114,8 +122,23 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         val touchHelper = ItemTouchHelper(SlideTitleListDragCallback(slideTitleListAdapter))
         touchHelper.attachToRecyclerView(binding.recyclerNavEditSlide)
 
-        toggle = ActionBarDrawerToggle(this@EditSlideActivity, binding.layoutActive, R.string.drawer_opened, R.string.drawer_closed)
-        toggle.syncState()
+        slideTitleToggle = ActionBarDrawerToggle(this@EditSlideActivity, binding.layoutActive, R.string.drawer_opened, R.string.drawer_closed)
+        slideTitleToggle.syncState()
+    }
+
+    private fun initEditChoiceListView(choiceItems: MutableList<ChoiceItem>){
+        editChoiceListAdapter = EditChoiceListAdapter(choiceItems)
+        editChoiceListAdapter.setItemClickListener(object: EditChoiceListAdapter.OnItemClickListener{
+            override fun onClick(v: View, position: Int) {
+                //
+            }
+        })
+
+        binding.recyclerEditChoice.layoutManager = LinearLayoutManager(baseContext)
+        binding.recyclerEditChoice.adapter = editChoiceListAdapter
+
+        val touchHelper = ItemTouchHelper(EditChoiceListDragCallback(editChoiceListAdapter))
+        touchHelper.attachToRecyclerView(binding.recyclerEditChoice)
     }
 
     private fun selectSlideItem(position: Int){
@@ -124,14 +147,17 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                 val slideId = logic.logics[position].slideId
                 val tempLogic = fileUtil.getLogicFromFile(logic.bookId)
                 val tempSlide = fileUtil.getSlideFromFile(logic.bookId, slideId)
+                val tempSlideLogic = tempLogic?.logics?.find { it.slideId == slideId }
 
                 withContext(Main) {
                     binding.layoutActive.closeDrawers()
-                    if(tempLogic != null && tempSlide != null ){
+                    if(tempLogic != null && tempSlide != null && tempSlideLogic != null){
                         logic = tempLogic
                         slide = tempSlide
+                        slideLogic = tempSlideLogic
                         slideTitleListAdapter.datas = logic.logics
-                        makeEditSlideScreen(logic, slide)
+                        makeEditSlideScreen(logic, slide, slideLogic.choiceItems)
+
                     }else{
                         makeNotHaveSlide()
                     }
@@ -140,7 +166,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         }
     }
 
-    private fun makeEditSlideScreen(logic: Logic, slide: Slide) {
+    private fun makeEditSlideScreen(logic: Logic, slide: Slide, choiceItems: MutableList<ChoiceItem>) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
         with(slide){
             binding.toolbar.subtitle = "# $slideId"
@@ -155,6 +181,9 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                 R.drawable.add_image
             }
         ).into(binding.imageViewShowMain)
+
+        editChoiceListAdapter.datas = choiceItems
+        editChoiceListAdapter.notifyDataSetChanged()
 
         isMenuItemEnabled = true
     }
@@ -184,6 +213,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         RoundEditText.onceFocus = false
         updateImage = false
         slideTitleListAdapter.onceMove = false
+        editChoiceListAdapter.onceMove = false
     }
 
     override fun onClick(view: View?) {
@@ -205,7 +235,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
-        if(toggle.onOptionsItemSelected(item)){
+        if(slideTitleToggle.onOptionsItemSelected(item)){
             return true
         }
 
@@ -249,7 +279,8 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         CoroutineScope(IO).launch {
             // Make new Slide object
             slide = Slide(slideId = nextId, slideTitle = getString(R.string.name_slide_prefix), question = getString(R.string.text_question_default))
-            logic.logics.add(SlideLogic(slide.slideId, slide.slideTitle))
+            slideLogic = SlideLogic(slide.slideId, slide.slideTitle)
+            logic.logics.add(slideLogic)
 
             // Save file
             fileUtil.makeSlideFile(logic.bookId, slide)
@@ -264,10 +295,11 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                 RoundEditText.onceFocus = false
                 updateImage = false
                 slideTitleListAdapter.onceMove = false
+                editChoiceListAdapter.onceMove = false
 
                 // Make Slide screen
                 slideTitleListAdapter.notifyUpdateSlideTitle(slide.slideId)
-                makeEditSlideScreen(logic, slide)
+                makeEditSlideScreen(logic, slide, slideLogic.choiceItems)
                 showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
             }
         }
@@ -290,17 +322,21 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                     fileUtil.getSlideFromFile(logic.bookId, logic.logics[0].slideId)
                 }
             }else { null }
+            val tempSlideLogic = if (tempSlide!= null) logic.logics.find { it.slideId == tempSlide.slideId } else null
 
             withContext(Main) {
                 RoundEditText.onceFocus = false
                 updateImage = false
                 slideTitleListAdapter.onceMove = false
+                editChoiceListAdapter.onceMove = false
 
                 slideTitleListAdapter.notifyDeleteSlideTitle(position)
-                tempSlide?.also {
+
+                if(tempSlide != null && tempSlideLogic != null){
                     slide = tempSlide
-                    makeEditSlideScreen(logic, slide)
-                }?:also {
+                    slideLogic = tempSlideLogic
+                    makeEditSlideScreen(logic, slide, slideLogic.choiceItems)
+                }else{
                     makeNotHaveSlide()
                 }
             }
@@ -312,12 +348,12 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun startAfterSaveEdits(always:() ->Unit){
-        showDialogAndStart(isShow = (RoundEditText.onceFocus || updateImage || slideTitleListAdapter.onceMove),
+        showDialogAndStart(isShow = (RoundEditText.onceFocus || updateImage || slideTitleListAdapter.onceMove || editChoiceListAdapter.onceMove),
             loading = binding.layoutLoading.root, main = binding.layoutActive,
             title = getString(R.string.save_dialog_title), message = getString(R.string.save_dialog_question),
             onlyOkBackground = { saveSlideFile(logic, slide) },
             onlyOk = {  slideTitleListAdapter.notifyUpdateSlideTitle(slide.slideId)},
-            onlyNo = {  RoundEditText.onceFocus = false; updateImage = false; slideTitleListAdapter.onceMove = false },
+            onlyNo = {  RoundEditText.onceFocus = false; updateImage = false; slideTitleListAdapter.onceMove = false; editChoiceListAdapter.onceMove = false },
             always = always
         )
     }

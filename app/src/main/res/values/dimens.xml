@@ -34,6 +34,7 @@
     <dimen name="margin_detail">15dp</dimen>
     <dimen name="margin_question">25dp</dimen>
     <dimen name="margin_item">10dp</dimen>
+    <dimen name="margin_edit_item">4dp</dimen>
 
     <dimen name="padding_item">10dp</dimen>
     <dimen name="padding_default_edit">5dp</dimen>
