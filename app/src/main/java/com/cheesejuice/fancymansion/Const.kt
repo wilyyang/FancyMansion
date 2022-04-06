@@ -6,6 +6,7 @@ class Const {
         const val TAG = "FancyMansion"
         const val ID_NOT_FOUND = -1L
         const val END_SLIDE_ID = -1L
+        const val ADD_NEW_CHOICE = -2L
         const val MODE_PLAY = "play"
         const val NOT_SUPPORT_COND_ID_2 = -1L
         const val ID_1_SLIDE = 1_00_00_00_00L

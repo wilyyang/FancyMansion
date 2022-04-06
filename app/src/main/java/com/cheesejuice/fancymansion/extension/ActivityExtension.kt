@@ -51,14 +51,6 @@ fun Activity.startEditSlideActivity(bookId: Long, slideId:Long = Const.FIRST_SLI
     startActivity(intent)
 }
 
-fun Activity.startEditChoiceActivity(bookId: Long, slideId: Long, choiceId: Long){
-    val intent = Intent(this, EditChoiceActivity::class.java)
-    intent.putExtra(Const.INTENT_BOOK_ID, bookId)
-    intent.putExtra(Const.INTENT_SLIDE_ID, slideId)
-    intent.putExtra(Const.INTENT_CHOICE_ID, choiceId)
-    startActivity(intent)
-}
-
 fun Activity.registerGallaryResultName(imageView: ImageView? = null, afterResult:(String)->Unit) =
     (this as ComponentActivity).registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {

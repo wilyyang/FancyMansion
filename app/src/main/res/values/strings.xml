@@ -7,17 +7,21 @@
     <string name="toolbar_title_update">Edit Book</string>
 
     <string name="toolbar_edit_slide">Edit Slide</string>
+    <string name="toolbar_edit_choice">Edit Choice</string>
     <string name="nav_select_slide">Select Slide</string>
 
     <string name="menu_slide_add">Slide Add</string>
     <string name="menu_slide_delete">Slide Delete</string>
     <string name="menu_slide_play">Slide Play</string>
     <string name="menu_slide_save">Slide Save</string>
+    <string name="menu_common_delete">Delete</string>
 
     <string name="start_book">START</string>
     <string name="create_book">CREATE</string>
     <string name="edit_book">EDIT</string>
     <string name="save_slide">SAVE</string>
+
+    <string name="save_common">SAVE</string>
 
     <string name="drawer_opened" translatable="false">open</string>
     <string name="drawer_closed" translatable="false">close</string>
@@ -33,6 +37,7 @@
 
     <string name="name_book_prefix">Book&#160;</string>
     <string name="name_slide_prefix">Slide&#160;</string>
+    <string name="name_choice_prefix">Choice&#160;</string>
     <string name="text_question_default">What to do?</string>
 
     <string name="wait_make_object">Data Extract ... Please Wait ...</string>

@@ -20,7 +20,7 @@ data class SlideLogic(var slideId: Long, var slideTitle: String, var choiceItems
 
 // (2.2.3)
 @Serializable
-data class ChoiceItem(var id: Long, var title: String, var showConditions: MutableList<Condition>, var enterItems: MutableList<EnterItem>)
+data class ChoiceItem(var id: Long, var title: String, var showConditions: MutableList<Condition> = mutableListOf(), var enterItems: MutableList<EnterItem> = mutableListOf())
 
 // (2.2.3.4)
 @Serializable

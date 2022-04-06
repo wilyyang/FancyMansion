@@ -26,6 +26,9 @@
             android:name=".EditSlideActivity"
             android:exported="true" />
         <activity
+            android:name=".EditChoiceActivity"
+            android:exported="true" />
+        <activity
             android:name=".ReadStartActivity"
             android:exported="true" />
         <activity
