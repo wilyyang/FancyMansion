@@ -59,7 +59,7 @@ class SlideTitleListAdapter(var datas: MutableList<SlideLogic>):
     override fun onItemMove(fromPosition: Int, toPosition: Int) {
         onceMove = true
         Collections.swap(datas, fromPosition, toPosition)
-        notifyItemMoved(fromPosition, toPosition)
+        notifyDataSetChanged()
     }
 }
 

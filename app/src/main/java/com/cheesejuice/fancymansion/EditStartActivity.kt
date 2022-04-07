@@ -1,5 +1,6 @@
 package com.cheesejuice.fancymansion
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,7 +8,9 @@ import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityEditStartBinding
 import com.cheesejuice.fancymansion.model.Config
@@ -38,6 +41,12 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
     lateinit var fileUtil: FileUtil
 
     private lateinit var gallaryForResult: ActivityResultLauncher<Intent>
+
+    private val readStartForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+            makeEditReadyScreen(config)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -165,7 +174,11 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                     title = getString(R.string.save_dialog_title), message = getString(R.string.save_dialog_question),
                     onlyOkBackground = { saveConfigFile(config) },
                     onlyNo = { RoundEditText.onceFocus = false; updateImage = false },
-                    always = { bookUtil.setOnlyPlay(true); bookUtil.deleteBookPref(config.bookId, Const.MODE_PLAY); startReadStartActivity(config.bookId)}
+                    always = { bookUtil.setOnlyPlay(true); bookUtil.deleteBookPref(config.bookId, Const.MODE_PLAY);
+                        val intent = Intent(this, ReadStartActivity::class.java)
+                        intent.putExtra(Const.INTENT_BOOK_ID, config.bookId)
+                        readStartForResult.launch(intent)
+                    }
                 )
             }
         }

@@ -12,9 +12,7 @@ import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.Const.Companion.FIRST_SLIDE
 import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
 import com.cheesejuice.fancymansion.extension.showDialogAndStart
-import com.cheesejuice.fancymansion.extension.startReadStartActivity
 import com.cheesejuice.fancymansion.extension.startReadSlideActivity
-import com.cheesejuice.fancymansion.view.RoundEditText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Default

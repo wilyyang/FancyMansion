@@ -32,6 +32,9 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -40,7 +43,8 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     private lateinit var logic: Logic
     private lateinit var slide: Slide
     private lateinit var slideLogic: SlideLogic
-    private var isEdit = false
+    private var updateImage = false
+    private var isChoiceEdit = false
 
     lateinit var slideTitleListAdapter:SlideTitleListAdapter
     lateinit var slideTitleToggle: ActionBarDrawerToggle
@@ -57,18 +61,40 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
 
     private lateinit var gallaryForResult: ActivityResultLauncher<Intent>
 
+    private val readSlideForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _: ActivityResult ->
+            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+            val bookId = logic.bookId
+            val slideId = slide.slideId
+
+            CoroutineScope(Default).launch {
+                val logicTemp = fileUtil.getLogicFromFile(bookId)
+                val slideTemp = logicTemp?.let {fileUtil.getSlideFromFile(bookId, slideId)}
+                val slideLogicTemp = logicTemp?.logics?.find { it.slideId == slideId }
+
+                withContext(Main) {
+                    if(logicTemp !== null && slideTemp != null && slideLogicTemp != null) {
+                        logic = logicTemp
+                        slide = slideTemp
+                        slideLogic = slideLogicTemp
+                        makeEditSlideScreen(logic, slide, slideLogic.choiceItems)
+                    }else{
+                        makeNotHaveSlide()
+                    }
+                }
+            }
+        }
+
     private val editChoiceForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
-                val slideId = slideLogic.slideId
                 logic = (application as MainApplication).logic!!
-                slideLogic = logic.logics.find { it.slideId == slideId }!!
+                slideLogic = logic.logics.first { it.slideId == slide.slideId }
 
-                initNavigationView(logic)
-                initEditChoiceListView(slideLogic.choiceItems)
-                makeEditSlideScreen(logic, slide, slideLogic.choiceItems)
-                isEdit = true
+                isChoiceEdit = true
+
+                editChoiceListAdapter.datas = slideLogic.choiceItems
+                editChoiceListAdapter.notifyDataSetChanged()
             }
         }
 
@@ -85,7 +111,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
 
         gallaryForResult = registerGallaryResultName(binding.imageViewShowMain) { imageName ->
             slide.slideImage = imageName
-            isEdit = true
+            updateImage = true
         }
 
         binding.imageViewSlideAdd.setOnClickListener(this)
@@ -148,7 +174,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         editChoiceListAdapter.setItemClickListener(object: EditChoiceListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
 
-                (application as MainApplication).logic = logic
+                (application as MainApplication).logic =  Json.decodeFromString<Logic>(Json.encodeToString(logic))
 
                 val intent = Intent(this@EditSlideActivity, EditChoiceActivity::class.java)
                 intent.putExtra(Const.INTENT_SLIDE_ID, slide.slideId)
@@ -225,7 +251,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             description = binding.etSlideDescription.text.toString()
             question = binding.etSlideQuestion.text.toString()
 
-            if(isEdit){
+            if(updateImage){
                 slideImage = fileUtil.makeImageFile(binding.imageViewShowMain.drawable, logic.bookId, slideImage)
             }
             fileUtil.makeSlideFile(logic.bookId, this)
@@ -234,7 +260,8 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         fileUtil.makeLogicFile(logic)
 
         RoundEditText.onceFocus = false
-        isEdit = false
+        updateImage = false
+        isChoiceEdit = false
         slideTitleListAdapter.onceMove = false
         editChoiceListAdapter.onceMove = false
     }
@@ -247,7 +274,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                 gallaryForResult.launch(intent)
             }
             R.id.tvAddChoice -> {
-                (application as MainApplication).logic = logic
+                (application as MainApplication).logic = Json.decodeFromString<Logic>(Json.encodeToString(logic))
 
                 val intent = Intent(this, EditChoiceActivity::class.java)
                 intent.putExtra(Const.INTENT_SLIDE_ID, slide.slideId)
@@ -291,7 +318,12 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                 startAfterSaveEdits {
                     bookUtil.setOnlyPlay(true)
                     bookUtil.deleteBookPref(logic.bookId, Const.MODE_PLAY)
-                    startReadSlideActivity(logic.bookId, slide.slideId) }
+
+                    val intent = Intent(this, ReadSlideActivity::class.java)
+                    intent.putExtra(Const.INTENT_BOOK_ID, logic.bookId)
+                    intent.putExtra(Const.INTENT_SLIDE_ID, slide.slideId)
+                    readSlideForResult.launch(intent)
+                }
             }
         }
         return super.onOptionsItemSelected(item)
@@ -323,7 +355,8 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                 }
 
                 RoundEditText.onceFocus = false
-                isEdit = false
+                updateImage = false
+                isChoiceEdit = false
                 slideTitleListAdapter.onceMove = false
                 editChoiceListAdapter.onceMove = false
 
@@ -356,7 +389,8 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
 
             withContext(Main) {
                 RoundEditText.onceFocus = false
-                isEdit = false
+                updateImage = false
+                isChoiceEdit = false
                 slideTitleListAdapter.onceMove = false
                 editChoiceListAdapter.onceMove = false
 
@@ -378,12 +412,12 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun startAfterSaveEdits(always:() ->Unit){
-        showDialogAndStart(isShow = (RoundEditText.onceFocus || isEdit || slideTitleListAdapter.onceMove || editChoiceListAdapter.onceMove),
+        showDialogAndStart(isShow = (RoundEditText.onceFocus || updateImage || isChoiceEdit || slideTitleListAdapter.onceMove || editChoiceListAdapter.onceMove),
             loading = binding.layoutLoading.root, main = binding.layoutActive,
             title = getString(R.string.save_dialog_title), message = getString(R.string.save_dialog_question),
             onlyOkBackground = { saveSlideFile(logic, slide) },
             onlyOk = {  slideTitleListAdapter.notifyUpdateSlideTitle(slide.slideId)},
-            onlyNo = {  RoundEditText.onceFocus = false; isEdit = false; slideTitleListAdapter.onceMove = false; editChoiceListAdapter.onceMove = false },
+            onlyNo = {  RoundEditText.onceFocus = false; updateImage = false; isChoiceEdit = false; slideTitleListAdapter.onceMove = false; editChoiceListAdapter.onceMove = false },
             always = always
         )
     }

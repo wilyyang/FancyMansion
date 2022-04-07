@@ -1,7 +1,6 @@
 package com.cheesejuice.fancymansion
 
 import android.app.Activity
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -13,7 +12,6 @@ import com.cheesejuice.fancymansion.model.ChoiceItem
 import com.cheesejuice.fancymansion.model.Logic
 import com.cheesejuice.fancymansion.model.SlideLogic
 import com.cheesejuice.fancymansion.util.BookUtil
-import com.cheesejuice.fancymansion.view.RoundEditText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +42,6 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        binding.toolbar.title = getString(R.string.toolbar_edit_choice)
 
         binding.btnCancelChoice.setOnClickListener (this)
         binding.btnSaveChoice.setOnClickListener (this)
@@ -56,12 +53,20 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
             return
         }
 
+        if (choiceId == Const.ADD_NEW_CHOICE) {
+            isNew = true
+            binding.toolbar.title = getString(R.string.toolbar_add_choice)
+            binding.btnSaveChoice.text = getString(R.string.add_common)
+        }else{
+            binding.toolbar.title = getString(R.string.toolbar_edit_choice)
+            binding.btnSaveChoice.text = getString(R.string.update_common)
+        }
+
         CoroutineScope(Dispatchers.Default).launch {
             val logicTemp = (application as MainApplication).logic
             val slideLogicTemp = logicTemp?.logics?.find { it.slideId == slideId }
             val choiceTemp = if (slideLogicTemp != null) {
-                if (choiceId == Const.ADD_NEW_CHOICE) {
-                    isNew = true
+                if (isNew) {
                     val nextSlideId = bookUtil.nextChoiceId(slideLogicTemp)
                     if(nextSlideId != -1L){
                         ChoiceItem(nextSlideId, getString(R.string.name_choice_prefix))
@@ -110,8 +115,6 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
                 if(isNew){
                     slideLogic.choiceItems.add(choice)
                 }
-
-                (application as MainApplication).logic = logic
                 setResult(Activity.RESULT_OK)
                 finish()
             }
@@ -142,15 +145,10 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun deleteChoice(){
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
-        CoroutineScope(Dispatchers.IO).launch {
-            // File IO
-
-            withContext(Dispatchers.Main) {
-                RoundEditText.onceFocus = false
-
-                // finish
-            }
+        if(!isNew){
+            slideLogic.choiceItems.removeIf { it.id == choiceId }
         }
+        setResult(Activity.RESULT_OK)
+        finish()
     }
 }

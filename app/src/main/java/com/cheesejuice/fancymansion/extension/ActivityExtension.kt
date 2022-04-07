@@ -38,12 +38,6 @@ fun Activity.startReadSlideActivity(bookId:Long, slideId: Long){
     startActivity(intent)
 }
 
-fun Activity.startReadStartActivity(bookId: Long){
-    val intent = Intent(this, ReadStartActivity::class.java)
-    intent.putExtra(Const.INTENT_BOOK_ID, bookId)
-    startActivity(intent)
-}
-
 fun Activity.startEditSlideActivity(bookId: Long, slideId:Long = Const.FIRST_SLIDE){
     val intent = Intent(this, EditSlideActivity::class.java)
     intent.putExtra(Const.INTENT_BOOK_ID, bookId)
