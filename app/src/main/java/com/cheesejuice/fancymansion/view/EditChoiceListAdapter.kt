@@ -9,7 +9,7 @@ import com.cheesejuice.fancymansion.databinding.ItemEditChoiceBinding
 import com.cheesejuice.fancymansion.model.ChoiceItem
 import java.util.*
 
-class EditChoiceListAdapter(var datas: MutableList<ChoiceItem>):
+class EditChoiceListAdapter(var datas: MutableList<ChoiceItem> = mutableListOf()):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), EditChoiceListDragCallback.OnItemMoveListener{
 
     var onceMove = false
@@ -59,7 +59,7 @@ class EditChoiceListAdapter(var datas: MutableList<ChoiceItem>):
     override fun onItemMove(fromPosition: Int, toPosition: Int) {
         onceMove = true
         Collections.swap(datas, fromPosition, toPosition)
-        notifyDataSetChanged()
+        notifyItemMoved(fromPosition, toPosition)
     }
 }
 

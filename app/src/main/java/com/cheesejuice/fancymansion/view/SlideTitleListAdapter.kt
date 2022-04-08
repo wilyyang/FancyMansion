@@ -9,7 +9,7 @@ import com.cheesejuice.fancymansion.databinding.ItemSlideTitleBinding
 import com.cheesejuice.fancymansion.model.SlideLogic
 import java.util.*
 
-class SlideTitleListAdapter(var datas: MutableList<SlideLogic>):
+class SlideTitleListAdapter(var datas: MutableList<SlideLogic> = mutableListOf()):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), SlideTitleListDragCallback.OnItemMoveListener{
 
     var onceMove = false
@@ -59,7 +59,7 @@ class SlideTitleListAdapter(var datas: MutableList<SlideLogic>):
     override fun onItemMove(fromPosition: Int, toPosition: Int) {
         onceMove = true
         Collections.swap(datas, fromPosition, toPosition)
-        notifyDataSetChanged()
+        notifyItemMoved(fromPosition, toPosition)
     }
 }
 

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import com.cheesejuice.fancymansion.databinding.ActivityEditChoiceBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.ChoiceItem
@@ -68,9 +69,11 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
             val choiceTemp = if (slideLogicTemp != null) {
                 if (isNew) {
                     val nextSlideId = bookUtil.nextChoiceId(slideLogicTemp)
-                    if(nextSlideId != -1L){
+                    if(nextSlideId > 0){
                         ChoiceItem(nextSlideId, getString(R.string.name_choice_prefix))
-                    }else{ null }
+                    }else{
+                        null
+                    }
                 } else {
                     slideLogicTemp.choiceItems.find { it.id == choiceId }
                 }
