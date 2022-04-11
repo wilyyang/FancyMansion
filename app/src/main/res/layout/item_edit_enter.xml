@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/tv_selector"
+    android:layout_margin="@dimen/margin_edit_item"
+    android:padding="@dimen/padding_item">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+        <TextView
+            android:id="@+id/tvEnterItemId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/size_small_brief_id"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="enter slide id : "
+            android:textStyle="bold"
+            android:textSize="@dimen/size_small_brief_id"/>
+
+        <TextView
+            android:id="@+id/tvEnterSlideId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/choice_not_found_slide"
+            android:textStyle="bold"
+            android:textSize="@dimen/size_small_brief_id"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+        <TextView
+            android:id="@+id/tvEnterSlideTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/size_item"
+            android:text="@string/choice_not_found_slide"
+            android:layout_weight="8"
+            android:maxLines="1"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/size_item"
+            android:textStyle="bold"
+            android:layout_weight="2"
+            android:paddingLeft="@dimen/margin_default"
+            android:text="@string/enter_slide"/>
+    </LinearLayout>
+
+</LinearLayout>

@@ -29,6 +29,9 @@
             android:name=".EditChoiceActivity"
             android:exported="true" />
         <activity
+            android:name=".EditEnterActivity"
+            android:exported="false" />
+        <activity
             android:name=".ReadStartActivity"
             android:exported="true" />
         <activity

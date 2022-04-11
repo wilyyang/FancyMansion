@@ -77,29 +77,23 @@
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:orientation="horizontal">
+                                    android:orientation="vertical">
 
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="@string/book_config_title"
+                                        android:text="@string/choice_enter_slide"
                                         android:textSize="@dimen/size_book" />
 
-                                    <com.google.android.material.textfield.TextInputLayout
-                                        style="@style/BookInputLayout"
+                                    <TextView
+                                        android:id="@+id/tvSelectEnterSlide"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        app:counterMaxLength="@integer/count_slide_choice">
-
-                                        <com.google.android.material.textfield.TextInputEditText
-                                            android:id="@+id/etChoiceTitle"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:maxLength="@integer/count_slide_choice"
-                                            android:padding="5dp"
-                                            tools:ignore="SpeakableTextPresentCheck" />
-
-                                    </com.google.android.material.textfield.TextInputLayout>
+                                        android:background="@color/tv_selector"
+                                        android:textAlignment="center"
+                                        android:textSize="@dimen/size_item"
+                                        android:padding="@dimen/padding_default_edit"
+                                        android:layout_margin="@dimen/margin_edit_item"/>
 
                                 </LinearLayout>
 
@@ -116,9 +110,8 @@
                                         <TextView
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:text="@string/book_slide_enter"
+                                            android:text="@string/choice_enter_condition"
                                             android:textSize="@dimen/size_book"/>
-
 
                                         <View
                                             android:layout_width="match_parent"
@@ -128,25 +121,23 @@
                                             android:layout_marginBottom="@dimen/margin_default"/>
 
                                         <TextView
-                                            android:id="@+id/tvAddEnter"
+                                            android:id="@+id/tvAddEnterCondition"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:background="@color/tv_selector"
                                             android:textAlignment="center"
                                             android:textSize="@dimen/size_item"
-                                            android:text="@string/book_edit_enter"
+                                            android:text="@string/choice_edit_enter_condition"
                                             android:padding="@dimen/padding_default_edit"
                                             android:layout_margin="@dimen/margin_edit_item"/>
 
                                     </LinearLayout>
                                     <androidx.recyclerview.widget.RecyclerView
-                                        android:id="@+id/recyclerEditEnter"
+                                        android:id="@+id/recyclerEditEnterCondition"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"/>
 
                                 </LinearLayout>
-
-
                             </LinearLayout>
                         </androidx.core.widget.NestedScrollView>
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -159,22 +150,22 @@
                         app:layout_constraintBottom_toBottomOf="parent">
 
                         <Button
-                            android:id="@+id/btnCancelChoice"
+                            android:id="@+id/btnCancelEnter"
                             android:text="@android:string/cancel"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_margin="@dimen/margin_default"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toStartOf="@+id/btnSaveChoice"
+                            app:layout_constraintEnd_toStartOf="@+id/btnSaveEnter"
                             app:layout_constraintTop_toTopOf="parent"/>
 
                         <Button
-                            android:id="@+id/btnSaveChoice"
+                            android:id="@+id/btnSaveEnter"
                             android:text="@string/update_common"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_margin="@dimen/margin_default"
-                            app:layout_constraintStart_toEndOf="@+id/btnCancelChoice"
+                            app:layout_constraintStart_toEndOf="@+id/btnCancelEnter"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"/>
 

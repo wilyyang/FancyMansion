@@ -1,23 +1,25 @@
 package com.cheesejuice.fancymansion
 
 import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.cheesejuice.fancymansion.databinding.ActivityEditChoiceBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.ChoiceItem
 import com.cheesejuice.fancymansion.model.Logic
 import com.cheesejuice.fancymansion.model.SlideLogic
 import com.cheesejuice.fancymansion.util.BookUtil
+import com.cheesejuice.fancymansion.view.EditEnterListAdapter
+import com.cheesejuice.fancymansion.view.EditEnterListDragCallback
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -29,10 +31,24 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
     private var slideId: Long = Const.ID_NOT_FOUND
     private var choiceId: Long = Const.ID_NOT_FOUND
     var isMenuItemEnabled = true
-    var isNew = false
+
+    private lateinit var editEnterListAdapter: EditEnterListAdapter
 
     @Inject
     lateinit var bookUtil: BookUtil
+
+    private val editEnterForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val init = loadData(slideId, choiceId)
+                initEditEnterListView()
+                if(init) {
+                    makeEditChoiceScreen(choice)
+                }else{
+                    makeNotHaveChoice()
+                }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +62,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
 
         binding.btnCancelChoice.setOnClickListener (this)
         binding.btnSaveChoice.setOnClickListener (this)
+        binding.tvAddEnter.setOnClickListener(this)
 
         slideId = intent.getLongExtra(Const.INTENT_SLIDE_ID, Const.ID_NOT_FOUND)
         choiceId = intent.getLongExtra(Const.INTENT_CHOICE_ID, Const.ID_NOT_FOUND)
@@ -54,8 +71,9 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
             return
         }
 
+        var makeChoice = false
         if (choiceId == Const.ADD_NEW_CHOICE) {
-            isNew = true
+            makeChoice = true
             binding.toolbar.title = getString(R.string.toolbar_add_choice)
             binding.btnSaveChoice.text = getString(R.string.add_common)
         }else{
@@ -63,42 +81,71 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
             binding.btnSaveChoice.text = getString(R.string.update_common)
         }
 
-        CoroutineScope(Dispatchers.Default).launch {
-            val logicTemp = (application as MainApplication).logic
-            val slideLogicTemp = logicTemp?.logics?.find { it.slideId == slideId }
-            val choiceTemp = if (slideLogicTemp != null) {
-                if (isNew) {
-                    val nextSlideId = bookUtil.nextChoiceId(slideLogicTemp)
-                    if(nextSlideId > 0){
-                        ChoiceItem(nextSlideId, getString(R.string.name_choice_prefix))
-                    }else{
-                        null
+        val init = loadData(slideId, choiceId, makeChoice)
+        initEditEnterListView()
+        if(init) {
+            makeEditChoiceScreen(choice)
+        }else{
+            makeNotHaveChoice()
+        }
+    }
+
+    private fun loadData(slideId:Long, choiceId:Long, makeChoice:Boolean = false): Boolean{
+        (application as MainApplication).logic?.also {  itLogic ->
+            logic = itLogic
+            logic.logics.find { it.slideId == slideId }?.also { itSlideLogic ->
+                slideLogic = itSlideLogic
+                if (makeChoice) {
+                    val nextChoiceId = bookUtil.nextChoiceId(slideLogic)
+                    if(nextChoiceId > 0){
+                        choice = ChoiceItem(nextChoiceId, getString(R.string.name_choice_prefix))
+                        slideLogic.choiceItems.add(choice)
+                        return true
                     }
                 } else {
-                    slideLogicTemp.choiceItems.find { it.id == choiceId }
-                }
-            }else{ null }
-
-            withContext(Dispatchers.Main) {
-                if (logicTemp != null && slideLogicTemp != null && choiceTemp != null) {
-                    logic = logicTemp
-                    slideLogic = slideLogicTemp
-                    choice = choiceTemp
-
-                    makeEditChoiceScreen(choice)
-                } else {
-                    makeNotHaveChoice()
+                    slideLogic.choiceItems.find { it.id == choiceId }?.also {
+                        choice = it
+                        return true
+                    }
                 }
             }
         }
+        return false
     }
+
+    private fun initEditEnterListView(){
+        editEnterListAdapter = EditEnterListAdapter()
+        editEnterListAdapter.setItemClickListener(object: EditEnterListAdapter.OnItemClickListener{
+            override fun onClick(v: View, position: Int) {
+                // NOT IMPLEMENTED
+                choice.title = binding.etChoiceTitle.text.toString()
+
+                val intent = Intent(this@EditChoiceActivity, EditEnterActivity::class.java)
+                intent.putExtra(Const.INTENT_SLIDE_ID, slideId)
+                intent.putExtra(Const.INTENT_CHOICE_ID, choiceId)
+                intent.putExtra(Const.INTENT_ENTER_ID, choice.enterItems[position].id)
+                editEnterForResult.launch(intent)
+            }
+        })
+
+        binding.recyclerEditEnter.layoutManager = LinearLayoutManager(baseContext)
+        binding.recyclerEditEnter.adapter = editEnterListAdapter
+
+        val touchHelper = ItemTouchHelper(EditEnterListDragCallback(editEnterListAdapter))
+        touchHelper.attachToRecyclerView(binding.recyclerEditEnter)
+    }
+
 
     private fun makeEditChoiceScreen(choice: ChoiceItem) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
         with(choice){
-            binding.toolbar.subtitle = "# $slideId"
+            binding.toolbar.subtitle = "# ${choice.id}"
             binding.etChoiceTitle.setText(title)
         }
+
+        editEnterListAdapter.datas = choice.enterItems
+        editEnterListAdapter.logic = logic
+        editEnterListAdapter.notifyDataSetChanged()
 
         isMenuItemEnabled = true
     }
@@ -113,11 +160,18 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(view: View?) {
         when(view?.id){
+            R.id.tvAddEnter -> {
+                choice.title = binding.etChoiceTitle.text.toString()
+
+                val intent = Intent(this, EditEnterActivity::class.java)
+                intent.putExtra(Const.INTENT_SLIDE_ID, slideId)
+                intent.putExtra(Const.INTENT_CHOICE_ID, choiceId)
+                intent.putExtra(Const.INTENT_ENTER_ID, Const.ADD_NEW_ENTER)
+                editEnterForResult.launch(intent)
+            }
+
             R.id.btnSaveChoice -> {
                 choice.title = binding.etChoiceTitle.text.toString()
-                if(isNew){
-                    slideLogic.choiceItems.add(choice)
-                }
                 setResult(Activity.RESULT_OK)
                 finish()
             }
@@ -142,16 +196,12 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         when(item.itemId) {
-            R.id.menu_delete -> deleteChoice()
+            R.id.menu_delete -> {
+                slideLogic.choiceItems.removeIf { it.id == choiceId }
+                setResult(Activity.RESULT_OK)
+                finish()
+            }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun deleteChoice(){
-        if(!isNew){
-            slideLogic.choiceItems.removeIf { it.id == choiceId }
-        }
-        setResult(Activity.RESULT_OK)
-        finish()
     }
 }

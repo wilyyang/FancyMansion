@@ -8,7 +8,10 @@
 
     <string name="toolbar_edit_slide">Edit Slide</string>
     <string name="toolbar_edit_choice">Edit Choice</string>
-    <string name="toolbar_add_choice">AddChoice</string>
+    <string name="toolbar_add_choice">Add Choice</string>
+
+    <string name="toolbar_edit_enter">Edit Enter Item</string>
+    <string name="toolbar_add_enter">Add Enter Item</string>
 
     <string name="nav_select_slide">Select Slide</string>
 
@@ -22,6 +25,7 @@
     <string name="create_book">CREATE</string>
     <string name="edit_book">EDIT</string>
     <string name="save_slide">SAVE</string>
+    <string name="enter_slide">ENTER</string>
 
     <string name="update_common">UPDATE</string>
     <string name="add_common">ADD</string>
@@ -64,6 +68,14 @@
     <string name="book_slide_description">description :&#160;</string>
     <string name="book_slide_question">question :&#160;</string>
     <string name="book_slide_choice">edit choice :&#160;</string>
+    <string name="book_slide_enter">edit enter :&#160;</string>
 
     <string name="book_edit_choice">ADD CHOICE</string>
+    <string name="book_edit_enter">ADD ENTER</string>
+
+    <string name="choice_edit_enter_condition">ADD ENTER CONDITION</string>
+
+    <string name="choice_not_found_slide">NOT FOUND SLIDE</string>
+    <string name="choice_enter_condition">enter condition :&#160;</string>
+    <string name="choice_enter_slide">select enter slide :&#160;</string>
 </resources>
