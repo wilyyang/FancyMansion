@@ -78,4 +78,18 @@
     <string name="choice_not_found_slide">NOT FOUND SLIDE</string>
     <string name="choice_enter_condition">enter condition :&#160;</string>
     <string name="choice_enter_slide">select enter slide :&#160;</string>
+
+    <string name="cond_text_entries">entries</string>
+    <string name="cond_text_count">count</string>
+
+    <string name="cond_text_over">over</string>
+    <string name="cond_text_under">under</string>
+    <string name="cond_text_equal">equal</string>
+    <string name="cond_text_not">not</string>
+    <string name="cond_text_all">all</string>
+
+    <string name="cond_text">Cond :&#160;</string>
+
+    <string name="cond_text_and">and</string>
+    <string name="cond_text_or">or</string>
 </resources>

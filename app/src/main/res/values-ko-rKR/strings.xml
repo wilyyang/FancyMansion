@@ -76,4 +76,18 @@
     <string name="choice_not_found_slide">슬라이드 찾을 수 없음</string>
     <string name="choice_enter_condition">진입 조건 :&#160;</string>
     <string name="choice_enter_slide">진입 슬라이드 선택 :&#160;</string>
+
+    <string name="cond_text_entries">진입</string>
+    <string name="cond_text_count">회</string>
+
+    <string name="cond_text_over">초과</string>
+    <string name="cond_text_under">미만</string>
+    <string name="cond_text_equal">같음</string>
+    <string name="cond_text_not">다름</string>
+    <string name="cond_text_all">전체</string>
+
+    <string name="cond_text">조건 :&#160;</string>
+
+    <string name="cond_text_and">그리고</string>
+    <string name="cond_text_or">또는</string>
 </resources>

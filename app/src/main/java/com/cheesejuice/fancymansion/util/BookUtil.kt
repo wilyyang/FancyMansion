@@ -5,7 +5,9 @@ import android.util.Log
 import com.cheesejuice.fancymansion.CondNext
 import com.cheesejuice.fancymansion.CondOp
 import com.cheesejuice.fancymansion.Const
+import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.model.Condition
+import com.cheesejuice.fancymansion.model.EnterItem
 import com.cheesejuice.fancymansion.model.SlideLogic
 import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
@@ -104,6 +106,24 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
         setIdCount(bookId, id, count, mode)
     }
 
+    // Operator language
+    fun translateOp(op: String):String = when(op){
+        "over" -> context.getString(R.string.cond_text_over)
+        "under" -> context.getString(R.string.cond_text_under)
+        "equal" -> context.getString(R.string.cond_text_equal)
+        "not" -> context.getString(R.string.cond_text_not)
+        "all" -> context.getString(R.string.cond_text_all)
+        "and" -> context.getString(R.string.cond_text_and)
+        "or" -> context.getString(R.string.cond_text_or)
+        else -> "Unknown"
+    }
+
+    fun translateText(text: String):String = when(text){
+        "entries" -> context.getString(R.string.cond_text_entries)
+        "count" -> context.getString(R.string.cond_text_count)
+        else -> "Unknown"
+    }
+
     // 00 / 00 / 00 / 00 / 00 = slide / choice / showCondition / enterId / enterCondition
     fun nextSlideId(logics: List<SlideLogic>): Long{
         var idMap = Array(100){ i -> false }
@@ -121,5 +141,14 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
 
         val result = idMap.indexOf(false)
         return if(result != -1)( result * Const.COUNT_CHOICE + logic.slideId ) else { -1 }
+    }
+
+    fun nextEnterId(enterItems: MutableList<EnterItem>, choiceId:Long): Long{
+        var idMap = Array(100){ i -> false }
+        idMap[0] = true
+        enterItems.map { ( (it.id - choiceId) / Const.COUNT_ENTER_ID ).toInt() }.forEach { idMap[it] = true }
+
+        val result = idMap.indexOf(false)
+        return if(result != -1)( result * Const.COUNT_ENTER_ID + choiceId ) else { -1 }
     }
 }

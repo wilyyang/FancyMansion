@@ -9,9 +9,10 @@ import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.databinding.ItemEditConditionBinding
 import com.cheesejuice.fancymansion.model.Condition
 import com.cheesejuice.fancymansion.model.Logic
+import com.cheesejuice.fancymansion.util.BookUtil
 import java.util.*
 
-class EditConditionListAdapter(var datas: MutableList<Condition> = mutableListOf(), var logic: Logic? = null):
+class EditConditionListAdapter(val bookUtil: BookUtil, var datas: MutableList<Condition> = mutableListOf()):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), EditConditionListDragCallback.OnItemMoveListener{
 
     var onceMove = false
@@ -38,20 +39,17 @@ class EditConditionListAdapter(var datas: MutableList<Condition> = mutableListOf
 
         with(binding){
             tvConditionId.text  = "condition id : ${datas[position].id}"
+            tvCondition1Id.text = "#${datas[position].conditionId1}"
 
-            tvCondition1Id.text = "slide : ${datas[position].conditionId1}"
-            tvCondition1Title.text = logic?.logics?.first { it.slideId == datas[position].conditionId1 }?.slideTitle
-
-            tvOperator.text = datas[position].conditionOp
+            tvOperator.text = bookUtil.translateOp(datas[position].conditionOp)
 
             if(datas[position].conditionId2 != Const.ID_NOT_FOUND){
-                tvCondition2Id.text = "slide : ${datas[position].conditionId2}"
-                tvCondition2Title.text = logic?.logics?.first { it.slideId == datas[position].conditionId2 }?.slideTitle
+                tvCondition2Id.text = "#${datas[position].conditionId2}"
+                tvCondition2label.text = bookUtil.translateText("entries")
             }else{
-                tvCondition2Title.text = "${datas[position].conditionCount}"
+                tvCondition2Id.text = "${datas[position].conditionCount}"
+                tvCondition2label.text = bookUtil.translateText("count")
             }
-
-            tvNext.text = datas[position].conditionNext
         }
 
         holder.apply {

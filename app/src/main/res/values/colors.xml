@@ -12,4 +12,9 @@
     <color name="item_choice_select">#AA999999</color>
 
     <color name="wait_background">#FFFFFFFF</color>
+
+    <color name="main_color_1">#FFBB86FC</color>
+    <color name="main_color_2">#FF03DAC5</color>
+
+    <color name="operator_color">#EE5555</color>
 </resources>

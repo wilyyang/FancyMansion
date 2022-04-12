@@ -57,7 +57,6 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
 
         setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
         binding.btnCancelChoice.setOnClickListener (this)
@@ -103,7 +102,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
                         return true
                     }
                 } else {
-                    slideLogic.choiceItems.find { it.id == choiceId }?.also {
+                    slideLogic.choiceItems.find { it.id == choiceId }?.let {
                         choice = it
                         return true
                     }
@@ -139,7 +138,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
     private fun makeEditChoiceScreen(choice: ChoiceItem) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
         with(choice){
-            binding.toolbar.subtitle = "# ${choice.id}"
+            binding.toolbar.subtitle = "id : ${choice.id}"
             binding.etChoiceTitle.setText(title)
         }
 

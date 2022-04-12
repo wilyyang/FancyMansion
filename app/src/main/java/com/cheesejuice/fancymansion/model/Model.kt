@@ -1,5 +1,6 @@
 package com.cheesejuice.fancymansion.model
 
+import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.Const.Companion.END_SLIDE_ID
 import kotlinx.serialization.Serializable
 
@@ -24,7 +25,7 @@ data class ChoiceItem(var id: Long, var title: String, var showConditions: Mutab
 
 // (2.2.3.4)
 @Serializable
-data class EnterItem(var id: Long, var enterSlideId: Long, var enterConditions: MutableList<Condition>)
+data class EnterItem(var id: Long, var enterSlideId: Long = Const.ID_NOT_FOUND, var enterConditions: MutableList<Condition> = mutableListOf())
 
 // (2.2.3.3) / (2.2.3.4.3)
 @Serializable

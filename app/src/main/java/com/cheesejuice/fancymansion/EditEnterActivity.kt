@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cheesejuice.fancymansion.databinding.ActivityEditEnterBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
+import com.cheesejuice.fancymansion.model.ChoiceItem
 import com.cheesejuice.fancymansion.model.EnterItem
 import com.cheesejuice.fancymansion.model.Logic
 import com.cheesejuice.fancymansion.util.BookUtil
@@ -49,7 +50,6 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
 
         setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
         binding.btnCancelEnter.setOnClickListener (this)
@@ -66,7 +66,7 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
         }
 
         var makeEnter = false
-        if (choiceId == Const.ADD_NEW_ENTER) {
+        if (enterId == Const.ADD_NEW_ENTER) {
             makeEnter = true
             binding.toolbar.title = getString(R.string.toolbar_add_enter)
             binding.btnSaveEnter.text = getString(R.string.add_common)
@@ -84,24 +84,30 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
         }
     }
 
-    private fun loadData(slideId:Long, choiceId:Long, enterId:Long, makeChoice:Boolean = false): Boolean{
+    private fun loadData(slideId:Long, choiceId:Long, enterId:Long, makeEnter:Boolean = false): Boolean{
         (application as MainApplication).logic?.also {  itLogic ->
             logic = itLogic
-            val tempEnter: EnterItem? = logic.logics.find {
-                it.slideId == slideId }?.choiceItems?.find{
-                it.id == choiceId }?.enterItems?.find {
-                it.id == enterId}
-
-            if(tempEnter != null){
-                enterItem = tempEnter
-                return true
+            logic.logics.find {it.slideId == slideId }?.choiceItems?.find{it.id == choiceId }?.enterItems?.also {  enterList ->
+                if (makeEnter) {
+                    val nextEnterId = bookUtil.nextEnterId(enterList, choiceId)
+                    if(nextEnterId > 0){
+                        enterItem = EnterItem(nextEnterId)
+                        enterList.add(enterItem)
+                        return true
+                    }
+                }else{
+                    enterList.find {it.id == enterId}?.let {
+                        enterItem = it
+                        return true
+                    }
+                }
             }
         }
         return false
     }
 
     private fun initEditConditionListView(){
-        editConditionListAdapter = EditConditionListAdapter()
+        editConditionListAdapter = EditConditionListAdapter(bookUtil)
         editConditionListAdapter.setItemClickListener(object: EditConditionListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
                 // NOT IMPLEMENTED
@@ -117,10 +123,9 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
 
     private fun makeEditChoiceScreen(enterItem: EnterItem) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
-        binding.toolbar.subtitle = "# ${enterItem.id}"
+        binding.toolbar.subtitle = "id : ${enterItem.id}"
 
         editConditionListAdapter.datas = enterItem.enterConditions
-        editConditionListAdapter.logic = logic
         editConditionListAdapter.notifyDataSetChanged()
 
         isMenuItemEnabled = true
