@@ -72,10 +72,12 @@
     <string name="book_edit_enter">진입항목 추가</string>
 
     <string name="choice_edit_enter_condition">진입 조건 추가</string>
+    <string name="choice_edit_show_condition">나타나기 조건 추가</string>
 
     <string name="choice_not_found_slide">슬라이드 찾을 수 없음</string>
+    <string name="choice_show_condition">나타나기 조건 :&#160;</string>
     <string name="choice_enter_condition">진입 조건 :&#160;</string>
-    <string name="choice_enter_slide">진입 슬라이드 선택 :&#160;</string>
+    <string name="choice_enter_slide">진입 슬라이드</string>
 
     <string name="cond_text_entries">진입</string>
     <string name="cond_text_count">회</string>
@@ -85,6 +87,11 @@
     <string name="cond_text_equal">같음</string>
     <string name="cond_text_not">다름</string>
     <string name="cond_text_all">전체</string>
+
+    <string name="choice_undefined">정해지지 않음</string>
+    <string name="choice_only_slide_enter">오직 슬라이드 진입</string>
+    <string name="select_slide">슬라이드 :&#160;</string>
+    <string name="select_choice">선택항목 :&#160;</string>
 
     <string name="cond_text">조건 :&#160;</string>
 

@@ -74,10 +74,17 @@
     <string name="book_edit_enter">ADD ENTER</string>
 
     <string name="choice_edit_enter_condition">ADD ENTER CONDITION</string>
+    <string name="choice_edit_show_condition">ADD SHOW CONDITION</string>
 
     <string name="choice_not_found_slide">NOT FOUND SLIDE</string>
+    <string name="choice_show_condition">show condition :&#160;</string>
     <string name="choice_enter_condition">enter condition :&#160;</string>
-    <string name="choice_enter_slide">select enter slide :&#160;</string>
+    <string name="choice_enter_slide">select enter slide</string>
+
+    <string name="choice_undefined">Undefined</string>
+    <string name="choice_only_slide_enter">Only Slide Enter</string>
+    <string name="select_slide">select slide :&#160;</string>
+    <string name="select_choice">select choice :&#160;</string>
 
     <string name="cond_text_entries">entries</string>
     <string name="cond_text_count">count</string>

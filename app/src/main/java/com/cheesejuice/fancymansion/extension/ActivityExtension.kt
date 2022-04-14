@@ -32,16 +32,19 @@ import java.io.InputStream
 
 // startActivity
 fun Activity.startReadSlideActivity(bookId:Long, slideId: Long){
-    val intent = Intent(this, ReadSlideActivity::class.java)
-    intent.putExtra(Const.INTENT_BOOK_ID, bookId)
-    intent.putExtra(Const.INTENT_SLIDE_ID, slideId)
+    val intent = Intent(this, ReadSlideActivity::class.java).apply {
+        putExtra(Const.INTENT_BOOK_ID, bookId)
+        putExtra(Const.INTENT_SLIDE_ID, slideId)
+    }
     startActivity(intent)
 }
 
 fun Activity.startEditSlideActivity(bookId: Long, slideId:Long = Const.FIRST_SLIDE){
-    val intent = Intent(this, EditSlideActivity::class.java)
-    intent.putExtra(Const.INTENT_BOOK_ID, bookId)
-    intent.putExtra(Const.INTENT_SLIDE_ID, slideId)
+    val intent = Intent(this, EditSlideActivity::class.java).apply {
+        putExtra(Const.INTENT_BOOK_ID, bookId)
+        putExtra(Const.INTENT_SLIDE_ID, slideId)
+    }
+
     startActivity(intent)
 }
 
@@ -56,7 +59,6 @@ fun Activity.registerGallaryResultName(imageView: ImageView? = null, afterResult
                 val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
                 cursor.moveToFirst()
 
-                cursor.getString(nameIndex)
                 cursor.getString(nameIndex)?.let {
                     afterResult(it)
                 }
@@ -114,6 +116,7 @@ fun Activity.showDialogAndStart(isShow: Boolean, loading: View? = null, main: Vi
     }
 }
 
+// Create Sample
 fun Activity.createSampleFiles(){
     val fileUtil = FileUtil(this)
     val config = Json.decodeFromString<Config>(Sample.getConfigSample(12345))

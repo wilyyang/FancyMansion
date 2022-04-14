@@ -17,6 +17,8 @@ import com.cheesejuice.fancymansion.model.ChoiceItem
 import com.cheesejuice.fancymansion.model.Logic
 import com.cheesejuice.fancymansion.model.SlideLogic
 import com.cheesejuice.fancymansion.util.BookUtil
+import com.cheesejuice.fancymansion.view.EditConditionListAdapter
+import com.cheesejuice.fancymansion.view.EditConditionListDragCallback
 import com.cheesejuice.fancymansion.view.EditEnterListAdapter
 import com.cheesejuice.fancymansion.view.EditEnterListDragCallback
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,6 +35,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
     var isMenuItemEnabled = true
 
     private lateinit var editEnterListAdapter: EditEnterListAdapter
+    private lateinit var editShowConditionListAdapter: EditConditionListAdapter
 
     @Inject
     lateinit var bookUtil: BookUtil
@@ -47,6 +50,13 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
                 }else{
                     makeNotHaveChoice()
                 }
+            }
+        }
+
+    private val editShowConditionForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                // NOT IMPLEMENTED
             }
         }
 
@@ -82,6 +92,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
 
         val init = loadData(slideId, choiceId, makeChoice)
         initEditEnterListView()
+        initEditShowConditionListView()
         if(init) {
             makeEditChoiceScreen(choice)
         }else{
@@ -134,6 +145,20 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
         touchHelper.attachToRecyclerView(binding.recyclerEditEnter)
     }
 
+    private fun initEditShowConditionListView(){
+        editShowConditionListAdapter = EditConditionListAdapter(bookUtil)
+        editShowConditionListAdapter.setItemClickListener(object: EditConditionListAdapter.OnItemClickListener{
+            override fun onClick(v: View, position: Int) {
+                // NOT IMPLEMENTED
+            }
+        })
+
+        binding.recyclerEditShowCondition.layoutManager = LinearLayoutManager(baseContext)
+        binding.recyclerEditShowCondition.adapter = editShowConditionListAdapter
+
+        val touchHelper = ItemTouchHelper(EditConditionListDragCallback(editShowConditionListAdapter))
+        touchHelper.attachToRecyclerView(binding.recyclerEditShowCondition)
+    }
 
     private fun makeEditChoiceScreen(choice: ChoiceItem) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
@@ -145,6 +170,9 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
         editEnterListAdapter.datas = choice.enterItems
         editEnterListAdapter.logic = logic
         editEnterListAdapter.notifyDataSetChanged()
+
+        editShowConditionListAdapter.datas = choice.showConditions
+        editShowConditionListAdapter.notifyDataSetChanged()
 
         isMenuItemEnabled = true
     }

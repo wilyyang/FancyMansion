@@ -6,13 +6,13 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ArrayAdapter
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cheesejuice.fancymansion.databinding.ActivityEditEnterBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
-import com.cheesejuice.fancymansion.model.ChoiceItem
 import com.cheesejuice.fancymansion.model.EnterItem
 import com.cheesejuice.fancymansion.model.Logic
 import com.cheesejuice.fancymansion.util.BookUtil
@@ -31,9 +31,10 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
     private var enterId: Long = Const.ID_NOT_FOUND
     var isMenuItemEnabled = true
 
-    private lateinit var editConditionListAdapter: EditConditionListAdapter
+    private lateinit var editEnterConditionListAdapter: EditConditionListAdapter
+    private lateinit var selectSlideAdapter: ArrayAdapter<String>
 
-    private val editConditionForResult =
+    private val editEnterConditionForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
                 // NOT IMPLEMENTED
@@ -54,7 +55,6 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
 
         binding.btnCancelEnter.setOnClickListener (this)
         binding.btnSaveEnter.setOnClickListener (this)
-        binding.tvSelectEnterSlide.setOnClickListener(this)
         binding.tvAddEnterCondition.setOnClickListener(this)
 
         slideId = intent.getLongExtra(Const.INTENT_SLIDE_ID, Const.ID_NOT_FOUND)
@@ -77,8 +77,10 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
 
         val init = loadData(slideId, choiceId, enterId, makeEnter)
         initEditConditionListView()
+        initSelectSpinner()
+
         if(init) {
-            makeEditChoiceScreen(enterItem)
+            makeEditEnterScreen(logic, enterItem)
         }else{
             makeNotHaveEnterItem()
         }
@@ -107,26 +109,45 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
     }
 
     private fun initEditConditionListView(){
-        editConditionListAdapter = EditConditionListAdapter(bookUtil)
-        editConditionListAdapter.setItemClickListener(object: EditConditionListAdapter.OnItemClickListener{
+        editEnterConditionListAdapter = EditConditionListAdapter(bookUtil)
+        editEnterConditionListAdapter.setItemClickListener(object: EditConditionListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
                 // NOT IMPLEMENTED
             }
         })
 
         binding.recyclerEditEnterCondition.layoutManager = LinearLayoutManager(baseContext)
-        binding.recyclerEditEnterCondition.adapter = editConditionListAdapter
+        binding.recyclerEditEnterCondition.adapter = editEnterConditionListAdapter
 
-        val touchHelper = ItemTouchHelper(EditConditionListDragCallback(editConditionListAdapter))
+        val touchHelper = ItemTouchHelper(EditConditionListDragCallback(editEnterConditionListAdapter))
         touchHelper.attachToRecyclerView(binding.recyclerEditEnterCondition)
     }
 
-    private fun makeEditChoiceScreen(enterItem: EnterItem) {
+    private fun initSelectSpinner(){
+        selectSlideAdapter = ArrayAdapter(this@EditEnterActivity, android.R.layout.simple_spinner_item)
+        selectSlideAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        binding.spinnerSelectSlide.apply {
+            adapter = selectSlideAdapter
+        }
+    }
+
+    private fun makeEditEnterScreen(logic:Logic, enterItem: EnterItem) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
         binding.toolbar.subtitle = "id : ${enterItem.id}"
 
-        editConditionListAdapter.datas = enterItem.enterConditions
-        editConditionListAdapter.notifyDataSetChanged()
+        editEnterConditionListAdapter.datas = enterItem.enterConditions
+        editEnterConditionListAdapter.notifyDataSetChanged()
+
+        // Spinner
+        selectSlideAdapter.run {
+            clear()
+            addAll(logic.logics.map { "[#${it.slideId}] ${it.slideTitle}" })
+            notifyDataSetChanged()
+        }
+
+        val slideIdx = logic.logics.indexOfFirst { it.slideId == enterItem.enterSlideId }
+        binding.spinnerSelectSlide.setSelection(slideIdx)
 
         isMenuItemEnabled = true
     }
@@ -142,7 +163,7 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
     override fun onClick(view: View?) {
         when(view?.id){
             R.id.btnSaveEnter -> {
-                // NOT IMPLEMENTED
+                enterItem.enterSlideId = logic.logics[binding.spinnerSelectSlide.selectedItemPosition].slideId
                 setResult(Activity.RESULT_OK)
                 finish()
             }
@@ -153,10 +174,6 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
             }
 
             R.id.tvAddEnterCondition -> {
-                // NOT IMPLEMENTED
-            }
-
-            R.id.tvSelectEnterSlide -> {
                 // NOT IMPLEMENTED
             }
         }
