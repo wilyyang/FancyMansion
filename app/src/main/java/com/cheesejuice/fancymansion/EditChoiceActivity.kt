@@ -127,7 +127,6 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
         editEnterListAdapter = EditEnterListAdapter()
         editEnterListAdapter.setItemClickListener(object: EditEnterListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
-                // NOT IMPLEMENTED
                 choice.title = binding.etChoiceTitle.text.toString()
 
                 val intent = Intent(this@EditChoiceActivity, EditEnterActivity::class.java)
@@ -149,7 +148,11 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
         editShowConditionListAdapter = EditConditionListAdapter(bookUtil)
         editShowConditionListAdapter.setItemClickListener(object: EditConditionListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
-                // NOT IMPLEMENTED
+                val intent = Intent(this@EditChoiceActivity, EditConditionActivity::class.java)
+                intent.putExtra(Const.INTENT_SLIDE_ID, slideId)
+                intent.putExtra(Const.INTENT_CHOICE_ID, choiceId)
+                intent.putExtra(Const.INTENT_CONDITION_ID, choice.showConditions[position].id)
+                editEnterForResult.launch(intent)
             }
         })
 

@@ -86,6 +86,14 @@
     <string name="select_slide">select slide :&#160;</string>
     <string name="select_choice">select choice :&#160;</string>
 
+    <string name="cond_condition_1">select condition 1</string>
+    <string name="cond_operator">operator :&#160;</string>
+    <string name="cond_condition_2">select condition 2</string>
+    <string name="cond_next">next relation :&#160;</string>
+
+    <string name="cond_slide">slide :&#160;</string>
+    <string name="cond_choice">choice :&#160;</string>
+
     <string name="cond_text_entries">entries</string>
     <string name="cond_text_count">count</string>
 
