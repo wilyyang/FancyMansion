@@ -8,6 +8,7 @@ class Const {
         const val END_SLIDE_ID = -1L
         const val ADD_NEW_CHOICE = -2L
         const val ADD_NEW_ENTER = -3L
+        const val ADD_NEW_CONDITION = -4L
         const val MODE_PLAY = "play"
         const val NOT_SUPPORT_COND_ID_2 = -1L
         const val ID_1_SLIDE = 1_00_00_00_00L
@@ -25,6 +26,7 @@ class Const {
         const val INTENT_CHOICE_ID = "INTENT_CHOICE_ID"
         const val INTENT_ENTER_ID = "INTENT_ENTER_ID"
         const val INTENT_CONDITION_ID = "INTENT_CONDITION_ID"
+        const val INTENT_SHOW_CONDITION = "INTENT_SHOW_CONDITION"
 
         // Pref
         const val PREF_SETTING = "PREF_SETTING"

@@ -128,8 +128,9 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(view: View?) {
         when(view?.id){
             R.id.imageViewConfigAdd -> {
-                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                intent.type = "image/*"
+                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
+                    type = "image/*"
+                }
                 gallaryForResult.launch(intent)
             }
 
@@ -175,8 +176,9 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                     onlyOkBackground = { saveConfigFile(config) },
                     onlyNo = { RoundEditText.onceFocus = false; updateImage = false },
                     always = { bookUtil.setOnlyPlay(true); bookUtil.deleteBookPref(config.bookId, Const.MODE_PLAY);
-                        val intent = Intent(this, ReadStartActivity::class.java)
-                        intent.putExtra(Const.INTENT_BOOK_ID, config.bookId)
+                        val intent = Intent(this, ReadStartActivity::class.java).apply {
+                            putExtra(Const.INTENT_BOOK_ID, config.bookId)
+                        }
                         readStartForResult.launch(intent)
                     }
                 )

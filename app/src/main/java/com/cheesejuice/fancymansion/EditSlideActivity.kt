@@ -177,9 +177,11 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             override fun onClick(v: View, position: Int) {
                 (application as MainApplication).logic =  Json.decodeFromString<Logic>(Json.encodeToString(logic))
 
-                val intent = Intent(this@EditSlideActivity, EditChoiceActivity::class.java)
-                intent.putExtra(Const.INTENT_SLIDE_ID, slide.slideId)
-                intent.putExtra(Const.INTENT_CHOICE_ID, slideLogic.choiceItems[position].id)
+                val intent = Intent(this@EditSlideActivity, EditChoiceActivity::class.java).apply {
+                    putExtra(Const.INTENT_SLIDE_ID, slide.slideId)
+                    putExtra(Const.INTENT_CHOICE_ID, slideLogic.choiceItems[position].id)
+                }
+
                 editChoiceForResult.launch(intent)
             }
         })
@@ -255,16 +257,18 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     override fun onClick(view: View?) {
         when(view?.id){
             R.id.imageViewSlideAdd -> {
-                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                intent.type = "image/*"
+                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
+                    type = "image/*"
+                }
                 gallaryForResult.launch(intent)
             }
             R.id.tvAddChoice -> {
                 (application as MainApplication).logic = Json.decodeFromString<Logic>(Json.encodeToString(logic))
 
-                val intent = Intent(this, EditChoiceActivity::class.java)
-                intent.putExtra(Const.INTENT_SLIDE_ID, slide.slideId)
-                intent.putExtra(Const.INTENT_CHOICE_ID, Const.ADD_NEW_CHOICE)
+                val intent = Intent(this, EditChoiceActivity::class.java).apply {
+                    putExtra(Const.INTENT_SLIDE_ID, slide.slideId)
+                    putExtra(Const.INTENT_CHOICE_ID, Const.ADD_NEW_CHOICE)
+                }
                 editChoiceForResult.launch(intent)
             }
         }
@@ -316,9 +320,10 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                     bookUtil.setOnlyPlay(true)
                     bookUtil.deleteBookPref(logic.bookId, Const.MODE_PLAY)
 
-                    val intent = Intent(this, ReadSlideActivity::class.java)
-                    intent.putExtra(Const.INTENT_BOOK_ID, logic.bookId)
-                    intent.putExtra(Const.INTENT_SLIDE_ID, slide.slideId)
+                    val intent = Intent(this, ReadSlideActivity::class.java).apply {
+                        putExtra(Const.INTENT_BOOK_ID, logic.bookId)
+                        putExtra(Const.INTENT_SLIDE_ID, slide.slideId)
+                    }
                     readSlideForResult.launch(intent)
                 }
             }

@@ -34,15 +34,15 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
     private lateinit var editEnterConditionListAdapter: EditConditionListAdapter
     private lateinit var selectSlideAdapter: ArrayAdapter<String>
 
+    @Inject
+    lateinit var bookUtil: BookUtil
+
     private val editEnterConditionForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
                 // NOT IMPLEMENTED
             }
         }
-
-    @Inject
-    lateinit var bookUtil: BookUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -20,6 +20,8 @@
     <string name="toolbar_edit_enter">진입항목 수정하기</string>
     <string name="toolbar_add_enter">진입항목 추가하기</string>
 
+    <string name="toolbar_edit_condition">조건 수정하기</string>
+    <string name="toolbar_add_condition">조건 추가하기</string>
 
     <string name="nav_select_slide">슬라이드 선택</string>
 

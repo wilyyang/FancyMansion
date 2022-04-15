@@ -13,6 +13,9 @@
     <string name="toolbar_edit_enter">Edit Enter Item</string>
     <string name="toolbar_add_enter">Add Enter Item</string>
 
+    <string name="toolbar_edit_condition">Edit Condition</string>
+    <string name="toolbar_add_condition">Add Condition</string>
+
     <string name="nav_select_slide">Select Slide</string>
 
     <string name="menu_slide_add">Slide Add</string>

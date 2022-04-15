@@ -129,10 +129,12 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
             override fun onClick(v: View, position: Int) {
                 choice.title = binding.etChoiceTitle.text.toString()
 
-                val intent = Intent(this@EditChoiceActivity, EditEnterActivity::class.java)
-                intent.putExtra(Const.INTENT_SLIDE_ID, slideId)
-                intent.putExtra(Const.INTENT_CHOICE_ID, choiceId)
-                intent.putExtra(Const.INTENT_ENTER_ID, choice.enterItems[position].id)
+                val intent = Intent(this@EditChoiceActivity, EditEnterActivity::class.java).apply {
+                    putExtra(Const.INTENT_SLIDE_ID, slideId)
+                    putExtra(Const.INTENT_CHOICE_ID, choiceId)
+                    putExtra(Const.INTENT_ENTER_ID, choice.enterItems[position].id)
+                }
+
                 editEnterForResult.launch(intent)
             }
         })
@@ -148,10 +150,12 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
         editShowConditionListAdapter = EditConditionListAdapter(bookUtil)
         editShowConditionListAdapter.setItemClickListener(object: EditConditionListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
-                val intent = Intent(this@EditChoiceActivity, EditConditionActivity::class.java)
-                intent.putExtra(Const.INTENT_SLIDE_ID, slideId)
-                intent.putExtra(Const.INTENT_CHOICE_ID, choiceId)
-                intent.putExtra(Const.INTENT_CONDITION_ID, choice.showConditions[position].id)
+                val intent = Intent(this@EditChoiceActivity, EditConditionActivity::class.java).apply {
+                    putExtra(Const.INTENT_SLIDE_ID, slideId)
+                    putExtra(Const.INTENT_CHOICE_ID, choiceId)
+                    putExtra(Const.INTENT_CONDITION_ID, choice.showConditions[position].id)
+                }
+
                 editEnterForResult.launch(intent)
             }
         })
@@ -193,10 +197,12 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
             R.id.tvAddEnter -> {
                 choice.title = binding.etChoiceTitle.text.toString()
 
-                val intent = Intent(this, EditEnterActivity::class.java)
-                intent.putExtra(Const.INTENT_SLIDE_ID, slideId)
-                intent.putExtra(Const.INTENT_CHOICE_ID, choiceId)
-                intent.putExtra(Const.INTENT_ENTER_ID, Const.ADD_NEW_ENTER)
+                val intent = Intent(this, EditEnterActivity::class.java).apply {
+                    putExtra(Const.INTENT_SLIDE_ID, slideId)
+                    putExtra(Const.INTENT_CHOICE_ID, choiceId)
+                    putExtra(Const.INTENT_ENTER_ID, Const.ADD_NEW_ENTER)
+                }
+
                 editEnterForResult.launch(intent)
             }
 
