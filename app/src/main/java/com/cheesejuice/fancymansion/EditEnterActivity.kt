@@ -1,6 +1,7 @@
 package com.cheesejuice.fancymansion
 
 import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -112,7 +113,15 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
         editEnterConditionListAdapter = EditConditionListAdapter(bookUtil)
         editEnterConditionListAdapter.setItemClickListener(object: EditConditionListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
-                // NOT IMPLEMENTED
+                val intent = Intent(this@EditEnterActivity, EditConditionActivity::class.java).apply {
+                    putExtra(Const.INTENT_SLIDE_ID, slideId)
+                    putExtra(Const.INTENT_CHOICE_ID, choiceId)
+                    putExtra(Const.INTENT_ENTER_ID, enterItem.id)
+                    putExtra(Const.INTENT_CONDITION_ID, enterItem.enterConditions[position].id)
+                    putExtra(Const.INTENT_SHOW_CONDITION, false)
+                }
+
+                editEnterConditionForResult.launch(intent)
             }
         })
 

@@ -81,10 +81,12 @@
     <string name="choice_enter_condition">진입 조건 :&#160;</string>
     <string name="choice_enter_slide">진입 슬라이드</string>
 
-    <string name="cond_condition_1">조건 1 선택</string>
+    <string name="cond_condition_1">필수 조건 선택</string>
     <string name="cond_operator">연산자 :&#160;</string>
-    <string name="cond_condition_2">조건 2 선택</string>
+    <string name="cond_condition_2">비교 조건 선택</string>
     <string name="cond_next">다음 조건 관계 :&#160;</string>
+
+    <string name="cond_count">조건 횟수</string>
 
     <string name="cond_slide">슬라이드 :&#160;</string>
     <string name="cond_choice">선택항목 :&#160;</string>
@@ -97,6 +99,9 @@
     <string name="cond_text_equal">같음</string>
     <string name="cond_text_not">다름</string>
     <string name="cond_text_all">전체</string>
+
+    <string name="cond_option_count">횟수</string>
+    <string name="cond_option_id">비교</string>
 
     <string name="choice_undefined">정해지지 않음</string>
     <string name="choice_only_slide_enter">오직 슬라이드 진입</string>

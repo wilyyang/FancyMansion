@@ -17,4 +17,10 @@
     <color name="main_color_2">#FF03DAC5</color>
 
     <color name="operator_color">#EE5555</color>
+
+    <color name="color_stroke_selector">#FFD6D6D6</color>
+    <color name="bg_selector_enable_uncheck">#FF9B9C9E</color>
+    <color name="bg_selector_enable_check">#FF339999</color>
+
+    <color name="color_stroke_base">#FFD1D1D1</color>
 </resources>

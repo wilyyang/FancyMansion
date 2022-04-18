@@ -154,9 +154,10 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
                     putExtra(Const.INTENT_SLIDE_ID, slideId)
                     putExtra(Const.INTENT_CHOICE_ID, choiceId)
                     putExtra(Const.INTENT_CONDITION_ID, choice.showConditions[position].id)
+                    putExtra(Const.INTENT_SHOW_CONDITION, true)
                 }
 
-                editEnterForResult.launch(intent)
+                editShowConditionForResult.launch(intent)
             }
         })
 

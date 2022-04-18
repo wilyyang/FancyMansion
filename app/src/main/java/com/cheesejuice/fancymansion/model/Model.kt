@@ -1,5 +1,7 @@
 package com.cheesejuice.fancymansion.model
 
+import com.cheesejuice.fancymansion.CondNext
+import com.cheesejuice.fancymansion.CondOp
 import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.Const.Companion.END_SLIDE_ID
 import kotlinx.serialization.Serializable
@@ -29,7 +31,7 @@ data class EnterItem(var id: Long, var enterSlideId: Long = Const.ID_NOT_FOUND, 
 
 // (2.2.3.3) / (2.2.3.4.3)
 @Serializable
-data class Condition(var id: Long, var conditionId1: Long, var conditionId2: Long, var conditionCount: Int, var conditionOp: String, var conditionNext: String)
+data class Condition(var id: Long, var conditionId1: Long = Const.ID_NOT_FOUND, var conditionId2: Long = Const.ID_NOT_FOUND, var conditionCount: Int = 0, var conditionOp: String = CondOp.ALL.opName, var conditionNext: String = CondNext.OR.relName)
 
 // (3)
 @Serializable

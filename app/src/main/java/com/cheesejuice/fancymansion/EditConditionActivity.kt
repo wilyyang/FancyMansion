@@ -1,18 +1,21 @@
 package com.cheesejuice.fancymansion
 
+import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import com.cheesejuice.fancymansion.databinding.ActivityEditConditionBinding
-import com.cheesejuice.fancymansion.databinding.ActivityEditEnterBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.Condition
-import com.cheesejuice.fancymansion.model.EnterItem
 import com.cheesejuice.fancymansion.model.Logic
 import com.cheesejuice.fancymansion.util.BookUtil
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
@@ -28,6 +31,11 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
 
     @Inject
     lateinit var bookUtil: BookUtil
+
+    private lateinit var selectId1SlideAdapter: ArrayAdapter<String>
+    private lateinit var selectId1ChoiceAdapter: ArrayAdapter<String>
+    private lateinit var selectId2SlideAdapter: ArrayAdapter<String>
+    private lateinit var selectId2ChoiceAdapter: ArrayAdapter<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,9 +55,8 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
         conditionId = intent.getLongExtra(Const.INTENT_CONDITION_ID, Const.ID_NOT_FOUND)
         isShowCondition = intent.getBooleanExtra(Const.INTENT_SHOW_CONDITION, false)
 
-
-        if( (slideId == Const.ID_NOT_FOUND || choiceId == Const.ID_NOT_FOUND || conditionId == Const.ID_NOT_FOUND) &&
-            (isShowCondition || enterId==Const.ID_NOT_FOUND) ){
+        if( slideId == Const.ID_NOT_FOUND || choiceId == Const.ID_NOT_FOUND || conditionId == Const.ID_NOT_FOUND ||
+            ( !isShowCondition && enterId == Const.ID_NOT_FOUND) ){
             makeNotHaveCondition()
             return
         }
@@ -64,11 +71,11 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
             binding.btnSaveCondition.text = getString(R.string.update_common)
         }
 
-        val init = loadData(slideId, choiceId, enterId, makeEnter)
+        val init = loadData(slideId, choiceId, enterId, conditionId, isShowCondition, makeCondition)
         initSelectSpinner()
 
         if(init) {
-            makeEditConditionScreen(logic, enterItem)
+            makeEditConditionScreen(logic, condition)
         }else{
             makeNotHaveCondition()
         }
@@ -77,18 +84,47 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
     private fun loadData(slideId:Long, choiceId:Long, enterId: Long, conditionId:Long, isShowCondition:Boolean, makeCondition:Boolean = false): Boolean{
         (application as MainApplication).logic?.also {  itLogic ->
             logic = itLogic
-            logic.logics.find {it.slideId == slideId }?.choiceItems?.find{it.id == choiceId }?.enterItems?.also {  enterList ->
-                if (makeEnter) {
-                    val nextEnterId = bookUtil.nextEnterId(enterList, choiceId)
-                    if(nextEnterId > 0){
-                        enterItem = EnterItem(nextEnterId)
-                        enterList.add(enterItem)
-                        return true
+            logic.logics.find {it.slideId == slideId }?.choiceItems?.find{it.id == choiceId }?.also{  itChoice ->
+                if(isShowCondition){
+                    if(makeCondition){
+                        // next show condition id
+                        val showConditionId = bookUtil.nextShowConditionId(itChoice.showConditions, choiceId)
+                        if(showConditionId > 0){
+                            // make show condition
+                            condition = Condition(showConditionId)
+                            // add  show condition
+                            itChoice.showConditions.add(condition)
+                            return true
+                        }
+                    }else{
+                        // find show condition
+                        itChoice.showConditions.find {it.id == conditionId}?.let {
+                            // set  show condition
+                            condition = it
+                            return true
+                        }
                     }
                 }else{
-                    enterList.find {it.id == enterId}?.let {
-                        enterItem = it
-                        return true
+                    itChoice.enterItems.find { it.id == enterId }?.enterConditions?.also { itEnterConditions ->
+                        if(makeCondition){
+                            // next enter condition id
+                            val enterConditionId = bookUtil.nextEnterConditionId(itEnterConditions, enterId)
+                            if(enterConditionId > 0){
+
+                                // make enter condition
+                                condition = Condition(enterConditionId)
+                                // add  enter condition
+                                itEnterConditions.add(condition)
+                                return true
+                            }
+                        }else{
+                            // find enter condition
+                            itEnterConditions.find { it.id == conditionId }?.let {
+                                // set  enter condition
+                                condition = it
+                                return true
+                            }
+                        }
                     }
                 }
             }
@@ -96,9 +132,227 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
         return false
     }
 
+    private fun initSelectSpinner(){
+        selectId1SlideAdapter = ArrayAdapter(this@EditConditionActivity, android.R.layout.simple_spinner_item)
+        selectId1SlideAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        binding.spinnerSlideCondition1.apply {
+            adapter = selectId1SlideAdapter
+        }
+
+        selectId1ChoiceAdapter = ArrayAdapter(this@EditConditionActivity, android.R.layout.simple_spinner_item)
+        selectId1ChoiceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        binding.spinnerChoiceCondition1.apply {
+            adapter = selectId1ChoiceAdapter
+        }
+
+        selectId2SlideAdapter = ArrayAdapter(this@EditConditionActivity, android.R.layout.simple_spinner_item)
+        selectId2SlideAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        binding.spinnerSlideCondition2.apply {
+            adapter = selectId2SlideAdapter
+        }
+
+        selectId2ChoiceAdapter = ArrayAdapter(this@EditConditionActivity, android.R.layout.simple_spinner_item)
+        selectId2ChoiceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        binding.spinnerChoiceCondition2.apply {
+            adapter = selectId2ChoiceAdapter
+        }
+
+        val opAdapter = ArrayAdapter<String>(this@EditConditionActivity, android.R.layout.simple_spinner_item).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            addAll(CondOp.values().map { it.opName })
+        }
+
+        binding.spinnerOperator.apply {
+            adapter = opAdapter
+        }
+
+        val nextAdapter = ArrayAdapter<String>(this@EditConditionActivity, android.R.layout.simple_spinner_item).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            addAll(CondNext.values().map { it.relName })
+        }
+
+        binding.spinnerNext.apply {
+            adapter = nextAdapter
+        }
+    }
+
+    private fun makeEditConditionScreen(logic:Logic, condition: Condition) {
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        binding.toolbar.subtitle = "id : ${condition.id}"
+
+        // init condition 1 spinner
+        selectId1SlideAdapter.run {
+            clear()
+            addAll(logic.logics.map { "[#${it.slideId}] ${it.slideTitle}" })
+            notifyDataSetChanged()
+        }
+
+        binding.spinnerSlideCondition1.run {
+            onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    selectId1ChoiceAdapter.run {
+                        clear()
+                        addAll(logic.logics[position].choiceItems.map { "[#${it.id}] ${it.title}" })
+                        add("[${getString(R.string.choice_only_slide_enter)}]")
+                        notifyDataSetChanged()
+
+                        binding.spinnerChoiceCondition1.setSelection(logic.logics[position].choiceItems.size)
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
+        }
+
+        // select radio button
+        binding.radioGroupCondOption.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                R.id.radioCondCount -> {
+                    binding.layoutCondCount.visibility = View.VISIBLE
+                    binding.layoutCondId2.visibility = View.INVISIBLE
+                }
+
+                R.id.radioCondId -> {
+                    binding.layoutCondCount.visibility = View.INVISIBLE
+                    binding.layoutCondId2.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        // init number picker layout
+        binding.pickerCount.apply {
+            minValue = 0
+            maxValue = 99
+            wrapSelectorWheel = false
+        }
+
+        // init comparison layout
+        selectId2SlideAdapter.run {
+            clear()
+            addAll(logic.logics.map { "[#${it.slideId}] ${it.slideTitle}" })
+            notifyDataSetChanged()
+        }
+
+        binding.spinnerSlideCondition2.run {
+            onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    selectId2ChoiceAdapter.run {
+                        clear()
+                        addAll(logic.logics[position].choiceItems.map { "[#${it.id}] ${it.title}" })
+                        add("[${getString(R.string.choice_only_slide_enter)}]")
+                        notifyDataSetChanged()
+
+                        binding.spinnerChoiceCondition2.setSelection(logic.logics[position].choiceItems.size)
+                    }
+                }
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
+        }
+
+        // init operator / next spinner
+        val opIdx = CondOp.values().indexOfFirst { it.opName == condition.conditionOp }
+        val nextIdx = CondNext.values().indexOfFirst { it.relName == condition.conditionNext }
+
+        // set first value
+        binding.spinnerSlideCondition1.run {
+            val slideIdx1 = logic.logics.indexOfFirst {  it.slideId == bookUtil.getSlideIdFromOther(condition.conditionId1) }
+            setSelection(slideIdx1)
+
+            val choiceIdx1 = logic.logics[slideIdx1].choiceItems.let { list ->
+                list.indexOfFirst { it.id == condition.conditionId1 }.let {
+                    if (it == -1){
+                        list.size
+                    }else{
+                        it
+                    }
+                }
+            }
+            binding.spinnerChoiceCondition1.setSelection(choiceIdx1)
+        }
+
+        // set second value
+        if(condition.conditionId2 < 1){
+            with(binding){
+                radioCondCount.isChecked = true
+                radioCondId.isChecked = false
+
+                pickerCount.value = condition.conditionCount
+            }
+        }else{
+            with(binding){
+                radioCondCount.isChecked = false
+                radioCondId.isChecked = true
+
+                spinnerSlideCondition2.run {
+                    val slideIdx2 = logic.logics.indexOfFirst { it.slideId == bookUtil.getSlideIdFromOther(condition.conditionId2) }
+                    setSelection(slideIdx2)
+
+                    val choiceIdx2 = logic.logics[slideIdx2].choiceItems.let { list ->
+                        list.indexOfFirst { it.id == condition.conditionId2 }.let {
+                            if (it == -1){
+                                list.size
+                            }else{
+                                it
+                            }
+                        }
+                    }
+                    spinnerChoiceCondition2.setSelection(choiceIdx2)
+                }
+            }
+        }
+
+        // set operator / next value
+        binding.spinnerOperator.setSelection(opIdx)
+        binding.spinnerNext.setSelection(nextIdx)
+
+        isMenuItemEnabled = true
+    }
+
+    private fun makeNotHaveCondition() {
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        binding.layoutEmpty.root.visibility = View.VISIBLE
+        binding.layoutContain.visibility = View.GONE
+
+        isMenuItemEnabled = false
+    }
 
 
-    override fun onClick(p0: View?) {
-        TODO("Not yet implemented")
+    override fun onClick(view: View?) {
+        when(view?.id){
+            R.id.btnSaveCondition -> {
+                // NOT IMPLEMENTED
+            }
+
+            R.id.btnCancelCondition -> {
+                setResult(Activity.RESULT_CANCELED)
+                finish()
+            }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu_edit_choice, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        this@EditConditionActivity.currentFocus?.let { it.clearFocus() }
+        if (!isMenuItemEnabled) {
+            return true
+        }
+
+        when(item.itemId) {
+            R.id.menu_delete -> {
+                // NOT IMPLEMENTED
+                setResult(Activity.RESULT_OK)
+                finish()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

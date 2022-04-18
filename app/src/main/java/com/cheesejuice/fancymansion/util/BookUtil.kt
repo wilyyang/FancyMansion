@@ -5,6 +5,7 @@ import android.util.Log
 import com.cheesejuice.fancymansion.CondNext
 import com.cheesejuice.fancymansion.CondOp
 import com.cheesejuice.fancymansion.Const
+import com.cheesejuice.fancymansion.Const.Companion.COUNT_SLIDE
 import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.model.Condition
 import com.cheesejuice.fancymansion.model.EnterItem
@@ -150,5 +151,25 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
 
         val result = idMap.indexOf(false)
         return if(result != -1)( result * Const.COUNT_ENTER_ID + choiceId ) else { -1 }
+    }
+
+    fun nextShowConditionId(conditions: MutableList<Condition>, choiceId:Long): Long{
+        var idMap = Array(100){ i -> false }
+        idMap[0] = true
+        conditions.map { ( (it.id - choiceId) / Const.COUNT_SHOW_COND ).toInt() }.forEach { idMap[it] = true }
+        val result = idMap.indexOf(false)
+        return if(result != -1)( result * Const.COUNT_SHOW_COND + choiceId ) else { -1 }
+    }
+
+    fun nextEnterConditionId(conditions: MutableList<Condition>, enterId:Long): Long{
+        var idMap = Array(100){ i -> false }
+        idMap[0] = true
+        conditions.map { ( it.id - enterId ).toInt() }.forEach { idMap[it] = true }
+        val result = idMap.indexOf(false)
+        return if(result != -1)( result + enterId ) else { -1 }
+    }
+
+    fun getSlideIdFromOther(id:Long): Long{
+        return (id / Const.COUNT_SLIDE)*COUNT_SLIDE
     }
 }

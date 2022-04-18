@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="spinner_base_style">
+        <item name="android:padding">@dimen/padding_item</item>
+        <item name="android:background">@drawable/bg_round_base</item>
+    </style>
+</resources>

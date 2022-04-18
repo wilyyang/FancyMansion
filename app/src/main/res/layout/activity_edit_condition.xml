@@ -103,7 +103,8 @@
                                         <Spinner
                                             android:id="@+id/spinnerSlideCondition1"
                                             android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"/>
+                                            android:layout_height="wrap_content"
+                                            style="@style/spinner_base_style" />
 
                                     </LinearLayout>
 
@@ -124,7 +125,8 @@
                                         <Spinner
                                             android:id="@+id/spinnerChoiceCondition1"
                                             android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"/>
+                                            android:layout_height="wrap_content"
+                                            style="@style/spinner_base_style"/>
 
                                     </LinearLayout>
 
@@ -153,7 +155,8 @@
                                     <Spinner
                                         android:id="@+id/spinnerOperator"
                                         android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"/>
+                                        android:layout_height="wrap_content"
+                                        style="@style/spinner_base_style"/>
 
                                 </LinearLayout>
 
@@ -165,61 +168,135 @@
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    android:layout_weight="1"
+                                    android:orientation="horizontal"
+                                    android:layout_marginVertical="20dp"
+                                    android:weightSum="2">
+
+                                    <RadioGroup
+                                        android:id="@+id/radioGroupCondOption"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginHorizontal="70dp"
+                                        android:orientation="horizontal"
+                                        android:weightSum="2">
+
+                                        <RadioButton
+                                            android:id="@+id/radioCondCount"
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:background="@drawable/bg_btn_selector"
+                                            android:button="@android:color/transparent"
+                                            android:text="@string/cond_option_count"
+                                            android:gravity="center"/>
+
+                                        <RadioButton
+                                            android:id="@+id/radioCondId"
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:background="@drawable/bg_btn_selector"
+                                            android:button="@android:color/transparent"
+                                            android:text="@string/cond_option_id"
+                                            android:gravity="center"/>
+                                    </RadioGroup>
+                                </LinearLayout>
+
+                                <FrameLayout
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="vertical"
-                                    android:layout_marginVertical="@dimen/margin_default">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="@string/cond_condition_2"
-                                        android:textSize="@dimen/size_book"
-                                        android:textStyle="bold"
-                                        android:layout_marginBottom="@dimen/margin_default"/>
+                                    android:background="@drawable/bg_round_base">
 
                                     <LinearLayout
+                                        android:id="@+id/layoutCondId2"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:orientation="vertical"
-                                        android:layout_marginStart="@dimen/margin_default"
-                                        android:layout_marginBottom="@dimen/margin_default">
+                                        android:padding="@dimen/padding_item"
+                                        android:visibility="invisible">
 
                                         <TextView
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:text="@string/cond_slide"
+                                            android:text="@string/cond_condition_2"
                                             android:textSize="@dimen/size_book"
+                                            android:textStyle="bold"
                                             android:layout_marginBottom="@dimen/margin_default"/>
 
-                                        <Spinner
-                                            android:id="@+id/spinnerSlideCondition2"
+                                        <LinearLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:orientation="vertical"
+                                            android:layout_marginStart="@dimen/margin_default"
+                                            android:layout_marginBottom="@dimen/margin_default">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="@string/cond_slide"
+                                                android:textSize="@dimen/size_book"
+                                                android:layout_marginBottom="@dimen/margin_default"/>
+
+                                            <Spinner
+                                                android:id="@+id/spinnerSlideCondition2"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                style="@style/spinner_base_style"/>
+
+                                        </LinearLayout>
+
+                                        <LinearLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:orientation="vertical"
+                                            android:layout_marginStart="@dimen/margin_default"
+                                            android:layout_marginBottom="@dimen/margin_default">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="@string/cond_choice"
+                                                android:textSize="@dimen/size_book"
+                                                android:layout_marginBottom="@dimen/margin_default"/>
+
+                                            <Spinner
+                                                android:id="@+id/spinnerChoiceCondition2"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                style="@style/spinner_base_style"/>
+
+                                        </LinearLayout>
+
+                                    </LinearLayout>
+
+
+                                    <LinearLayout
+                                        android:id="@+id/layoutCondCount"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:padding="@dimen/padding_item">
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="@string/cond_count"
+                                            android:textSize="@dimen/size_book"
+                                            android:textStyle="bold"
+                                            android:layout_marginBottom="@dimen/margin_default"/>
+
+                                        <NumberPicker
+                                            android:id="@+id/picker_count"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"/>
 
                                     </LinearLayout>
 
-                                    <LinearLayout
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:orientation="vertical"
-                                        android:layout_marginStart="@dimen/margin_default"
-                                        android:layout_marginBottom="@dimen/margin_default">
+                                </FrameLayout>
 
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:text="@string/cond_choice"
-                                            android:textSize="@dimen/size_book"
-                                            android:layout_marginBottom="@dimen/margin_default"/>
-
-                                        <Spinner
-                                            android:id="@+id/spinnerChoiceCondition2"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"/>
-
-                                    </LinearLayout>
-
-                                </LinearLayout>
 
                                 <View
                                     android:layout_width="match_parent"
@@ -244,7 +321,8 @@
                                     <Spinner
                                         android:id="@+id/spinnerNext"
                                         android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"/>
+                                        android:layout_height="wrap_content"
+                                        style="@style/spinner_base_style"/>
 
                                 </LinearLayout>
 
