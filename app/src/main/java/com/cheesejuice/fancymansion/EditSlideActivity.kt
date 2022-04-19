@@ -23,6 +23,7 @@ import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
 import com.cheesejuice.fancymansion.databinding.ActivityEditSlideBinding
 import com.cheesejuice.fancymansion.extension.*
+import com.cheesejuice.fancymansion.model.ChoiceItem
 import com.cheesejuice.fancymansion.view.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -76,12 +77,24 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
 
     private val editChoiceForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                logic = (application as MainApplication).logic!!
-                slideLogic = logic.logics.first { it.slideId == slide.slideId }
+            (application as MainApplication).logic = null
+            (application as MainApplication).slideLogic = null
+            (application as MainApplication).choice?.let {  choiceItem ->
+                when (result.resultCode) {
+                    Const.RESULT_NEW -> {
+                        slideLogic.choiceItems.add(Json.decodeFromString(Json.encodeToString(choiceItem)))
+                    }
+                    Const.RESULT_UPDATE -> {
+                        slideLogic.choiceItems[slideLogic.choiceItems.indexOfFirst { it.id == choiceItem.id }] =
+                            Json.decodeFromString(Json.encodeToString(choiceItem))
+                    }
+                    Const.RESULT_DELETE -> {
+                        slideLogic.choiceItems.removeIf { it.id == choiceItem.id }
+                    }
+                }
+                (application as MainApplication).choice = null
 
                 isChoiceEdit = true
-
                 // Keep user slide edit (not call makeEditSlideScreen)
                 slideTitleListAdapter.datas = logic.logics
                 slideTitleListAdapter.notifyDataSetChanged()
@@ -175,13 +188,12 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         editChoiceListAdapter = EditChoiceListAdapter()
         editChoiceListAdapter.setItemClickListener(object: EditChoiceListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
-                (application as MainApplication).logic =  Json.decodeFromString<Logic>(Json.encodeToString(logic))
+                (application as MainApplication).logic = Json.decodeFromString<Logic>(Json.encodeToString(logic))
+                (application as MainApplication).slideLogic = Json.decodeFromString<SlideLogic>(Json.encodeToString(slideLogic))
 
                 val intent = Intent(this@EditSlideActivity, EditChoiceActivity::class.java).apply {
-                    putExtra(Const.INTENT_SLIDE_ID, slide.slideId)
                     putExtra(Const.INTENT_CHOICE_ID, slideLogic.choiceItems[position].id)
                 }
-
                 editChoiceForResult.launch(intent)
             }
         })
@@ -264,9 +276,9 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             }
             R.id.tvAddChoice -> {
                 (application as MainApplication).logic = Json.decodeFromString<Logic>(Json.encodeToString(logic))
+                (application as MainApplication).slideLogic = Json.decodeFromString<SlideLogic>(Json.encodeToString(slideLogic))
 
-                val intent = Intent(this, EditChoiceActivity::class.java).apply {
-                    putExtra(Const.INTENT_SLIDE_ID, slide.slideId)
+                val intent = Intent(this@EditSlideActivity, EditChoiceActivity::class.java).apply {
                     putExtra(Const.INTENT_CHOICE_ID, Const.ADD_NEW_CHOICE)
                 }
                 editChoiceForResult.launch(intent)

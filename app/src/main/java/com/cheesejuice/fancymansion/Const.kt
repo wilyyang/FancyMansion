@@ -28,6 +28,12 @@ class Const {
         const val INTENT_CONDITION_ID = "INTENT_CONDITION_ID"
         const val INTENT_SHOW_CONDITION = "INTENT_SHOW_CONDITION"
 
+        const val RESULT_NEW = 1
+        const val RESULT_UPDATE = 2
+        const val RESULT_NEW_DELETE = 3
+        const val RESULT_DELETE = 4
+        const val RESULT_CANCEL = 5
+
         // Pref
         const val PREF_SETTING = "PREF_SETTING"
         const val PREF_ONLY_PLAY = "PREF_ONLY_PLAY"

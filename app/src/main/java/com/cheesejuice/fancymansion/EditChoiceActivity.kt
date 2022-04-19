@@ -22,19 +22,33 @@ import com.cheesejuice.fancymansion.view.EditConditionListDragCallback
 import com.cheesejuice.fancymansion.view.EditEnterListAdapter
 import com.cheesejuice.fancymansion.view.EditEnterListDragCallback
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityEditChoiceBinding
-    private lateinit var logic: Logic
-    private lateinit var slideLogic: SlideLogic
+
+    // not modified member
+    private val logic: Logic by lazy {
+        (application as MainApplication).logic!!
+    }
+    private val slideLogic: SlideLogic by lazy {
+        (application as MainApplication).slideLogic!!
+    }
+
+    // copy member
     private lateinit var choice: ChoiceItem
-    private var slideId: Long = Const.ID_NOT_FOUND
+
+    // intent value
     private var choiceId: Long = Const.ID_NOT_FOUND
+
     private var isMenuItemEnabled = true
     private var makeChoice = false
 
+    // ui
     private lateinit var editEnterListAdapter: EditEnterListAdapter
     private lateinit var editShowConditionListAdapter: EditConditionListAdapter
 
@@ -44,7 +58,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
     private val editEnterForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val init = loadData(slideId)
+                val init = loadData()
                 initEditEnterListView()
                 if(init) {
                     makeEditChoiceScreen(choice)
@@ -57,7 +71,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
     private val editShowConditionForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val init = loadData(slideId)
+                val init = loadData()
                 initEditShowConditionListView()
                 if(init) {
                     makeEditChoiceScreen(choice)
@@ -81,13 +95,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
         binding.tvAddEnter.setOnClickListener(this)
         binding.tvAddShowCondition.setOnClickListener(this)
 
-        slideId = intent.getLongExtra(Const.INTENT_SLIDE_ID, Const.ID_NOT_FOUND)
         choiceId = intent.getLongExtra(Const.INTENT_CHOICE_ID, Const.ID_NOT_FOUND)
-        if(slideId == Const.ID_NOT_FOUND || choiceId == Const.ID_NOT_FOUND){
-            makeNotHaveChoice()
-            return
-        }
-
         if (choiceId == Const.ADD_NEW_CHOICE) {
             makeChoice = true
             binding.toolbar.title = getString(R.string.toolbar_add_choice)
@@ -97,7 +105,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
             binding.btnSaveChoice.text = getString(R.string.update_common)
         }
 
-        val init = loadData(slideId, makeChoice)
+        val init = loadData(makeChoice)
         initEditEnterListView()
         initEditShowConditionListView()
         if(init) {
@@ -107,25 +115,18 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun loadData(slideId:Long, makeChoice:Boolean = false): Boolean{
-        (application as MainApplication).logic?.also {  itLogic ->
-            logic = itLogic
-            logic.logics.find { it.slideId == slideId }?.also { itSlideLogic ->
-                slideLogic = itSlideLogic
-                if (makeChoice) {
-                    val nextChoiceId = bookUtil.nextChoiceId(slideLogic)
-                    if(nextChoiceId > 0){
-                        choiceId = nextChoiceId
-                        choice = ChoiceItem(nextChoiceId, getString(R.string.name_choice_prefix))
-                        slideLogic.choiceItems.add(choice)
-                        return true
-                    }
-                } else {
-                    slideLogic.choiceItems.find { it.id == choiceId }?.let {
-                        choice = it
-                        return true
-                    }
-                }
+    private fun loadData(makeChoice:Boolean = false): Boolean{
+        if (makeChoice) {
+            val nextChoiceId = bookUtil.nextChoiceId(slideLogic)
+            if(nextChoiceId > 0){
+                choiceId = nextChoiceId
+                choice = ChoiceItem(nextChoiceId, getString(R.string.name_choice_prefix))
+                return true
+            }
+        } else {
+            slideLogic.choiceItems.find { it.id == choiceId }?.let {
+                choice = Json.decodeFromString(Json.encodeToString(it))
+                return true
             }
         }
         return false
@@ -138,7 +139,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
                 choice.title = binding.etChoiceTitle.text.toString()
 
                 val intent = Intent(this@EditChoiceActivity, EditEnterActivity::class.java).apply {
-                    putExtra(Const.INTENT_SLIDE_ID, slideId)
+                    putExtra(Const.INTENT_SLIDE_ID, slideLogic.slideId)
                     putExtra(Const.INTENT_CHOICE_ID, choiceId)
                     putExtra(Const.INTENT_ENTER_ID, choice.enterItems[position].id)
                 }
@@ -159,7 +160,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
         editShowConditionListAdapter.setItemClickListener(object: EditConditionListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
                 val intent = Intent(this@EditChoiceActivity, EditConditionActivity::class.java).apply {
-                    putExtra(Const.INTENT_SLIDE_ID, slideId)
+                    putExtra(Const.INTENT_SLIDE_ID, slideLogic.slideId)
                     putExtra(Const.INTENT_CHOICE_ID, choiceId)
                     putExtra(Const.INTENT_CONDITION_ID, choice.showConditions[position].id)
                     putExtra(Const.INTENT_SHOW_CONDITION, true)
@@ -207,7 +208,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
                 choice.title = binding.etChoiceTitle.text.toString()
 
                 val intent = Intent(this, EditEnterActivity::class.java).apply {
-                    putExtra(Const.INTENT_SLIDE_ID, slideId)
+                    putExtra(Const.INTENT_SLIDE_ID, slideLogic.slideId)
                     putExtra(Const.INTENT_CHOICE_ID, choiceId)
                     putExtra(Const.INTENT_ENTER_ID, Const.ADD_NEW_ENTER)
                 }
@@ -217,7 +218,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.tvAddShowCondition -> {
                 val intent = Intent(this@EditChoiceActivity, EditConditionActivity::class.java).apply {
-                    putExtra(Const.INTENT_SLIDE_ID, slideId)
+                    putExtra(Const.INTENT_SLIDE_ID, slideLogic.slideId)
                     putExtra(Const.INTENT_CHOICE_ID, choiceId)
                     putExtra(Const.INTENT_CONDITION_ID, Const.ADD_NEW_CONDITION)
                     putExtra(Const.INTENT_SHOW_CONDITION, true)
@@ -228,15 +229,17 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.btnSaveChoice -> {
                 choice.title = binding.etChoiceTitle.text.toString()
-                setResult(Activity.RESULT_OK)
+                (application as MainApplication).choice = choice
+                if(makeChoice){
+                    setResult(Const.RESULT_NEW)
+                }else{
+                    setResult(Const.RESULT_UPDATE)
+                }
                 finish()
             }
 
             R.id.btnCancelChoice -> {
-                if(makeChoice){
-                    slideLogic.choiceItems.removeIf { it.id == choiceId }
-                }
-                setResult(Activity.RESULT_CANCELED)
+                setResult(Const.RESULT_CANCEL)
                 finish()
             }
         }
@@ -256,8 +259,12 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
 
         when(item.itemId) {
             R.id.menu_delete -> {
-                slideLogic.choiceItems.removeIf { it.id == choiceId }
-                setResult(Activity.RESULT_OK)
+                if(makeChoice){
+                    setResult(Const.RESULT_NEW_DELETE)
+                }else{
+                    (application as MainApplication).choice = choice
+                    setResult(Const.RESULT_DELETE)
+                }
                 finish()
             }
         }
