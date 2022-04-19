@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -21,6 +22,7 @@ import com.cheesejuice.fancymansion.model.SlideLogic
 import com.cheesejuice.fancymansion.model.Logic
 import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
+import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.databinding.ActivityEditSlideBinding
 import com.cheesejuice.fancymansion.extension.*
 import com.cheesejuice.fancymansion.model.ChoiceItem
@@ -208,6 +210,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     private fun setSaveFlag(flag:Boolean){
         RoundEditText.onceFocus = flag
         updateImage = flag
+        Log.d(TAG, "setSaveFlag : $updateImage")
         isChoiceEdit = flag
         slideTitleListAdapter.onceMove = flag
         editChoiceListAdapter.onceMove = flag
@@ -258,6 +261,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             question = binding.etSlideQuestion.text.toString()
 
             if(updateImage){
+                Log.d(TAG, "$updateImage")
                 slideImage = fileUtil.makeImageFile(binding.imageViewShowMain.drawable, logic.bookId, slideImage)
             }
             fileUtil.makeSlideFile(logic.bookId, this)
@@ -319,8 +323,8 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             R.id.menu_save -> {
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
                 CoroutineScope(IO).launch {
-                    setSaveFlag(false)
                     saveSlideFile(logic, slide)
+                    setSaveFlag(false)
                     withContext(Main) {
                         slideTitleListAdapter.notifyUpdateSlideTitle(slide.slideId)
                         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
