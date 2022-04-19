@@ -60,14 +60,23 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
 
     private val editEnterConditionForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val init = loadData()
-                initEditConditionListView()
-                if(init) {
-                    makeEditEnterScreen(logic, enterItem)
-                }else{
-                    makeNotHaveEnterItem()
+            (application as MainApplication).enter = null
+            (application as MainApplication).condition?.let {  condition ->
+                when (result.resultCode) {
+                    Const.RESULT_NEW -> {
+                        enterItem.enterConditions.add(Json.decodeFromString(Json.encodeToString(condition)))
+                    }
+                    Const.RESULT_UPDATE -> {
+                        enterItem.enterConditions[enterItem.enterConditions.indexOfFirst { it.id == condition.id }] =
+                            Json.decodeFromString(Json.encodeToString(condition))
+                    }
+                    Const.RESULT_DELETE -> {
+                        enterItem.enterConditions.removeIf { it.id == condition.id }
+                    }
                 }
+
+                makeEditEnterScreen(logic, enterItem)
+                (application as MainApplication).condition = null
             }
         }
 
@@ -126,10 +135,9 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
         editEnterConditionListAdapter = EditConditionListAdapter(bookUtil)
         editEnterConditionListAdapter.setItemClickListener(object: EditConditionListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
+                enterItem.enterSlideId = logic.logics[binding.spinnerSelectSlide.selectedItemPosition].slideId
+                (application as MainApplication).enter = Json.decodeFromString(Json.encodeToString(enterItem))
                 val intent = Intent(this@EditEnterActivity, EditConditionActivity::class.java).apply {
-                    putExtra(Const.INTENT_SLIDE_ID, slideLogic.slideId)
-                    putExtra(Const.INTENT_CHOICE_ID, choice.id)
-                    putExtra(Const.INTENT_ENTER_ID, enterItem.id)
                     putExtra(Const.INTENT_CONDITION_ID, enterItem.enterConditions[position].id)
                     putExtra(Const.INTENT_SHOW_CONDITION, false)
                 }
@@ -201,10 +209,9 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
             }
 
             R.id.tvAddEnterCondition -> {
+                enterItem.enterSlideId = logic.logics[binding.spinnerSelectSlide.selectedItemPosition].slideId
+                (application as MainApplication).enter = Json.decodeFromString(Json.encodeToString(enterItem))
                 val intent = Intent(this@EditEnterActivity, EditConditionActivity::class.java).apply {
-                    putExtra(Const.INTENT_SLIDE_ID, slideLogic.slideId)
-                    putExtra(Const.INTENT_CHOICE_ID, choice.id)
-                    putExtra(Const.INTENT_ENTER_ID, enterItem.id)
                     putExtra(Const.INTENT_CONDITION_ID, Const.ADD_NEW_CONDITION)
                     putExtra(Const.INTENT_SHOW_CONDITION, false)
                 }

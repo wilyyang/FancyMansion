@@ -12,29 +12,41 @@ import android.widget.ArrayAdapter
 import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.databinding.ActivityEditConditionBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
-import com.cheesejuice.fancymansion.model.Condition
-import com.cheesejuice.fancymansion.model.Logic
+import com.cheesejuice.fancymansion.model.*
 import com.cheesejuice.fancymansion.util.BookUtil
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityEditConditionBinding
-    private lateinit var logic: Logic
+
+    // not modified member
+    private val logic: Logic by lazy {
+        (application as MainApplication).logic!!
+    }
+    private val slideLogic: SlideLogic by lazy {
+        (application as MainApplication).slideLogic!!
+    }
+    private val choice: ChoiceItem by lazy {
+        (application as MainApplication).choice!!
+    }
+
+    // copy member
     private lateinit var condition: Condition
-    private var slideId: Long = Const.ID_NOT_FOUND
-    private var choiceId: Long = Const.ID_NOT_FOUND
-    private var enterId: Long = Const.ID_NOT_FOUND
+
+    // intent value
     private var conditionId: Long = Const.ID_NOT_FOUND
+
     private var isMenuItemEnabled = false
     private var isShowCondition = false
     private var makeCondition = false
 
-    @Inject
-    lateinit var bookUtil: BookUtil
-
+    // ui
     private lateinit var selectId1SlideAdapter: ArrayAdapter<String>
     private lateinit var selectId1ChoiceAdapter: ArrayAdapter<String>
     private lateinit var selectId2SlideAdapter: ArrayAdapter<String>
@@ -42,6 +54,9 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
 
     private var choice1InitPos = -1
     private var choice2InitPos = -1
+
+    @Inject
+    lateinit var bookUtil: BookUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,17 +70,8 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
         binding.btnSaveCondition.setOnClickListener (this)
         binding.btnCancelCondition.setOnClickListener (this)
 
-        slideId = intent.getLongExtra(Const.INTENT_SLIDE_ID, Const.ID_NOT_FOUND)
-        choiceId = intent.getLongExtra(Const.INTENT_CHOICE_ID, Const.ID_NOT_FOUND)
-        enterId = intent.getLongExtra(Const.INTENT_ENTER_ID, Const.ID_NOT_FOUND)
         conditionId = intent.getLongExtra(Const.INTENT_CONDITION_ID, Const.ID_NOT_FOUND)
         isShowCondition = intent.getBooleanExtra(Const.INTENT_SHOW_CONDITION, false)
-
-        if( slideId == Const.ID_NOT_FOUND || choiceId == Const.ID_NOT_FOUND || conditionId == Const.ID_NOT_FOUND ||
-            ( !isShowCondition && enterId == Const.ID_NOT_FOUND) ){
-            makeNotHaveCondition()
-            return
-        }
 
         if (conditionId == Const.ADD_NEW_CONDITION) {
             makeCondition = true
@@ -76,9 +82,8 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
             binding.btnSaveCondition.text = getString(R.string.update_common)
         }
 
-        val init = loadData(slideId, choiceId, enterId, conditionId, isShowCondition, makeCondition)
+        val init = loadData(conditionId, isShowCondition, makeCondition)
         initSelectSpinner()
-
         if(init) {
             makeEditConditionScreen(logic, condition)
         }else{
@@ -86,51 +91,38 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun loadData(slideId:Long, choiceId:Long, enterId: Long, _conditionId:Long, isShowCondition:Boolean, makeCondition:Boolean = false): Boolean{
-        (application as MainApplication).logic?.also {  itLogic ->
-            logic = itLogic
-            logic.logics.find {it.slideId == slideId }?.choiceItems?.find{it.id == choiceId }?.also{  itChoice ->
-                if(isShowCondition){
-                    if(makeCondition){
-                        // next show condition id
-                        val showConditionId = bookUtil.nextShowConditionId(itChoice.showConditions, choiceId)
-                        if(showConditionId > 0){
-                            // make show condition
-                            conditionId = showConditionId
-                            condition = Condition(showConditionId)
-                            // add  show condition
-                            itChoice.showConditions.add(condition)
-                            return true
-                        }
-                    }else{
-                        // find show condition
-                        itChoice.showConditions.find {it.id == _conditionId}?.let {
-                            // set  show condition
-                            condition = it
-                            return true
-                        }
+    private fun loadData(_conditionId: Long, isShowCondition: Boolean, makeCondition: Boolean = false): Boolean {
+        if (isShowCondition) {
+            if (makeCondition) {
+                // next show condition id
+                val showConditionId = bookUtil.nextShowConditionId(choice.showConditions, choice.id)
+                if (showConditionId > 0) {
+                    conditionId = showConditionId
+                    condition = Condition(showConditionId)
+                    return true
+                }
+            } else {
+                // find show condition
+                choice.showConditions.find { it.id == _conditionId }?.let {
+                    condition = Json.decodeFromString(Json.encodeToString(it))
+                    return true
+                }
+            }
+        } else {
+            (application as MainApplication).enter?.also { enter ->
+                if (makeCondition) {
+                    // next enter condition id
+                    val enterConditionId = bookUtil.nextEnterConditionId(enter.enterConditions, enter.id)
+                    if (enterConditionId > 0) {
+                        conditionId = enterConditionId
+                        condition = Condition(enterConditionId)
+                        return true
                     }
-                }else{
-                    itChoice.enterItems.find { it.id == enterId }?.enterConditions?.also { itEnterConditions ->
-                        if(makeCondition){
-                            // next enter condition id
-                            val enterConditionId = bookUtil.nextEnterConditionId(itEnterConditions, enterId)
-                            if(enterConditionId > 0){
-                                // make enter condition
-                                conditionId = enterConditionId
-                                condition = Condition(enterConditionId)
-                                // add  enter condition
-                                itEnterConditions.add(condition)
-                                return true
-                            }
-                        }else{
-                            // find enter condition
-                            itEnterConditions.find { it.id == _conditionId }?.let {
-                                // set  enter condition
-                                condition = it
-                                return true
-                            }
-                        }
+                } else {
+                    // find enter condition
+                    enter.enterConditions.find { it.id == _conditionId }?.let {
+                        condition = Json.decodeFromString(Json.encodeToString(it))
+                        return true
                     }
                 }
             }
@@ -349,16 +341,18 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
                     }
                     conditionNext = CondNext.values()[binding.spinnerNext.selectedItemPosition].relName
                 }
-                setResult(Activity.RESULT_OK)
+
+                (application as MainApplication).condition = condition
+                if (makeCondition) {
+                    setResult(Const.RESULT_NEW)
+                } else {
+                    setResult(Const.RESULT_UPDATE)
+                }
                 finish()
             }
 
             R.id.btnCancelCondition -> {
-                if(makeCondition){
-                    deleteCondition(logic, conditionId, isShowCondition)
-                }
-
-                setResult(Activity.RESULT_CANCELED)
+                setResult(Const.RESULT_CANCEL)
                 finish()
             }
         }
@@ -378,25 +372,15 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
 
         when(item.itemId) {
             R.id.menu_delete -> {
-                deleteCondition(logic, conditionId, isShowCondition)
-                setResult(Activity.RESULT_OK)
+                if (makeCondition) {
+                    setResult(Const.RESULT_NEW_DELETE)
+                } else {
+                    (application as MainApplication).condition = condition
+                    setResult(Const.RESULT_DELETE)
+                }
                 finish()
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun deleteCondition(logic: Logic, conditionId:Long, isShowCondition:Boolean){
-        logic.logics.find {
-            it.slideId == slideId
-        }?.choiceItems?.find {
-            it.id == choiceId
-        }?.let { choice ->
-            if (isShowCondition) {
-                choice.showConditions.removeIf { it.id == conditionId }
-            } else {
-                choice.enterItems.find { it.id == enterId }?.enterConditions?.removeIf { it.id == conditionId }
-            }
-        }
     }
 }
