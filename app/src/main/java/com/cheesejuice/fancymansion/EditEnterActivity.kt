@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -15,25 +14,44 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cheesejuice.fancymansion.databinding.ActivityEditEnterBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
+import com.cheesejuice.fancymansion.model.ChoiceItem
 import com.cheesejuice.fancymansion.model.EnterItem
 import com.cheesejuice.fancymansion.model.Logic
+import com.cheesejuice.fancymansion.model.SlideLogic
 import com.cheesejuice.fancymansion.util.BookUtil
 import com.cheesejuice.fancymansion.view.EditConditionListAdapter
 import com.cheesejuice.fancymansion.view.EditConditionListDragCallback
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
     private lateinit var binding: ActivityEditEnterBinding
-    private lateinit var logic: Logic
+
+    // not modified member
+    private val logic: Logic by lazy {
+        (application as MainApplication).logic!!
+    }
+    private val slideLogic: SlideLogic by lazy {
+        (application as MainApplication).slideLogic!!
+    }
+    private val choice: ChoiceItem by lazy {
+        (application as MainApplication).choice!!
+    }
+
+    // copy member
     private lateinit var enterItem: EnterItem
-    private var slideId: Long = Const.ID_NOT_FOUND
-    private var choiceId: Long = Const.ID_NOT_FOUND
+
+    // intent value
     private var enterId: Long = Const.ID_NOT_FOUND
-    private var isMenuItemEnabled = true
+
+    private var isMenuItemEnabled = false
     private var makeEnter = false
 
+    // ui
     private lateinit var editEnterConditionListAdapter: EditConditionListAdapter
     private lateinit var selectSlideAdapter: ArrayAdapter<String>
 
@@ -43,7 +61,7 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
     private val editEnterConditionForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val init = loadData(slideId, choiceId)
+                val init = loadData()
                 initEditConditionListView()
                 if(init) {
                     makeEditEnterScreen(logic, enterItem)
@@ -66,13 +84,7 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
         binding.btnSaveEnter.setOnClickListener (this)
         binding.tvAddEnterCondition.setOnClickListener(this)
 
-        slideId = intent.getLongExtra(Const.INTENT_SLIDE_ID, Const.ID_NOT_FOUND)
-        choiceId = intent.getLongExtra(Const.INTENT_CHOICE_ID, Const.ID_NOT_FOUND)
         enterId = intent.getLongExtra(Const.INTENT_ENTER_ID, Const.ID_NOT_FOUND)
-        if(slideId == Const.ID_NOT_FOUND || choiceId == Const.ID_NOT_FOUND || enterId == Const.ID_NOT_FOUND){
-            makeNotHaveEnterItem()
-            return
-        }
 
         if (enterId == Const.ADD_NEW_ENTER) {
             makeEnter = true
@@ -83,7 +95,7 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
             binding.btnSaveEnter.text = getString(R.string.update_common)
         }
 
-        val init = loadData(slideId, choiceId, makeEnter)
+        val init = loadData(makeEnter)
         initEditConditionListView()
         initSelectSpinner()
         if(init) {
@@ -93,24 +105,18 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
         }
     }
 
-    private fun loadData(slideId:Long, choiceId:Long, makeEnter:Boolean = false): Boolean{
-        (application as MainApplication).logic?.also {  itLogic ->
-            logic = itLogic
-            logic.logics.find {it.slideId == slideId }?.choiceItems?.find{it.id == choiceId }?.enterItems?.also {  enterList ->
-                if (makeEnter) {
-                    val nextEnterId = bookUtil.nextEnterId(enterList, choiceId)
-                    if(nextEnterId > 0){
-                        enterId = nextEnterId
-                        enterItem = EnterItem(nextEnterId)
-                        enterList.add(enterItem)
-                        return true
-                    }
-                }else{
-                    enterList.find {it.id == enterId}?.let {
-                        enterItem = it
-                        return true
-                    }
-                }
+    private fun loadData(makeEnter:Boolean = false): Boolean{
+        if (makeEnter) {
+            val nextEnterId = bookUtil.nextEnterId(choice.enterItems, choice.id)
+            if(nextEnterId > 0){
+                enterId = nextEnterId
+                enterItem = EnterItem(nextEnterId)
+                return true
+            }
+        }else{
+            choice.enterItems.find { it.id == enterId }?.let {
+                enterItem = Json.decodeFromString(Json.encodeToString(it))
+                return true
             }
         }
         return false
@@ -121,8 +127,8 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
         editEnterConditionListAdapter.setItemClickListener(object: EditConditionListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
                 val intent = Intent(this@EditEnterActivity, EditConditionActivity::class.java).apply {
-                    putExtra(Const.INTENT_SLIDE_ID, slideId)
-                    putExtra(Const.INTENT_CHOICE_ID, choiceId)
+                    putExtra(Const.INTENT_SLIDE_ID, slideLogic.slideId)
+                    putExtra(Const.INTENT_CHOICE_ID, choice.id)
                     putExtra(Const.INTENT_ENTER_ID, enterItem.id)
                     putExtra(Const.INTENT_CONDITION_ID, enterItem.enterConditions[position].id)
                     putExtra(Const.INTENT_SHOW_CONDITION, false)
@@ -180,23 +186,24 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
         when(view?.id){
             R.id.btnSaveEnter -> {
                 enterItem.enterSlideId = logic.logics[binding.spinnerSelectSlide.selectedItemPosition].slideId
-                setResult(Activity.RESULT_OK)
+                (application as MainApplication).enter = enterItem
+                if (makeEnter) {
+                    setResult(Const.RESULT_NEW)
+                } else {
+                    setResult(Const.RESULT_UPDATE)
+                }
                 finish()
             }
 
             R.id.btnCancelEnter -> {
-                if(makeEnter){
-                    deleteEnter(logic, slideId, choiceId, enterId)
-                }
-
-                setResult(Activity.RESULT_CANCELED)
+                setResult(Const.RESULT_CANCEL)
                 finish()
             }
 
             R.id.tvAddEnterCondition -> {
                 val intent = Intent(this@EditEnterActivity, EditConditionActivity::class.java).apply {
-                    putExtra(Const.INTENT_SLIDE_ID, slideId)
-                    putExtra(Const.INTENT_CHOICE_ID, choiceId)
+                    putExtra(Const.INTENT_SLIDE_ID, slideLogic.slideId)
+                    putExtra(Const.INTENT_CHOICE_ID, choice.id)
                     putExtra(Const.INTENT_ENTER_ID, enterItem.id)
                     putExtra(Const.INTENT_CONDITION_ID, Const.ADD_NEW_CONDITION)
                     putExtra(Const.INTENT_SHOW_CONDITION, false)
@@ -221,18 +228,15 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
 
         when(item.itemId) {
             R.id.menu_delete -> {
-                deleteEnter(logic, slideId, choiceId, enterId)
-                setResult(Activity.RESULT_OK)
+                if (makeEnter) {
+                    setResult(Const.RESULT_NEW_DELETE)
+                } else {
+                    (application as MainApplication).enter = enterItem
+                    setResult(Const.RESULT_DELETE)
+                }
                 finish()
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun deleteEnter(logic: Logic, slideId:Long, choiceId:Long, enterId:Long){
-        logic.logics.find {
-            it.slideId == slideId }?.choiceItems?.find{
-            it.id == choiceId }?.enterItems?.
-        removeIf { it.id == enterId }
     }
 }

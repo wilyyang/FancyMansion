@@ -45,7 +45,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
     // intent value
     private var choiceId: Long = Const.ID_NOT_FOUND
 
-    private var isMenuItemEnabled = true
+    private var isMenuItemEnabled = false
     private var makeChoice = false
 
     // ui
@@ -57,27 +57,43 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
 
     private val editEnterForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val init = loadData()
-                initEditEnterListView()
-                if(init) {
-                    makeEditChoiceScreen(choice)
-                }else{
-                    makeNotHaveChoice()
+            (application as MainApplication).choice = null
+            (application as MainApplication).enter?.let {  enterItem ->
+                when (result.resultCode) {
+                    Const.RESULT_NEW -> {
+                        choice.enterItems.add(Json.decodeFromString(Json.encodeToString(enterItem)))
+                    }
+                    Const.RESULT_UPDATE -> {
+                        choice.enterItems[choice.enterItems.indexOfFirst { it.id == enterItem.id }] =
+                            Json.decodeFromString(Json.encodeToString(enterItem))
+                    }
+                    Const.RESULT_DELETE -> {
+                        choice.enterItems.removeIf { it.id == enterItem.id }
+                    }
                 }
+                makeEditChoiceScreen(choice)
+                (application as MainApplication).enter = null
             }
         }
 
     private val editShowConditionForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val init = loadData()
-                initEditShowConditionListView()
-                if(init) {
-                    makeEditChoiceScreen(choice)
-                }else{
-                    makeNotHaveChoice()
+            (application as MainApplication).choice = null
+            (application as MainApplication).condition?.let {  condition ->
+                when (result.resultCode) {
+                    Const.RESULT_NEW -> {
+                        choice.showConditions.add(Json.decodeFromString(Json.encodeToString(condition)))
+                    }
+                    Const.RESULT_UPDATE -> {
+                        choice.showConditions[choice.showConditions.indexOfFirst { it.id == condition.id }] =
+                            Json.decodeFromString(Json.encodeToString(condition))
+                    }
+                    Const.RESULT_DELETE -> {
+                        choice.showConditions.removeIf { it.id == condition.id }
+                    }
                 }
+                makeEditChoiceScreen(choice)
+                (application as MainApplication).condition = null
             }
         }
 
@@ -137,10 +153,9 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
         editEnterListAdapter.setItemClickListener(object: EditEnterListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
                 choice.title = binding.etChoiceTitle.text.toString()
+                (application as MainApplication).choice = Json.decodeFromString<ChoiceItem>(Json.encodeToString(choice))
 
                 val intent = Intent(this@EditChoiceActivity, EditEnterActivity::class.java).apply {
-                    putExtra(Const.INTENT_SLIDE_ID, slideLogic.slideId)
-                    putExtra(Const.INTENT_CHOICE_ID, choiceId)
                     putExtra(Const.INTENT_ENTER_ID, choice.enterItems[position].id)
                 }
 
@@ -159,9 +174,10 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
         editShowConditionListAdapter = EditConditionListAdapter(bookUtil)
         editShowConditionListAdapter.setItemClickListener(object: EditConditionListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
+                choice.title = binding.etChoiceTitle.text.toString()
+                (application as MainApplication).choice = Json.decodeFromString<ChoiceItem>(Json.encodeToString(choice))
+
                 val intent = Intent(this@EditChoiceActivity, EditConditionActivity::class.java).apply {
-                    putExtra(Const.INTENT_SLIDE_ID, slideLogic.slideId)
-                    putExtra(Const.INTENT_CHOICE_ID, choiceId)
                     putExtra(Const.INTENT_CONDITION_ID, choice.showConditions[position].id)
                     putExtra(Const.INTENT_SHOW_CONDITION, true)
                 }
@@ -206,10 +222,9 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
         when(view?.id){
             R.id.tvAddEnter -> {
                 choice.title = binding.etChoiceTitle.text.toString()
+                (application as MainApplication).choice = Json.decodeFromString<ChoiceItem>(Json.encodeToString(choice))
 
                 val intent = Intent(this, EditEnterActivity::class.java).apply {
-                    putExtra(Const.INTENT_SLIDE_ID, slideLogic.slideId)
-                    putExtra(Const.INTENT_CHOICE_ID, choiceId)
                     putExtra(Const.INTENT_ENTER_ID, Const.ADD_NEW_ENTER)
                 }
 
@@ -217,9 +232,10 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.tvAddShowCondition -> {
+                choice.title = binding.etChoiceTitle.text.toString()
+                (application as MainApplication).choice = Json.decodeFromString<ChoiceItem>(Json.encodeToString(choice))
+
                 val intent = Intent(this@EditChoiceActivity, EditConditionActivity::class.java).apply {
-                    putExtra(Const.INTENT_SLIDE_ID, slideLogic.slideId)
-                    putExtra(Const.INTENT_CHOICE_ID, choiceId)
                     putExtra(Const.INTENT_CONDITION_ID, Const.ADD_NEW_CONDITION)
                     putExtra(Const.INTENT_SHOW_CONDITION, true)
                 }
