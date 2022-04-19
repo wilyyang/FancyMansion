@@ -31,7 +31,8 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
     private var slideId: Long = Const.ID_NOT_FOUND
     private var choiceId: Long = Const.ID_NOT_FOUND
     private var enterId: Long = Const.ID_NOT_FOUND
-    var isMenuItemEnabled = true
+    private var isMenuItemEnabled = true
+    private var makeEnter = false
 
     private lateinit var editEnterConditionListAdapter: EditConditionListAdapter
     private lateinit var selectSlideAdapter: ArrayAdapter<String>
@@ -73,7 +74,6 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
             return
         }
 
-        var makeEnter = false
         if (enterId == Const.ADD_NEW_ENTER) {
             makeEnter = true
             binding.toolbar.title = getString(R.string.toolbar_add_enter)
@@ -185,6 +185,10 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
             }
 
             R.id.btnCancelEnter -> {
+                if(makeEnter){
+                    deleteEnter(logic, slideId, choiceId, enterId)
+                }
+
                 setResult(Activity.RESULT_CANCELED)
                 finish()
             }
@@ -217,14 +221,18 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
 
         when(item.itemId) {
             R.id.menu_delete -> {
-                logic.logics.find {
-                    it.slideId == slideId }?.choiceItems?.find{
-                    it.id == choiceId }?.enterItems?.
-                    removeIf { it.id == enterId }
+                deleteEnter(logic, slideId, choiceId, enterId)
                 setResult(Activity.RESULT_OK)
                 finish()
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun deleteEnter(logic: Logic, slideId:Long, choiceId:Long, enterId:Long){
+        logic.logics.find {
+            it.slideId == slideId }?.choiceItems?.find{
+            it.id == choiceId }?.enterItems?.
+        removeIf { it.id == enterId }
     }
 }

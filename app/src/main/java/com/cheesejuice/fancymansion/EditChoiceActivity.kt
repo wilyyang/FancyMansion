@@ -32,7 +32,8 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var choice: ChoiceItem
     private var slideId: Long = Const.ID_NOT_FOUND
     private var choiceId: Long = Const.ID_NOT_FOUND
-    var isMenuItemEnabled = true
+    private var isMenuItemEnabled = true
+    private var makeChoice = false
 
     private lateinit var editEnterListAdapter: EditEnterListAdapter
     private lateinit var editShowConditionListAdapter: EditConditionListAdapter
@@ -87,7 +88,6 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
             return
         }
 
-        var makeChoice = false
         if (choiceId == Const.ADD_NEW_CHOICE) {
             makeChoice = true
             binding.toolbar.title = getString(R.string.toolbar_add_choice)
@@ -233,6 +233,9 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.btnCancelChoice -> {
+                if(makeChoice){
+                    slideLogic.choiceItems.removeIf { it.id == choiceId }
+                }
                 setResult(Activity.RESULT_CANCELED)
                 finish()
             }

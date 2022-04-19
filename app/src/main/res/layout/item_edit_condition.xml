@@ -76,8 +76,7 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/size_condition_item"
             android:textStyle="bold"
-            android:layout_marginLeft="@dimen/margin_default"
-            android:layout_marginRight="@dimen/margin_default"
+            android:layout_marginStart="@dimen/margin_default"
             android:text="or"/>
 
     </LinearLayout>
