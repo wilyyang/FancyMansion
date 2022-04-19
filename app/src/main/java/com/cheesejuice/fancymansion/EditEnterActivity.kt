@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -41,7 +42,13 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
     private val editEnterConditionForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
-                // NOT IMPLEMENTED
+                val init = loadData(slideId, choiceId)
+                initEditConditionListView()
+                if(init) {
+                    makeEditEnterScreen(logic, enterItem)
+                }else{
+                    makeNotHaveEnterItem()
+                }
             }
         }
 
@@ -76,10 +83,9 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
             binding.btnSaveEnter.text = getString(R.string.update_common)
         }
 
-        val init = loadData(slideId, choiceId, enterId, makeEnter)
+        val init = loadData(slideId, choiceId, makeEnter)
         initEditConditionListView()
         initSelectSpinner()
-
         if(init) {
             makeEditEnterScreen(logic, enterItem)
         }else{
@@ -87,13 +93,14 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
         }
     }
 
-    private fun loadData(slideId:Long, choiceId:Long, enterId:Long, makeEnter:Boolean = false): Boolean{
+    private fun loadData(slideId:Long, choiceId:Long, makeEnter:Boolean = false): Boolean{
         (application as MainApplication).logic?.also {  itLogic ->
             logic = itLogic
             logic.logics.find {it.slideId == slideId }?.choiceItems?.find{it.id == choiceId }?.enterItems?.also {  enterList ->
                 if (makeEnter) {
                     val nextEnterId = bookUtil.nextEnterId(enterList, choiceId)
                     if(nextEnterId > 0){
+                        enterId = nextEnterId
                         enterItem = EnterItem(nextEnterId)
                         enterList.add(enterItem)
                         return true
@@ -183,7 +190,15 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
             }
 
             R.id.tvAddEnterCondition -> {
-                // NOT IMPLEMENTED
+                val intent = Intent(this@EditEnterActivity, EditConditionActivity::class.java).apply {
+                    putExtra(Const.INTENT_SLIDE_ID, slideId)
+                    putExtra(Const.INTENT_CHOICE_ID, choiceId)
+                    putExtra(Const.INTENT_ENTER_ID, enterItem.id)
+                    putExtra(Const.INTENT_CONDITION_ID, Const.ADD_NEW_CONDITION)
+                    putExtra(Const.INTENT_SHOW_CONDITION, false)
+                }
+
+                editEnterConditionForResult.launch(intent)
             }
         }
     }

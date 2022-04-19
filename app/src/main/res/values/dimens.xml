@@ -7,6 +7,7 @@
     <dimen name="size_question">16sp</dimen>
     <dimen name="size_item">15sp</dimen>
     <dimen name="size_small_brief_id">10sp</dimen>
+    <dimen name="size_condition_item">13sp</dimen>
 
     <dimen name="size_config">13sp</dimen>
 

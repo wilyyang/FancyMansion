@@ -259,8 +259,13 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
 
         // set first value
         binding.spinnerSlideCondition1.run {
-            val slideIdx1 = logic.logics.indexOfFirst {  it.slideId == bookUtil.getSlideIdFromOther(condition.conditionId1) }
-            setSelection(slideIdx1)
+            val slideIdx1 = logic.logics.indexOfFirst {  it.slideId == bookUtil.getSlideIdFromOther(condition.conditionId1) }.let {
+                if (it > 0) {
+                    it
+                } else {
+                    0
+                }
+            }
 
             val choiceIdx1 = logic.logics[slideIdx1].choiceItems.let { list ->
                 list.indexOfFirst { it.id == condition.conditionId1 }.let {
@@ -271,6 +276,8 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
                     }
                 }
             }
+
+            setSelection(slideIdx1)
             binding.spinnerChoiceCondition1.setSelection(choiceIdx1)
         }
 
@@ -324,7 +331,35 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(view: View?) {
         when(view?.id){
             R.id.btnSaveCondition -> {
-                // NOT IMPLEMENTED
+                condition.apply {
+                    val slideLogic1 = logic.logics[binding.spinnerSlideCondition1.selectedItemPosition]
+                    conditionId1 = if(slideLogic1.choiceItems.size == binding.spinnerChoiceCondition1.selectedItemPosition){
+                        slideLogic1.slideId
+                    }else{
+                        slideLogic1.choiceItems[binding.spinnerChoiceCondition1.selectedItemPosition].id
+                    }
+
+                    conditionOp = CondOp.values()[binding.spinnerOperator.selectedItemPosition].opName
+
+                    when(binding.radioGroupCondOption.checkedRadioButtonId){
+                        binding.radioCondCount.id -> {
+                            conditionCount = binding.pickerCount.value
+                            conditionId2 = Const.ID_NOT_FOUND
+                        }
+                        binding.radioCondId.id -> {
+                            conditionCount = 0
+                            val slideLogic2 = logic.logics[binding.spinnerSlideCondition2.selectedItemPosition]
+                            conditionId2 = if(slideLogic2.choiceItems.size == binding.spinnerChoiceCondition2.selectedItemPosition){
+                                slideLogic2.slideId
+                            }else{
+                                slideLogic2.choiceItems[binding.spinnerChoiceCondition2.selectedItemPosition].id
+                            }
+                        }
+                    }
+                    conditionNext = CondNext.values()[binding.spinnerNext.selectedItemPosition].relName
+                }
+                setResult(Activity.RESULT_OK)
+                finish()
             }
 
             R.id.btnCancelCondition -> {
@@ -348,7 +383,16 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
 
         when(item.itemId) {
             R.id.menu_delete -> {
-                // NOT IMPLEMENTED
+                val choice = logic.logics.find {
+                    it.slideId == slideId }?.choiceItems?.find{
+                    it.id == choiceId }
+
+                if(isShowCondition){
+                    choice?.showConditions?.removeIf { it.id == conditionId }
+                }else{
+                    choice?.enterItems?.find { it.id == enterId }?.enterConditions?.removeIf { it.id == conditionId }
+                }
+
                 setResult(Activity.RESULT_OK)
                 finish()
             }
