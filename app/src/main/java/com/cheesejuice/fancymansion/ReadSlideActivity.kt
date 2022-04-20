@@ -21,6 +21,8 @@ class ReadSlideActivity : AppCompatActivity() {
     private lateinit var binding: ActivityReadSlideBinding
     private lateinit var logic: Logic
     private lateinit var slide: Slide
+
+    private lateinit var publishCode: String
     var mode: String = ""
 
     @Inject
@@ -43,6 +45,8 @@ class ReadSlideActivity : AppCompatActivity() {
         // init config & slide object
         val bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, Const.ID_NOT_FOUND)
         var slideId = intent.getLongExtra(Const.INTENT_SLIDE_ID, Const.ID_NOT_FOUND)
+        publishCode = intent.getStringExtra(Const.INTENT_PUBLISH_CODE).orEmpty()
+
         CoroutineScope(Default).launch {
             val logicTemp = fileUtil.getLogicFromFile(bookId)
             val slideTemp = logicTemp?.let {
@@ -59,8 +63,8 @@ class ReadSlideActivity : AppCompatActivity() {
                     slide = slideTemp
 
                     // if not play mode and have save, not count save
-                    val isSave = ((mode != Const.MODE_PLAY) && slideId == bookUtil.getSaveSlideId(logic.bookId))
-                    if(!isSave){ bookUtil.incrementIdCount(logic.bookId, slide.slideId, mode) }
+                    val isSave = ((mode != Const.MODE_PLAY) && slideId == bookUtil.getSaveSlideId(logic.bookId, publishCode))
+                    if(!isSave){ bookUtil.incrementIdCount(logic.bookId, publishCode, slide.slideId, mode) }
 
                     makeSlideScreen(logic, slide)
                 }else{
@@ -83,7 +87,7 @@ class ReadSlideActivity : AppCompatActivity() {
             val passChoiceItems: ArrayList<ChoiceItem> = arrayListOf()
             logic.logics.find { it.slideId == slideId }?.let {
                 for(choiceItem in it.choiceItems){
-                    if(bookUtil.checkConditions(logic.bookId, choiceItem.showConditions, mode)){
+                    if(bookUtil.checkConditions(logic.bookId, publishCode, choiceItem.showConditions, mode)){
                         passChoiceItems.add(choiceItem)
                     }
                 }
@@ -94,7 +98,7 @@ class ReadSlideActivity : AppCompatActivity() {
             val adapter = ChoiceAdapter(passChoiceItems)
             adapter.setItemClickListener(object : ChoiceAdapter.OnItemClickListener {
                 override fun onClick(v: View, choiceItem: ChoiceItem) {
-                    bookUtil.incrementIdCount(logic.bookId, choiceItem.id, mode)
+                    bookUtil.incrementIdCount(logic.bookId, publishCode, choiceItem.id, mode)
                     enterNextSlide(logic, choiceItem)
                 }
             })
@@ -102,7 +106,7 @@ class ReadSlideActivity : AppCompatActivity() {
         }
 
         // Save read slide point
-        bookUtil.setSaveSlideId(logic.bookId, slide.slideId)
+        bookUtil.setSaveSlideId(logic.bookId, publishCode, slide.slideId)
     }
 
     private fun makeNotHaveSlide() {
@@ -118,8 +122,8 @@ class ReadSlideActivity : AppCompatActivity() {
             // Get Next Slide Id
             var nextSlideId = Const.END_SLIDE_ID
             for(enterItem in choiceItem.enterItems) {
-                if(bookUtil.checkConditions(logic.bookId, enterItem.enterConditions, mode)){
-                    bookUtil.incrementIdCount(logic.bookId, enterItem.id, mode)
+                if(bookUtil.checkConditions(logic.bookId, publishCode, enterItem.enterConditions, mode)){
+                    bookUtil.incrementIdCount(logic.bookId, publishCode, enterItem.id, mode)
                     nextSlideId = enterItem.enterSlideId
                     break
                 }
@@ -131,7 +135,7 @@ class ReadSlideActivity : AppCompatActivity() {
             withContext(Main){
                 slideNext?.also {
                     slide = it
-                    bookUtil.incrementIdCount(logic.bookId, slide.slideId, mode)
+                    bookUtil.incrementIdCount(logic.bookId, publishCode, slide.slideId, mode)
                     makeSlideScreen(logic, slide)
                 }?:also {
                     showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)

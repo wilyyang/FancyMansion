@@ -15,21 +15,21 @@ import javax.inject.Inject
 
 class BookUtil @Inject constructor(@ActivityContext private val context: Context){
     // Check Condition
-    fun checkConditions(bookId: Long, conditions: MutableList<Condition>, mode: String): Boolean{
+    fun checkConditions(bookId: Long, publishCode: String, conditions: MutableList<Condition>, mode: String): Boolean{
         var result = true
         var nextLogic = CondNext.AND
         for(condition in conditions){
-            result = nextLogic.check(result, checkCondition(bookId, condition, mode))
+            result = nextLogic.check(result, checkCondition(bookId, publishCode, condition, mode))
             nextLogic = CondNext.from(condition.conditionNext)
             if(result && nextLogic == CondNext.OR) break
         }
         return result
     }
 
-    fun checkCondition(bookId: Long, condition: Condition, mode: String): Boolean =
+    fun checkCondition(bookId: Long, publishCode: String, condition: Condition, mode: String): Boolean =
         condition.run{
-            val count1 = getIdCount(bookId, conditionId1, mode)
-            val count2 = if(conditionId2== Const.NOT_SUPPORT_COND_ID_2) conditionCount else getIdCount(bookId, conditionId2, mode)
+            val count1 = getIdCount(bookId, publishCode, conditionId1, mode)
+            val count2 = if(conditionId2== Const.NOT_SUPPORT_COND_ID_2) conditionCount else getIdCount(bookId, publishCode, conditionId2, mode)
             Log.d(Const.TAG, "mode - $mode check : $conditionId1 ($count1) $conditionOp $conditionId2 ($count2)")
             CondOp.from(conditionOp).check(count1, count2)
         }
@@ -48,32 +48,18 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
         editor.commit()
     }
 
-    fun incrementBookCount():Long{
-        val pref = context.getSharedPreferences(Const.PREF_SETTING, Context.MODE_PRIVATE)
-        val count = pref.getLong(Const.PREF_BOOK_COUNT, 0L) + 1L
-        val editor = pref.edit()
-        editor.putLong(Const.PREF_BOOK_COUNT, count)
-        editor.commit()
-        return count
-    }
-
-    fun getBookCount():Long{
-        val pref = context.getSharedPreferences(Const.PREF_SETTING, Context.MODE_PRIVATE)
-        return pref.getLong(Const.PREF_BOOK_COUNT, 0L)
-    }
-
     // Reading Book Info
-    fun getSaveSlideId(bookId: Long): Long{
+    fun getSaveSlideId(bookId: Long, publishCode:String): Long{
         val pref = context.getSharedPreferences(
-            Const.PREF_PREFIX_BOOK+bookId,
+            Const.PREF_PREFIX_BOOK+bookId+"_"+publishCode,
             Context.MODE_PRIVATE
         )
         return pref.getLong(Const.PREF_SAVE_SLIDE_ID, Const.ID_NOT_FOUND)
     }
 
-    fun setSaveSlideId(bookId: Long, slideId: Long){
+    fun setSaveSlideId(bookId: Long, publishCode:String, slideId: Long){
         val pref = context.getSharedPreferences(
-            Const.PREF_PREFIX_BOOK+bookId,
+            Const.PREF_PREFIX_BOOK+bookId+"_"+publishCode,
             Context.MODE_PRIVATE
         )
         val editor = pref.edit()
@@ -81,20 +67,20 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
         editor.commit()
     }
 
-    fun deleteBookPref(bookId: Long, mode: String){
-        context.deleteSharedPreferences(mode+ Const.PREF_PREFIX_BOOK+bookId)
+    fun deleteBookPref(bookId: Long, publishCode:String, mode: String){
+        context.deleteSharedPreferences(mode+ Const.PREF_PREFIX_BOOK+bookId+"_"+publishCode)
     }
 
     // Book Count
-    private fun getIdCount(bookId: Long, slideId: Long, mode: String):Int{
-        val pref = context.getSharedPreferences(mode+ Const.PREF_PREFIX_BOOK+bookId,
+    private fun getIdCount(bookId: Long, publishCode:String, slideId: Long, mode: String):Int{
+        val pref = context.getSharedPreferences(mode+ Const.PREF_PREFIX_BOOK+bookId+"_"+publishCode,
             Context.MODE_PRIVATE
         )
         return pref.getInt(Const.PREF_PREFIX_COUNT+slideId, 0)
     }
 
-    private fun setIdCount(bookId: Long, slideId: Long, count: Int, mode: String){
-        val pref = context.getSharedPreferences(mode+ Const.PREF_PREFIX_BOOK+bookId,
+    private fun setIdCount(bookId: Long, publishCode:String, slideId: Long, count: Int, mode: String){
+        val pref = context.getSharedPreferences(mode+ Const.PREF_PREFIX_BOOK+bookId+"_"+publishCode,
             Context.MODE_PRIVATE
         )
         val editor = pref.edit()
@@ -102,9 +88,9 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
         editor.commit()
     }
 
-    fun incrementIdCount(bookId: Long, id: Long, mode: String){
-        val count = getIdCount(bookId, id, mode) + 1
-        setIdCount(bookId, id, count, mode)
+    fun incrementIdCount(bookId: Long, publishCode:String, id: Long, mode: String){
+        val count = getIdCount(bookId, publishCode, id, mode) + 1
+        setIdCount(bookId, publishCode, id, count, mode)
     }
 
     // Operator language
@@ -170,6 +156,6 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
     }
 
     fun getSlideIdFromOther(id:Long): Long{
-        return (id / Const.COUNT_SLIDE)*COUNT_SLIDE
+        return (id / COUNT_SLIDE)*COUNT_SLIDE
     }
 }

@@ -94,13 +94,13 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun startBookWithSetting(mod: String, con: Config){
-        val saveSlide = bookUtil.getSaveSlideId(con.bookId)
+        val saveSlide = bookUtil.getSaveSlideId(con.bookId, config.publishCode)
 
         showDialogAndStart(isShow = (mod != Const.MODE_PLAY && saveSlide != ID_NOT_FOUND),
             title = getString(R.string.record_dialog_title), message = getString(R.string.record_dialog_question),
-            onlyOk = { startReadSlideActivity(con.bookId, saveSlide) },  // Start Save Point
-            onlyNo = { bookUtil.deleteBookPref(con.bookId, ""); startReadSlideActivity(con.bookId, FIRST_SLIDE) },
-            noShow = { bookUtil.deleteBookPref(con.bookId, Const.MODE_PLAY); startReadSlideActivity(con.bookId, FIRST_SLIDE)}
+            onlyOk = { startReadSlideActivity(con.bookId, config.publishCode, saveSlide) },  // Start Save Point
+            onlyNo = { bookUtil.deleteBookPref(con.bookId, config.publishCode, ""); startReadSlideActivity(con.bookId, config.publishCode, FIRST_SLIDE) },
+            noShow = { bookUtil.deleteBookPref(con.bookId, config.publishCode, Const.MODE_PLAY); startReadSlideActivity(con.bookId, config.publishCode, FIRST_SLIDE)}
         )
     }
 }

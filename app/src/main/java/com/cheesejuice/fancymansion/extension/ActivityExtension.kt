@@ -31,9 +31,10 @@ import java.io.FileOutputStream
 import java.io.InputStream
 
 // startActivity
-fun Activity.startReadSlideActivity(bookId:Long, slideId: Long){
+fun Activity.startReadSlideActivity(bookId:Long, publishCode:String, slideId: Long){
     val intent = Intent(this, ReadSlideActivity::class.java).apply {
         putExtra(Const.INTENT_BOOK_ID, bookId)
+        putExtra(Const.INTENT_PUBLISH_CODE, publishCode)
         putExtra(Const.INTENT_SLIDE_ID, slideId)
     }
     startActivity(intent)

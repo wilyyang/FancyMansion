@@ -10,7 +10,7 @@ class Sample {
             "bookId":$bookId,
             "version":101001,
             "updateTime":234256544566,
-            "publishId":0,
+            "publishCode":"",
             "title":"나의 고양이 찾기",
             "writer":"팀 치즈쥬스",
             "illustrator":"무료 이미지",

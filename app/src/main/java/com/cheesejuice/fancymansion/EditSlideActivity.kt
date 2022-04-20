@@ -334,7 +334,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             R.id.menu_play -> {
                 startAfterSaveEdits {
                     bookUtil.setOnlyPlay(true)
-                    bookUtil.deleteBookPref(logic.bookId, Const.MODE_PLAY)
+                    bookUtil.deleteBookPref(logic.bookId, "", Const.MODE_PLAY)
 
                     val intent = Intent(this, ReadSlideActivity::class.java).apply {
                         putExtra(Const.INTENT_BOOK_ID, logic.bookId)

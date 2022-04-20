@@ -11,7 +11,7 @@ data class Book(val config: Config, var logic: Logic, var slides: MutableList<Sl
 
 // (1)
 @Serializable
-data class Config(val bookId: Long, var version: Long = 0L, var updateTime: Long = System.currentTimeMillis(), var publishId: Long = 0, var title: String, var writer: String = "", var illustrator: String = "", var description: String = "", var coverImage: String = "", var defaultEndId: Long = END_SLIDE_ID, var readMode: String = "edit")
+data class Config(val bookId: Long, var version: Long = 0L, var updateTime: Long = System.currentTimeMillis(), var publishCode: String = "", var title: String, var writer: String = "", var illustrator: String = "", var description: String = "", var coverImage: String = "", var defaultEndId: Long = END_SLIDE_ID, var readMode: String = "edit")
 
 // (2)
 @Serializable

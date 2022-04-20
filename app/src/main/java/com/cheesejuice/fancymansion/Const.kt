@@ -27,6 +27,7 @@ class Const {
         const val INTENT_ENTER_ID = "INTENT_ENTER_ID"
         const val INTENT_CONDITION_ID = "INTENT_CONDITION_ID"
         const val INTENT_SHOW_CONDITION = "INTENT_SHOW_CONDITION"
+        const val INTENT_PUBLISH_CODE = "INTENT_PUBLISH_CODE"
 
         const val RESULT_NEW = 1
         const val RESULT_UPDATE = 2

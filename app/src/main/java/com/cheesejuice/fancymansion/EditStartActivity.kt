@@ -1,6 +1,5 @@
 package com.cheesejuice.fancymansion
 
-import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -58,7 +57,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
         util.checkRequestPermissions()
 
         fileUtil.initRootFolder()
-        createSampleFiles()
+//        createSampleFiles()
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -72,10 +71,15 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
         binding.imageViewConfigAdd.setOnClickListener(this)
         binding.btnEditBook.setOnClickListener(this)
 
+        fileUtil.getNewEditBookId()
         val isCreate = false //intent.getBooleanExtra(Const.KEY_BOOK_CREATE, false)
         var bookId = 12345L //intent.getLongExtra(Const.KEY_BOOK_ID, KEY_BOOK_ID_NOT_FOUND)
         if(isCreate || bookId == ID_NOT_FOUND){
-            bookId = bookUtil.incrementBookCount()
+            bookId = fileUtil.getNewEditBookId()
+            if(bookId == -1L){
+                util.getAlertDailog(this@EditStartActivity).show()
+                return
+            }
             fileUtil.makeEmptyBook(bookId)
         }
 
@@ -177,7 +181,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                     title = getString(R.string.save_dialog_title), message = getString(R.string.save_dialog_question),
                     onlyOkBackground = { saveConfigFile(config) },
                     onlyNo = { RoundEditText.onceFocus = false; updateImage = false },
-                    always = { bookUtil.setOnlyPlay(true); bookUtil.deleteBookPref(config.bookId, Const.MODE_PLAY);
+                    always = { bookUtil.setOnlyPlay(true); bookUtil.deleteBookPref(config.bookId, config.publishCode, Const.MODE_PLAY);
                         val intent = Intent(this, ReadStartActivity::class.java).apply {
                             putExtra(Const.INTENT_BOOK_ID, config.bookId)
                         }
