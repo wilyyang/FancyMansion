@@ -137,10 +137,10 @@ fun Activity.createSampleFiles(){
 //    }
 
     fileUtil.makeLogicFile(logic)
-
+    val bookPath = File(getExternalFilesDir(null), Const.FILE_DIR_BOOK)
     val array = arrayOf("image_1.gif", "image_2.gif", "image_3.gif", "image_4.gif", "image_5.gif", "image_6.gif", "fish_cat.jpg", "game_end.jpg")
     for (fileName in array){
-        val file = File(getExternalFilesDir(null), Const.FILE_PREFIX_BOOK+ config.bookId + File.separator+fileName)
+        val file = File(bookPath, Const.FILE_PREFIX_BOOK+ config.bookId + File.separator+ Const.FILE_DIR_MEDIA + File.separator+ fileName)
         val input: InputStream = resources.openRawResource(Sample.getSampleImageId(fileName))
         val out = FileOutputStream(file)
         val buff = ByteArray(1024)

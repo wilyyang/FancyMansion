@@ -45,11 +45,19 @@ class Const {
         const val PREF_PREFIX_COUNT = "count_"
 
         // File
+        const val FILE_DIR_BOOK = "book"
+        const val FILE_DIR_MEDIA = "media"
+        const val FILE_DIR_SLIDE = "slide"
+
+        const val FILE_DIR_READONLY = "readonly"
+
         const val FILE_PREFIX_BOOK = "book_"
-        const val FILE_PREFIX_CONFIG = "config_"
-        const val FILE_PREFIX_LOGIC = "logic_"
+        const val FILE_PREFIX_CONFIG = "config"
+        const val FILE_PREFIX_LOGIC = "logic"
         const val FILE_PREFIX_SLIDE = "slide_"
         const val FILE_PREFIX_IMAGE = "image_"
+
+        const val FILE_PREFIX_READ = "read_"
     }
 }
 

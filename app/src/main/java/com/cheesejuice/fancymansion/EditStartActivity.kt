@@ -56,7 +56,9 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
         // temp code
         util.checkRequestPermissions()
-//        createSampleFiles()
+
+        fileUtil.initRootFolder()
+        createSampleFiles()
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
