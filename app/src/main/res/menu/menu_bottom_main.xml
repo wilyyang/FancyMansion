@@ -2,21 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_edit"
+        android:id="@+id/menu_make"
         app:showAsAction="ifRoom"
         android:enabled="true"
-        android:icon="@drawable/add_image"
-        android:title="Edit" />
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="@string/menu_main_make" />
     <item
         android:id="@+id/menu_store"
         app:showAsAction="ifRoom"
         android:enabled="true"
-        android:icon="@drawable/add_image"
-        android:title="Store" />
+        android:icon="@android:drawable/ic_menu_share"
+        android:title="@string/menu_main_store" />
     <item
-        android:id="@+id/menu_read"
+        android:id="@+id/menu_book"
         app:showAsAction="ifRoom"
         android:enabled="true"
-        android:icon="@drawable/add_image"
-        android:title="Read" />
+        android:icon="@android:drawable/ic_menu_my_calendar"
+        android:title="@string/menu_main_book" />
 </menu>

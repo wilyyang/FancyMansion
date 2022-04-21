@@ -2,15 +2,26 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_save"
-        android:icon="@android:drawable/ic_menu_save"
-        android:title="@string/menu_slide_save"
+        android:id="@+id/menu_upload"
+        android:icon="@android:drawable/ic_menu_upload"
+        android:title="@string/menu_book_upload"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/menu_play"
-        android:title="@string/menu_slide_play"
         android:icon="@android:drawable/ic_media_play"
-        app:showAsAction="always">
-    </item>
+        android:title="@string/menu_book_play"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/menu_save"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="@string/menu_book_save"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/menu_delete"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="@string/menu_book_delete"
+        app:showAsAction="ifRoom"/>
 </menu>

@@ -24,6 +24,17 @@
     <string name="menu_slide_save">Slide Save</string>
     <string name="menu_common_delete">Delete</string>
 
+    <string name="menu_book_play">Play Book</string>
+    <string name="menu_book_save">Save Book</string>
+    <string name="menu_book_delete">Delete Book</string>
+    <string name="menu_book_upload">Upload Book</string>
+
+    <string name="menu_main_make">make book</string>
+    <string name="menu_main_book">my book</string>
+    <string name="menu_main_store">book store</string>
+
+    <string name="fab_add">ADD</string>
+
     <string name="start_book">START</string>
     <string name="create_book">CREATE</string>
     <string name="edit_book">EDIT</string>

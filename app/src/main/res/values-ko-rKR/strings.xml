@@ -13,6 +13,17 @@
     <string name="menu_slide_save">슬라이드 저장</string>
     <string name="menu_common_delete">삭제</string>
 
+    <string name="menu_book_play">책 시연</string>
+    <string name="menu_book_save">책 저장</string>
+    <string name="menu_book_delete">책 삭제</string>
+    <string name="menu_book_upload">책 업로드</string>
+
+    <string name="menu_main_make">만들기</string>
+    <string name="menu_main_book">나의 책</string>
+    <string name="menu_main_store">책방</string>
+
+    <string name="fab_add">추가</string>
+
     <string name="toolbar_edit_slide">슬라이드 수정하기</string>
     <string name="toolbar_edit_choice">선택항목 수정하기</string>
     <string name="toolbar_add_choice">선택항목 추가하기</string>

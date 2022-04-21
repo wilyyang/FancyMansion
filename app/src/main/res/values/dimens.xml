@@ -32,6 +32,8 @@
     <dimen name="margin_bsub">30dp</dimen>
     <dimen name="margin_bmain">35dp</dimen>
 
+    <dimen name="margin_fab">16dp</dimen>
+
     <dimen name="margin_title">20dp</dimen>
     <dimen name="margin_detail">15dp</dimen>
     <dimen name="margin_question">25dp</dimen>

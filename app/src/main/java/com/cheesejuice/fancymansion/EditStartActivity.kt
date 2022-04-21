@@ -39,6 +39,8 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
     @Inject
     lateinit var fileUtil: FileUtil
 
+    private var makeBook = false
+
     private lateinit var gallaryForResult: ActivityResultLauncher<Intent>
 
     private val readStartForResult =
@@ -53,12 +55,6 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(binding.root)
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
 
-        // temp code
-        util.checkRequestPermissions()
-
-        fileUtil.initRootFolder()
-//        createSampleFiles()
-
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -72,9 +68,11 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
         binding.btnEditBook.setOnClickListener(this)
 
         fileUtil.getNewEditBookId()
-        val isCreate = false //intent.getBooleanExtra(Const.KEY_BOOK_CREATE, false)
-        var bookId = 12345L //intent.getLongExtra(Const.KEY_BOOK_ID, KEY_BOOK_ID_NOT_FOUND)
+        val isCreate = intent.getBooleanExtra(Const.INTENT_BOOK_CREATE, false)
+        var bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
         if(isCreate || bookId == ID_NOT_FOUND){
+            makeBook = true
+
             bookId = fileUtil.getNewEditBookId()
             if(bookId == -1L){
                 util.getAlertDailog(this@EditStartActivity).show()
@@ -162,17 +160,13 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
         when(item.itemId) {
-            android.R.id.home -> finish()
+            android.R.id.home -> {
+                setResult(Const.RESULT_CANCEL)
+                finish()
+            }
 
-            R.id.menu_save -> {
-                this@EditStartActivity.currentFocus?.let { it.clearFocus() }
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
-                CoroutineScope(IO).launch {
-                    saveConfigFile(config)
-                    withContext(Main) {
-                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
-                    }
-                }
+            R.id.menu_upload -> {
+
             }
 
             R.id.menu_play -> {
@@ -188,6 +182,33 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                         readStartForResult.launch(intent)
                     }
                 )
+            }
+
+            R.id.menu_save -> {
+                this@EditStartActivity.currentFocus?.let { it.clearFocus() }
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+                CoroutineScope(IO).launch {
+                    saveConfigFile(config)
+                    withContext(Main) {
+                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+                    }
+                }
+            }
+
+            R.id.menu_delete -> {
+                this@EditStartActivity.currentFocus?.let { it.clearFocus() }
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+                CoroutineScope(IO).launch {
+                    fileUtil.deleteBookFolder(config.bookId)
+                    withContext(Main) {
+                        if (makeBook) {
+                            setResult(Const.RESULT_NEW_DELETE)
+                        } else {
+                            setResult(Const.RESULT_DELETE)
+                        }
+                        finish()
+                    }
+                }
             }
         }
         return super.onOptionsItemSelected(item)

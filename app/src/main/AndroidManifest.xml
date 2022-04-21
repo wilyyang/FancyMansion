@@ -25,7 +25,9 @@
 
         <activity
             android:name=".EditStartActivity"
-            android:exported="true"/>
+            android:exported="true">
+
+        </activity>
         <activity
             android:name=".EditSlideActivity"
             android:exported="false" />

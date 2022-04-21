@@ -21,6 +21,7 @@ class Const {
         const val COUNT_ENTER_COND = 1L
 
         // Intent
+        const val INTENT_BOOK_CREATE = "INTENT_BOOK_CREATE"
         const val INTENT_BOOK_ID = "INTENT_BOOK_ID"
         const val INTENT_SLIDE_ID = "INTENT_SLIDE_ID"
         const val INTENT_CHOICE_ID = "INTENT_CHOICE_ID"
@@ -44,6 +45,8 @@ class Const {
 
         const val PREF_PREFIX_BOOK = "book_"
         const val PREF_PREFIX_COUNT = "count_"
+
+        const val PREF_MAKE_SAMPLE = "PREF_MAKE_SAMPLE"
 
         // File
         const val FILE_DIR_BOOK = "book"

@@ -7,6 +7,7 @@ import com.cheesejuice.fancymansion.CondOp
 import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.Const.Companion.COUNT_SLIDE
 import com.cheesejuice.fancymansion.R
+import com.cheesejuice.fancymansion.extension.createSampleFiles
 import com.cheesejuice.fancymansion.model.Condition
 import com.cheesejuice.fancymansion.model.EnterItem
 import com.cheesejuice.fancymansion.model.SlideLogic
@@ -86,6 +87,17 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
         val editor = pref.edit()
         editor.putInt(Const.PREF_PREFIX_COUNT+slideId, count)
         editor.commit()
+    }
+
+    fun isSampleMake():Boolean{
+        val pref = context.getSharedPreferences(Const.PREF_SETTING, Context.MODE_PRIVATE)
+        if(!pref.getBoolean(Const.PREF_MAKE_SAMPLE, false)){
+            val editor = pref.edit()
+            editor.putBoolean(Const.PREF_MAKE_SAMPLE, true)
+            editor.commit()
+            return false
+        }
+        return true
     }
 
     fun incrementIdCount(bookId: Long, publishCode:String, id: Long, mode: String){
