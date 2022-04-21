@@ -1,10 +1,13 @@
 package com.cheesejuice.fancymansion.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.cheesejuice.fancymansion.Const
+import com.cheesejuice.fancymansion.EditStartActivity
 import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.databinding.FragmentStoreBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
@@ -15,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class StoreFragment : Fragment() {
+class StoreFragment : Fragment(), View.OnClickListener {
     private var _binding: FragmentStoreBinding? = null
     private val binding get() = _binding!!
 
@@ -32,13 +35,13 @@ class StoreFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentStoreBinding.inflate(inflater, container, false)
-
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
 
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         setHasOptionsMenu(true)
-        binding.toolbar.title = "Store Fragment"
+
+        binding.toolbar.title = getString(R.string.frag_main_store)
 
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
 
@@ -66,5 +69,11 @@ class StoreFragment : Fragment() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onClick(view: View?) {
+        when(view?.id) {
+
+        }
     }
 }

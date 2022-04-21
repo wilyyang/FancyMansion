@@ -33,6 +33,10 @@
     <string name="menu_main_book">my book</string>
     <string name="menu_main_store">book store</string>
 
+    <string name="frag_main_make">Make Book</string>
+    <string name="frag_main_book">My Book List</string>
+    <string name="frag_main_store">Book Store</string>
+
     <string name="fab_add">ADD</string>
 
     <string name="start_book">START</string>

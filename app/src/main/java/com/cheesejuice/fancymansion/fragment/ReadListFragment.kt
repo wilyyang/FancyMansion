@@ -15,7 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ReadListFragment : Fragment() {
+class ReadListFragment : Fragment(), View.OnClickListener {
     private var _binding: FragmentReadListBinding? = null
     private val binding get() = _binding!!
 
@@ -32,13 +32,13 @@ class ReadListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentReadListBinding.inflate(inflater, container, false)
-
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
 
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         setHasOptionsMenu(true)
-        binding.toolbar.title = "Read List Fragment"
+
+        binding.toolbar.title = getString(R.string.frag_main_book)
 
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
 
@@ -66,5 +66,11 @@ class ReadListFragment : Fragment() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onClick(view: View?) {
+        when(view?.id) {
+
+        }
     }
 }

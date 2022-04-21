@@ -20,7 +20,6 @@ import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.io.FilenameFilter
 import java.nio.ByteBuffer
 import javax.inject.Inject
 
@@ -73,6 +72,19 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
             } ?: also { ++id }
         }
         return -1L
+    }
+
+    fun getConfigList(isReadOnly:Boolean = false): List<Config>?{
+        try {
+            return if (isReadOnly) { bookPath } else { readOnlyPath }
+                .listFiles { _, name -> name.startsWith(Const.FILE_PREFIX_BOOK) }
+                ?.map { File(it.absolutePath, Const.FILE_PREFIX_CONFIG + ".json") }
+                ?.filter { it.exists() }
+                ?.map { file -> Json.decodeFromString( FileInputStream(file).bufferedReader().use { it.readText() })}
+        } catch (e: Exception) {
+            Log.d(TAG, "" + e.printStackTrace())
+        }
+        return null
     }
 
     fun makeEmptyBook(bookId: Long): Boolean{

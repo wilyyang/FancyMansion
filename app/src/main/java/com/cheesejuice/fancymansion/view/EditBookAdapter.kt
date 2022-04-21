@@ -4,8 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.cheesejuice.fancymansion.databinding.ItemChoiceBinding
-import com.cheesejuice.fancymansion.model.ChoiceItem
+import com.cheesejuice.fancymansion.databinding.ItemEditBookBinding
 import com.cheesejuice.fancymansion.model.Config
 
 class EditBookAdapter(val datas: MutableList<Config>):
@@ -15,7 +14,7 @@ class EditBookAdapter(val datas: MutableList<Config>):
     private lateinit var itemClickListener : OnItemClickListener
 
     interface OnItemClickListener {
-        fun onClick(v: View, choiceItem: ChoiceItem)
+        fun onClick(v: View, config: Config)
     }
 
     fun setItemClickListener(onItemClickListener: OnItemClickListener) {
@@ -24,7 +23,7 @@ class EditBookAdapter(val datas: MutableList<Config>):
 
     // Override
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
-            = EditBookViewHolder(ItemChoiceBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+            = EditBookViewHolder(ItemEditBookBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
     override fun getItemCount(): Int{
         return datas.size
@@ -32,14 +31,15 @@ class EditBookAdapter(val datas: MutableList<Config>):
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val binding=(holder as EditBookViewHolder).binding
-        binding.tvItemText.text = datas[position].title
+        binding.tvEditBookId.text = "${datas[position].bookId}"
+        binding.tvEditBookTitle.text = "${datas[position].title}"
         holder.apply {
-//            itemView.setOnClickListener {
-//                itemClickListener.onClick(it, datas[this.bindingAdapterPosition])
-//            }
+            itemView.setOnClickListener {
+                itemClickListener.onClick(it, datas[this.bindingAdapterPosition])
+            }
         }
     }
 
     // ViewHolder
-    inner class EditBookViewHolder(val binding: ItemChoiceBinding): RecyclerView.ViewHolder(binding.root)
+    inner class EditBookViewHolder(val binding: ItemEditBookBinding): RecyclerView.ViewHolder(binding.root)
 }
