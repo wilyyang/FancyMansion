@@ -42,10 +42,13 @@ class CommonUtil @Inject constructor(@ActivityContext private val context: Conte
         return true
     }
 
-    val formatss = SimpleDateFormat("yyyy-MM-dd kk:mm:ss", Locale("ko", "KR"))
-    val formatdate = SimpleDateFormat("yyyy-MM-dd", Locale("ko", "KR"))
-    fun longToTimeFormatss(time: Long) = formatss.format(Date(time))
-    fun longToTimeFormatdate(time: Long) = formatdate.format(Date(time))
+
+    companion object{
+        val formatss = SimpleDateFormat("yyyy-MM-dd kk:mm:ss", Locale("ko", "KR"))
+        val formatdate = SimpleDateFormat("yyyy-MM-dd", Locale("ko", "KR"))
+        fun longToTimeFormatss(time: Long) = formatss.format(Date(time))
+        fun longToTimeFormatdate(time: Long) = formatdate.format(Date(time))
+    }
 
     fun getAlertDailog(context: Context,
                        title:String = context.getString(R.string.alert_default_title),

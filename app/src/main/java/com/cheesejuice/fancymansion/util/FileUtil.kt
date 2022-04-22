@@ -74,13 +74,15 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         return -1L
     }
 
-    fun getConfigList(isReadOnly:Boolean = false): List<Config>?{
+    fun getConfigList(isReadOnly:Boolean = false): MutableList<Config>?{
         try {
-            return if (isReadOnly) { bookPath } else { readOnlyPath }
+            return if (isReadOnly) { readOnlyPath } else { bookPath }
                 .listFiles { _, name -> name.startsWith(Const.FILE_PREFIX_BOOK) }
-                ?.map { File(it.absolutePath, Const.FILE_PREFIX_CONFIG + ".json") }
-                ?.filter { it.exists() }
-                ?.map { file -> Json.decodeFromString( FileInputStream(file).bufferedReader().use { it.readText() })}
+                ?.map { File(it.absolutePath, Const.FILE_PREFIX_CONFIG + ".json") }!!
+                .filter { it.exists() }
+                .map { file ->
+                    Json.decodeFromString<Config>(FileInputStream(file).bufferedReader().use { it.readText() })
+                }.toMutableList()
         } catch (e: Exception) {
             Log.d(TAG, "" + e.printStackTrace())
         }
@@ -295,7 +297,7 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
     }
 
     fun getImageFile(bookId: Long, imageName: String, isReadOnly:Boolean = false, publishCode:String = ""): File?{
-        Log.e(Const.TAG, "getImageFile $bookId >> $imageName")
+        Log.e(TAG, "getImageFile $bookId >> $imageName")
 
         val file = if(isReadOnly){
             File(readOnlyPath, Const.FILE_PREFIX_BOOK+ bookId + "_$publishCode" + File.separator + Const.FILE_DIR_MEDIA + File.separator+ imageName)

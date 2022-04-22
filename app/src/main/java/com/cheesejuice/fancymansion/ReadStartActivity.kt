@@ -68,7 +68,7 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
             binding.tvConfigDescription.text = description
 
             binding.tvConfigId.text = "#$bookId"
-            binding.tvConfigTime.text = util.longToTimeFormatss(updateTime)
+            binding.tvConfigTime.text = CommonUtil.longToTimeFormatss(updateTime)
             binding.tvConfigWriter.text = writer
             binding.tvConfigIllustrator.text = illustrator
 

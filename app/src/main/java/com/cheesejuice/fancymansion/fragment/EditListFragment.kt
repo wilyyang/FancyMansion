@@ -25,6 +25,10 @@ import com.cheesejuice.fancymansion.util.FileUtil
 import com.cheesejuice.fancymansion.view.EditBookAdapter
 import com.cheesejuice.fancymansion.view.EditConditionListAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -50,8 +54,16 @@ class EditListFragment : Fragment(), View.OnClickListener {
     private val editStartForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
-            // Update list
-            showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+            CoroutineScope(Dispatchers.Default).launch {
+                val init = loadData()
+                withContext(Dispatchers.Main) {
+                    if(init) {
+                        makeEditList(editList)
+                    }else{
+                        util.getAlertDailog(activity as AppCompatActivity).show()
+                    }
+                }
+            }
         }
 
     override fun onCreateView(
@@ -70,11 +82,15 @@ class EditListFragment : Fragment(), View.OnClickListener {
 
         binding.toolbar.title = getString(R.string.frag_main_make)
 
-        val init = loadData()
-        if(init) {
-            makeEditList(editList)
-        }else{
-            util.getAlertDailog(activity as AppCompatActivity).show()
+        CoroutineScope(Dispatchers.Default).launch {
+            val init = loadData()
+            withContext(Dispatchers.Main) {
+                if(init) {
+                    makeEditList(editList)
+                }else{
+                    util.getAlertDailog(activity as AppCompatActivity).show()
+                }
+            }
         }
         return binding.root
     }
@@ -85,10 +101,7 @@ class EditListFragment : Fragment(), View.OnClickListener {
     }
 
     private fun loadData(): Boolean{
-        val list = fileUtil.getConfigList()?.let {
-            Log.d(TAG, "${it.size}")
-            it as? MutableList<Config>
-        }
+        val list = fileUtil.getConfigList()
         return if(list != null){
             editList = list
             true
@@ -100,10 +113,14 @@ class EditListFragment : Fragment(), View.OnClickListener {
     private fun makeEditList(editList : MutableList<Config>) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
 
-        editBookAdapter = EditBookAdapter(editList)
+        editBookAdapter = EditBookAdapter(editList, fileUtil, requireActivity())
         editBookAdapter.setItemClickListener(object: EditBookAdapter.OnItemClickListener{
             override fun onClick(v: View, config: Config) {
-                //
+                val intent = Intent(activity, EditStartActivity::class.java).apply {
+                    putExtra(Const.INTENT_BOOK_CREATE, false)
+                    putExtra(Const.INTENT_BOOK_ID, config.bookId)
+                }
+                editStartForResult.launch(intent)
             }
 
         })

@@ -54,6 +54,8 @@
     <string name="save_dialog_title">Save Edits</string>
     <string name="save_dialog_question">Save your edits before playing?</string>
 
+    <string name="save_dialog_config_question">Save your edits?</string>
+
     <string name="record_dialog_title">Load Record</string>
     <string name="record_dialog_question">Load your last book record?</string>
 

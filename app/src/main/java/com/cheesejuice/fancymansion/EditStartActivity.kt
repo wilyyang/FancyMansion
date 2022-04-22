@@ -99,14 +99,19 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
         with(conf){
             binding.tvConfigId.text = "#$bookId (v $version)"
-            binding.tvConfigTime.text = util.longToTimeFormatss(updateTime)
+            binding.tvConfigTime.text = CommonUtil.longToTimeFormatss(updateTime)
 
             binding.etConfigTitle.setText(title)
             binding.etConfigWriter.setText(writer)
             binding.etConfigIllustrator.setText(illustrator)
             binding.etConfigDescription.setText(description)
         }
-        Glide.with(applicationContext).load(fileUtil.getImageFile(conf.bookId, conf.coverImage)).into(binding.imageViewShowMain)
+        fileUtil.getImageFile(conf.bookId, conf.coverImage)?.also {
+            Glide.with(applicationContext).load(it).into(binding.imageViewShowMain)
+        }?:also {
+            Glide.with(applicationContext).load(R.drawable.add_image).into(binding.imageViewShowMain)
+        }
+
         binding.btnEditBook.isEnabled = true
     }
 
@@ -191,6 +196,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                     saveConfigFile(config)
                     withContext(Main) {
                         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+                        finish()
                     }
                 }
             }
