@@ -118,7 +118,46 @@ fun Activity.showDialogAndStart(isShow: Boolean, loading: View? = null, main: Vi
 }
 
 // Create Sample
-fun Activity.createSampleFiles(){
+fun Activity.createEditSampleFiles(){
+    val fileUtil = FileUtil(this)
+    val config = Json.decodeFromString<Config>(Sample.getConfigSample(12345))
+    val logic = Json.decodeFromString<Logic>(Sample.getLogicSample(12345))
+
+    fileUtil.makeBookFolder(config.bookId)
+    fileUtil.makeConfigFile(config)
+
+    for(i in 1 .. 9){
+        val slide = Json.decodeFromString<Slide>(Sample.getSlideSample(i * 1_00_00_00_00L))
+        fileUtil.makeSlideFile(config.bookId, slide!!)
+    }
+
+//    for(i in 10 .. 99){
+//        val slide = Json.decodeFromString<Slide>(Sample.getLogicSample(i * 1_00_00_00_00L))
+//        fileUtil.makeSlideJson(config.bookId, slide!!)
+//        logic.logics.add(SlideLogic(slide.slideId, slide.slideTitle))
+//    }
+
+    fileUtil.makeLogicFile(logic)
+    val bookPath = File(getExternalFilesDir(null), Const.FILE_DIR_BOOK)
+    val array = arrayOf("image_1.gif", "image_2.gif", "image_3.gif", "image_4.gif", "image_5.gif", "image_6.gif", "fish_cat.jpg", "game_end.jpg")
+    for (fileName in array){
+        val file = File(bookPath, Const.FILE_PREFIX_BOOK+ config.bookId + File.separator+ Const.FILE_DIR_MEDIA + File.separator+ fileName)
+        val input: InputStream = resources.openRawResource(Sample.getSampleImageId(fileName))
+        val out = FileOutputStream(file)
+        val buff = ByteArray(1024)
+        var read = 0
+        try {
+            while (input.read(buff).also { read = it } > 0) {
+                out.write(buff, 0, read)
+            }
+        } finally {
+            input.close()
+            out.close()
+        }
+    }
+}
+
+fun Activity.createReadOnlySampleFiles(){
     val fileUtil = FileUtil(this)
     val config = Json.decodeFromString<Config>(Sample.getConfigSample(12345))
     val logic = Json.decodeFromString<Logic>(Sample.getLogicSample(12345))

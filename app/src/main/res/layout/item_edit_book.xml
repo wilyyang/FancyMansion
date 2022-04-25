@@ -12,7 +12,6 @@
         android:id="@+id/imageCover"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:background="@drawable/add_image"
         android:padding="@dimen/padding_item" />
 
     <LinearLayout

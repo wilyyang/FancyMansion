@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -15,6 +16,7 @@ import com.cheesejuice.fancymansion.databinding.ActivityEditStartBinding
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
+import com.cheesejuice.fancymansion.Const.Companion.TAG
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
@@ -67,21 +69,19 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
         binding.imageViewConfigAdd.setOnClickListener(this)
         binding.btnEditBook.setOnClickListener(this)
 
-        fileUtil.getNewEditBookId()
         val isCreate = intent.getBooleanExtra(Const.INTENT_BOOK_CREATE, false)
         var bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
-        if(isCreate || bookId == ID_NOT_FOUND){
-            makeBook = true
-
-            bookId = fileUtil.getNewEditBookId()
-            if(bookId == -1L){
-                util.getAlertDailog(this@EditStartActivity).show()
-                return
-            }
-            fileUtil.makeEmptyBook(bookId)
-        }
 
         CoroutineScope(Default).launch {
+            if(isCreate || bookId == ID_NOT_FOUND){
+                makeBook = true
+                bookId = fileUtil.getNewEditBookId()
+
+                if(bookId != -1L){
+                    fileUtil.makeEmptyBook(bookId)
+                }
+            }
+
             val conf = fileUtil.getConfigFromFile(bookId)
             withContext(Main) {
                 conf?.also{

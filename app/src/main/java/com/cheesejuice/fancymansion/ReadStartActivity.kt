@@ -45,7 +45,7 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
 
         binding.btnStartBook.setOnClickListener(this)
 
-        val bookId = 12345L//intent.getLongExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
+        val bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
         CoroutineScope(Default).launch {
             val conf = fileUtil.getConfigFromFile(bookId)
 

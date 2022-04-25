@@ -52,24 +52,21 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
                 id = 0L
             }
 
-            val temp = bookPath.listFiles { _, name -> name.startsWith(Const.FILE_PREFIX_BOOK) }
+            //file id equal to candidate id
+            val sameId = bookPath.listFiles { _, name -> name.startsWith(Const.FILE_PREFIX_BOOK) }
                 ?.map { it.name.substring(Const.FILE_PREFIX_BOOK.length).toLongOrNull() }
-                ?.firstOrNull {
-                    if (it != null) {
-                        it != id
-                    } else {
-                        false
-                    }
-                }
+                ?.firstOrNull { it == id }
 
-            temp?.also {
+            //id count increment if present
+            sameId?.also {
+                ++id
+            } ?: also {
                 pref.edit().apply {
                     putLong(Const.PREF_BOOK_COUNT, id)
                     commit()
                 }
                 return id
-
-            } ?: also { ++id }
+            }
         }
         return -1L
     }

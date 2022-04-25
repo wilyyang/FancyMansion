@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
-        android:id="@+id/menu_upload"
-        android:icon="@android:drawable/ic_menu_upload"
-        android:title="@string/menu_book_upload"
+        android:id="@+id/menu_save"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="@string/menu_book_save"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/menu_delete"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="@string/menu_book_delete"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/menu_play"
         android:icon="@android:drawable/ic_media_play"
         android:title="@string/menu_book_play"
-        app:showAsAction="always"/>
-
-    <item
-        android:id="@+id/menu_save"
-        android:icon="@android:drawable/ic_menu_save"
-        android:title="@string/menu_book_save"
         app:showAsAction="ifRoom"/>
 
     <item
-        android:id="@+id/menu_delete"
-        android:icon="@android:drawable/ic_menu_delete"
-        android:title="@string/menu_book_delete"
+        android:id="@+id/menu_upload"
+        android:icon="@android:drawable/ic_menu_upload"
+        android:title="@string/menu_book_upload"
         app:showAsAction="ifRoom"/>
 </menu>

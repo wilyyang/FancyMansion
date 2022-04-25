@@ -5,7 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.cheesejuice.fancymansion.databinding.ActivityMainBinding
-import com.cheesejuice.fancymansion.extension.createSampleFiles
+import com.cheesejuice.fancymansion.extension.createEditSampleFiles
+import com.cheesejuice.fancymansion.extension.createReadOnlySampleFiles
 import com.cheesejuice.fancymansion.fragment.EditListFragment
 import com.cheesejuice.fancymansion.fragment.ReadListFragment
 import com.cheesejuice.fancymansion.fragment.StoreFragment
@@ -36,7 +37,8 @@ class MainActivity : AppCompatActivity() {
         fileUtil.initRootFolder()
 
         if(!bookUtil.isSampleMake()){
-            createSampleFiles()
+            createEditSampleFiles()
+            createReadOnlySampleFiles()
         }
         // [end] temp code
 

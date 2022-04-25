@@ -7,7 +7,6 @@ import com.cheesejuice.fancymansion.CondOp
 import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.Const.Companion.COUNT_SLIDE
 import com.cheesejuice.fancymansion.R
-import com.cheesejuice.fancymansion.extension.createSampleFiles
 import com.cheesejuice.fancymansion.model.Condition
 import com.cheesejuice.fancymansion.model.EnterItem
 import com.cheesejuice.fancymansion.model.SlideLogic

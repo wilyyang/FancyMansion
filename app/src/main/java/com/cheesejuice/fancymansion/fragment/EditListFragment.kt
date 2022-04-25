@@ -104,6 +104,7 @@ class EditListFragment : Fragment(), View.OnClickListener {
         val list = fileUtil.getConfigList()
         return if(list != null){
             editList = list
+            editList.sortBy { it.title }
             true
         }else{
             false
