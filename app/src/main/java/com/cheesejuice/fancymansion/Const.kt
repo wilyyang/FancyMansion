@@ -9,7 +9,7 @@ class Const {
         const val ADD_NEW_CHOICE = -2L
         const val ADD_NEW_ENTER = -3L
         const val ADD_NEW_CONDITION = -4L
-        const val MODE_PLAY = "play"
+        const val EDIT_PLAY = "EDIT_PLAY"
         const val NOT_SUPPORT_COND_ID_2 = -1L
         const val ID_1_SLIDE = 1_00_00_00_00L
         const val FIRST_SLIDE = 1L
@@ -30,6 +30,8 @@ class Const {
         const val INTENT_SHOW_CONDITION = "INTENT_SHOW_CONDITION"
         const val INTENT_PUBLISH_CODE = "INTENT_PUBLISH_CODE"
 
+        const val INTENT_READ_ONLY = "INTENT_READ_ONLY"
+
         const val RESULT_NEW = 1
         const val RESULT_UPDATE = 2
         const val RESULT_NEW_DELETE = 3
@@ -38,7 +40,7 @@ class Const {
 
         // Pref
         const val PREF_SETTING = "PREF_SETTING"
-        const val PREF_ONLY_PLAY = "PREF_ONLY_PLAY"
+        const val PREF_EDIT_PLAY = "PREF_EDIT_PLAY"
 
         const val PREF_BOOK_COUNT = "PREF_BOOK_COUNT"
         const val PREF_SAVE_SLIDE_ID = "PREF_SAVE_SLIDE_ID"

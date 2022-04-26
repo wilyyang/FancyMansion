@@ -1,6 +1,5 @@
 package com.cheesejuice.fancymansion
 
-import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -25,7 +24,6 @@ import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
 import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.databinding.ActivityEditSlideBinding
 import com.cheesejuice.fancymansion.extension.*
-import com.cheesejuice.fancymansion.model.ChoiceItem
 import com.cheesejuice.fancymansion.view.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -333,8 +331,8 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             }
             R.id.menu_play -> {
                 startAfterSaveEdits {
-                    bookUtil.setOnlyPlay(true)
-                    bookUtil.deleteBookPref(logic.bookId, "", Const.MODE_PLAY)
+                    bookUtil.setEditPlay(true)
+                    bookUtil.deleteBookPref(logic.bookId, "", Const.EDIT_PLAY)
 
                     val intent = Intent(this, ReadSlideActivity::class.java).apply {
                         putExtra(Const.INTENT_BOOK_ID, logic.bookId)

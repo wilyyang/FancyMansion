@@ -79,8 +79,8 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
 
     fun getConfigList(isReadOnly:Boolean = false): MutableList<Config>?{
         try {
-            return if (isReadOnly) { readOnlyPath } else { bookPath }
-                .listFiles { _, name -> name.startsWith(Const.FILE_PREFIX_BOOK) }
+            return if (isReadOnly) { readOnlyPath.listFiles { _, name -> name.startsWith(Const.FILE_PREFIX_READ) } }
+            else { bookPath.listFiles { _, name -> name.startsWith(Const.FILE_PREFIX_BOOK) } }
                 ?.map { File(it.absolutePath, Const.FILE_PREFIX_CONFIG + ".json") }!!
                 .filter { it.exists() }
                 .map { file ->
@@ -113,14 +113,22 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         val config = Json.decodeFromString<Config>(FileInputStream(configFile).bufferedReader().use { it.readText() })
 
         // get publish code
-        config.publishCode = "12345"
+        config.publishCode = "$bookId"
 
         // copy origin folder
-        val target = File(readOnlyPath, Const.FILE_PREFIX_READ+bookId+"_${config.publishCode}")
+        val target = File(bookPath, Const.FILE_PREFIX_READ+bookId+"_${config.publishCode}")
         if(target.exists()){
             target.deleteRecursively()
         }
         dir.copyRecursively(target, overwrite = true)
+
+        val file = File(target, Const.FILE_PREFIX_CONFIG+".json")
+        if(file.exists()){
+            file.delete()
+        }
+        FileOutputStream(file).use {
+            it.write(Json.encodeToString(config).toByteArray())
+        }
 
         // encrypt logic
         val logicFile = File(target, Const.FILE_DIR_CONTENT + File.separator +Const.FILE_PREFIX_LOGIC+".json")
@@ -152,12 +160,11 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
             content.mkdir()
         }
         unzip(target.absolutePath+File.separator+Const.FILE_DIR_CONTENT+".zip",
-            content.absolutePath)
+            target.absolutePath)
         File(target, Const.FILE_DIR_CONTENT+".zip").delete()
     }
 
     // encrypt / decrypt
-
     private val SECRET_KEY = "kvE4bhrMPqadsfer345dv39fmbAnyuwO"
     private val SECRET_IV = SECRET_KEY.substring(0, 16)
 
@@ -261,7 +268,7 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         var config: Config? = null
         try{
             val file = if(isReadOnly){
-                File(readOnlyPath, Const.FILE_PREFIX_BOOK+bookId + "_$publishCode" +File.separator+ Const.FILE_PREFIX_CONFIG+".json")
+                File(readOnlyPath, Const.FILE_PREFIX_READ+bookId + "_$publishCode" +File.separator+ Const.FILE_PREFIX_CONFIG+".json")
             }else{
                 File(bookPath, Const.FILE_PREFIX_BOOK+bookId +File.separator+ Const.FILE_PREFIX_CONFIG+".json")
             }
@@ -271,7 +278,7 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
             }
 
         }catch (e: Exception){
-            Log.d(Const.TAG, ""+e.printStackTrace())
+            Log.d(TAG, ""+e.printStackTrace())
         }
         return config
     }
@@ -297,7 +304,7 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         var logic: Logic? = null
         try{
             val file = if(isReadOnly){
-                File(readOnlyPath, Const.FILE_PREFIX_BOOK+bookId + "_$publishCode" +File.separator + Const.FILE_DIR_CONTENT+File.separator+ Const.FILE_PREFIX_LOGIC+".json")
+                File(readOnlyPath, Const.FILE_PREFIX_READ+bookId + "_$publishCode" +File.separator + Const.FILE_DIR_CONTENT+File.separator+ Const.FILE_PREFIX_LOGIC+".json")
             }else{
                 File(bookPath, Const.FILE_PREFIX_BOOK+bookId +File.separator+ Const.FILE_DIR_CONTENT + File.separator+Const.FILE_PREFIX_LOGIC+".json")
             }
@@ -338,7 +345,7 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         var slide: Slide? = null
         try{
             val file = if(isReadOnly){
-                File(readOnlyPath, Const.FILE_PREFIX_BOOK +bookId + "_$publishCode" + File.separator+ Const.FILE_DIR_CONTENT + File.separator+ Const.FILE_DIR_SLIDE+File.separator+Const.FILE_PREFIX_SLIDE+slideId+".json")
+                File(readOnlyPath, Const.FILE_PREFIX_READ +bookId + "_$publishCode" + File.separator+ Const.FILE_DIR_CONTENT + File.separator+ Const.FILE_DIR_SLIDE+File.separator+Const.FILE_PREFIX_SLIDE+slideId+".json")
             }else{
                 File(bookPath, Const.FILE_PREFIX_BOOK +bookId + File.separator+ Const.FILE_DIR_CONTENT+File.separator+ Const.FILE_DIR_SLIDE+File.separator+Const.FILE_PREFIX_SLIDE+slideId+".json")
             }
@@ -356,7 +363,7 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
     fun deleteSlideFile(bookId: Long, slideId: Long, isReadOnly:Boolean = false, publishCode:String = ""): Boolean{
         try{
             val file = if(isReadOnly){
-                File(readOnlyPath, Const.FILE_PREFIX_BOOK+bookId + "_$publishCode" + File.separator+ Const.FILE_DIR_CONTENT + File.separator+ Const.FILE_DIR_SLIDE+File.separator+Const.FILE_PREFIX_SLIDE+slideId+".json")
+                File(readOnlyPath, Const.FILE_PREFIX_READ+bookId + "_$publishCode" + File.separator+ Const.FILE_DIR_CONTENT + File.separator+ Const.FILE_DIR_SLIDE+File.separator+Const.FILE_PREFIX_SLIDE+slideId+".json")
             }else{
                 File(bookPath, Const.FILE_PREFIX_BOOK+bookId + File.separator+ Const.FILE_DIR_CONTENT +File.separator+ Const.FILE_DIR_SLIDE+File.separator+Const.FILE_PREFIX_SLIDE+slideId+".json")
             }
@@ -415,7 +422,7 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
 
     fun getImageFile(bookId: Long, imageName: String, isReadOnly:Boolean = false, publishCode:String = "", isCover: Boolean = false): File?{
         val file = File( if(isReadOnly){ readOnlyPath } else { bookPath },
-            Const.FILE_PREFIX_BOOK + bookId
+            if(isReadOnly){ Const.FILE_PREFIX_READ } else { Const.FILE_PREFIX_BOOK } + bookId
                     + if(isReadOnly){ "_$publishCode" } else { "" } + File.separator
                     + if(isCover){ "" } else {Const.FILE_DIR_CONTENT + File.separator + Const.FILE_DIR_MEDIA + File.separator }
                     + imageName)

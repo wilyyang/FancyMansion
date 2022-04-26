@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -16,7 +15,6 @@ import com.cheesejuice.fancymansion.databinding.ActivityEditStartBinding
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
-import com.cheesejuice.fancymansion.Const.Companion.TAG
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
@@ -180,7 +178,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                     title = getString(R.string.save_dialog_title), message = getString(R.string.save_dialog_question),
                     onlyOkBackground = { saveConfigFile(config) },
                     onlyNo = { RoundEditText.onceFocus = false; updateImage = false },
-                    always = { bookUtil.setOnlyPlay(true); bookUtil.deleteBookPref(config.bookId, config.publishCode, Const.MODE_PLAY);
+                    always = { bookUtil.setEditPlay(true); bookUtil.deleteBookPref(config.bookId, config.publishCode, Const.EDIT_PLAY);
                         val intent = Intent(this, ReadStartActivity::class.java).apply {
                             putExtra(Const.INTENT_BOOK_ID, config.bookId)
                         }

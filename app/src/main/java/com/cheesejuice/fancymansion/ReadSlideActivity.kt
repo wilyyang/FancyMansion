@@ -40,7 +40,7 @@ class ReadSlideActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        if(bookUtil.getOnlyPlay()) { mode = Const.MODE_PLAY}
+        if(bookUtil.getEditPlay()) { mode = Const.EDIT_PLAY}
 
         // init config & slide object
         val bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, Const.ID_NOT_FOUND)
@@ -48,13 +48,13 @@ class ReadSlideActivity : AppCompatActivity() {
         publishCode = intent.getStringExtra(Const.INTENT_PUBLISH_CODE).orEmpty()
 
         CoroutineScope(Default).launch {
-            val logicTemp = fileUtil.getLogicFromFile(bookId)
+            val logicTemp = fileUtil.getLogicFromFile(bookId, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode)
             val slideTemp = logicTemp?.let {
                 // Slide is First
                 if(slideId == Const.FIRST_SLIDE && it.logics.size > 0){
                     slideId = it.logics[0].slideId
                 }
-                fileUtil.getSlideFromFile(bookId, slideId)
+                fileUtil.getSlideFromFile(bookId, slideId, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode)
             }
 
             withContext(Main) {
@@ -63,7 +63,7 @@ class ReadSlideActivity : AppCompatActivity() {
                     slide = slideTemp
 
                     // if not play mode and have save, not count save
-                    val isSave = ((mode != Const.MODE_PLAY) && slideId == bookUtil.getSaveSlideId(logic.bookId, publishCode))
+                    val isSave = ((mode != Const.EDIT_PLAY) && slideId == bookUtil.getSaveSlideId(logic.bookId, publishCode))
                     if(!isSave){ bookUtil.incrementIdCount(logic.bookId, publishCode, slide.slideId, mode) }
 
                     makeSlideScreen(logic, slide)
@@ -78,7 +78,9 @@ class ReadSlideActivity : AppCompatActivity() {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
         with(slide){
             // Make Main Content
-            Glide.with(applicationContext).load(fileUtil.getImageFile(logic.bookId, slideImage)).into(binding.imageViewShowMain)
+            Glide.with(applicationContext)
+                .load(fileUtil.getImageFile(logic.bookId, slideImage, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode))
+                .into(binding.imageViewShowMain)
             binding.tvSlideTitle.text = slideTitle
             binding.tvSlideDescription.text = description
             binding.tvSlideQuestion.text = question
@@ -129,7 +131,7 @@ class ReadSlideActivity : AppCompatActivity() {
                 }
             }
 
-            val slideNext = fileUtil.getSlideFromFile(logic.bookId, nextSlideId)
+            val slideNext = fileUtil.getSlideFromFile(logic.bookId, nextSlideId, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode)
 
             delay(100)
             withContext(Main){

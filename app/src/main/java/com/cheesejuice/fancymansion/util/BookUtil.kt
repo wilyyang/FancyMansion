@@ -36,15 +36,15 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
 
 
     // Setting Pref
-    fun getOnlyPlay(): Boolean{
+    fun getEditPlay(): Boolean{
         val pref = context.getSharedPreferences(Const.PREF_SETTING, Context.MODE_PRIVATE)
-        return pref.getBoolean(Const.PREF_ONLY_PLAY, false)
+        return pref.getBoolean(Const.PREF_EDIT_PLAY, false)
     }
 
-    fun setOnlyPlay(onlyPlay: Boolean){
+    fun setEditPlay(editPlay: Boolean){
         val pref = context.getSharedPreferences(Const.PREF_SETTING, Context.MODE_PRIVATE)
         val editor = pref.edit()
-        editor.putBoolean(Const.PREF_ONLY_PLAY, onlyPlay)
+        editor.putBoolean(Const.PREF_EDIT_PLAY, editPlay)
         editor.commit()
     }
 

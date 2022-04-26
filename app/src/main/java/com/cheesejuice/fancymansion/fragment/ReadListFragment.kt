@@ -1,23 +1,35 @@
 package com.cheesejuice.fancymansion.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.cheesejuice.fancymansion.R
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.cheesejuice.fancymansion.*
 import com.cheesejuice.fancymansion.databinding.FragmentReadListBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
+import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.BookUtil
 import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FileUtil
+import com.cheesejuice.fancymansion.view.EditBookAdapter
+import com.cheesejuice.fancymansion.view.ReadBookAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ReadListFragment : Fragment(), View.OnClickListener {
+class ReadListFragment : Fragment() {
     private var _binding: FragmentReadListBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var readList : MutableList<Config>
 
     @Inject
     lateinit var util: CommonUtil
@@ -25,6 +37,24 @@ class ReadListFragment : Fragment(), View.OnClickListener {
     lateinit var bookUtil: BookUtil
     @Inject
     lateinit var fileUtil: FileUtil
+
+    // ui
+    private lateinit var readBookAdapter: ReadBookAdapter
+
+    private val readStartForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+            CoroutineScope(Dispatchers.Default).launch {
+                val init = loadData()
+                withContext(Dispatchers.Main) {
+                    if(init) {
+                        makeReadList(readList)
+                    }else{
+                        util.getAlertDailog(activity as AppCompatActivity).show()
+                    }
+                }
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,8 +70,16 @@ class ReadListFragment : Fragment(), View.OnClickListener {
 
         binding.toolbar.title = getString(R.string.frag_main_book)
 
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
-
+        CoroutineScope(Dispatchers.Default).launch {
+            val init = loadData()
+            withContext(Dispatchers.Main) {
+                if(init) {
+                    makeReadList(readList)
+                }else{
+                    util.getAlertDailog(activity as AppCompatActivity).show()
+                }
+            }
+        }
         return binding.root
     }
 
@@ -50,27 +88,34 @@ class ReadListFragment : Fragment(), View.OnClickListener {
         _binding = null
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_edit_config, menu)
+    private fun loadData(): Boolean{
+        val list = fileUtil.getConfigList(isReadOnly = true)
+        return if(list != null){
+            readList = list
+            readList.sortBy { it.title }
+            true
+        }else{
+            false
+        }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean
-    {
-        when(item.itemId) {
-            R.id.menu_save -> {
-                Toast.makeText(context, "save clicked", Toast.LENGTH_SHORT).show()
+    private fun makeReadList(readList : MutableList<Config>) {
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+
+        readBookAdapter = ReadBookAdapter(readList, fileUtil, requireActivity())
+        readBookAdapter.setItemClickListener(object: ReadBookAdapter.OnItemClickListener{
+            override fun onClick(v: View, config: Config) {
+                bookUtil.setEditPlay(false)
+                val intent = Intent(activity, ReadStartActivity::class.java).apply {
+                    putExtra(Const.INTENT_BOOK_ID, config.bookId)
+                    putExtra(Const.INTENT_PUBLISH_CODE, config.publishCode)
+                }
+                readStartForResult.launch(intent)
             }
 
-            R.id.menu_play -> {
-                Toast.makeText(context, "play clicked", Toast.LENGTH_SHORT).show()
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
+        })
 
-    override fun onClick(view: View?) {
-        when(view?.id) {
-
-        }
+        binding.recyclerReadBook.layoutManager = LinearLayoutManager(context)
+        binding.recyclerReadBook.adapter = readBookAdapter
     }
 }

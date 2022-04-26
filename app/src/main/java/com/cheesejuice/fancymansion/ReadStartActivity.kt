@@ -41,13 +41,15 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        if(bookUtil.getOnlyPlay()) { mode = Const.MODE_PLAY}
+        if(bookUtil.getEditPlay()) { mode = Const.EDIT_PLAY}
 
         binding.btnStartBook.setOnClickListener(this)
 
         val bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
+        val publishCode = intent.getStringExtra(Const.INTENT_PUBLISH_CODE)?: ""
+
         CoroutineScope(Default).launch {
-            val conf = fileUtil.getConfigFromFile(bookId)
+            val conf = fileUtil.getConfigFromFile(bookId, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode)
 
             withContext(Main) {
                 conf?.also{
@@ -73,7 +75,9 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
             binding.tvConfigIllustrator.text = illustrator
 
         }
-        Glide.with(applicationContext).load(fileUtil.getImageFile(conf.bookId, conf.coverImage, isCover = true)).into(binding.imageViewShowMain)
+        Glide.with(applicationContext)
+            .load(fileUtil.getImageFile(conf.bookId, conf.coverImage, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = config.publishCode, isCover = true))
+            .into(binding.imageViewShowMain)
         binding.btnStartBook.isEnabled = true
     }
 
@@ -96,11 +100,16 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
     private fun startBookWithSetting(mod: String, con: Config){
         val saveSlide = bookUtil.getSaveSlideId(con.bookId, config.publishCode)
 
-        showDialogAndStart(isShow = (mod != Const.MODE_PLAY && saveSlide != ID_NOT_FOUND),
+        showDialogAndStart(isShow = (mod != Const.EDIT_PLAY && saveSlide != ID_NOT_FOUND),
             title = getString(R.string.record_dialog_title), message = getString(R.string.record_dialog_question),
             onlyOk = { startReadSlideActivity(con.bookId, config.publishCode, saveSlide) },  // Start Save Point
             onlyNo = { bookUtil.deleteBookPref(con.bookId, config.publishCode, ""); startReadSlideActivity(con.bookId, config.publishCode, FIRST_SLIDE) },
-            noShow = { bookUtil.deleteBookPref(con.bookId, config.publishCode, Const.MODE_PLAY); startReadSlideActivity(con.bookId, config.publishCode, FIRST_SLIDE)}
+            noShow = {
+                if(mod == Const.EDIT_PLAY){
+                    bookUtil.deleteBookPref(con.bookId, config.publishCode, Const.EDIT_PLAY)
+                }
+                startReadSlideActivity(con.bookId, config.publishCode, FIRST_SLIDE)
+            }
         )
     }
 }
