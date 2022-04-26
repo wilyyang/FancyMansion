@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.util.Base64
 import android.util.Log
 import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.cheesejuice.fancymansion.Const
@@ -17,10 +18,15 @@ import dagger.hilt.android.qualifiers.ActivityContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
+import net.lingala.zip4j.ZipFile
+import net.lingala.zip4j.model.ZipParameters
+import net.lingala.zip4j.model.enums.CompressionLevel
+import net.lingala.zip4j.model.enums.CompressionMethod
+import java.io.*
 import java.nio.ByteBuffer
+import javax.crypto.Cipher
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 
 class FileUtil @Inject constructor(@ActivityContext private val context: Context){
@@ -96,24 +102,104 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
     }
 
     // ReadOnly File
-    fun copyBookFolder(origin:String, target:String){
+    fun uploadBook(bookId: Long):Boolean{
+        val dir = File(bookPath, Const.FILE_PREFIX_BOOK+bookId)
+        if(!dir.exists()){
+            return false
+        }
 
+        // get config
+        val configFile = File(dir, Const.FILE_PREFIX_CONFIG+".json")
+        val config = Json.decodeFromString<Config>(FileInputStream(configFile).bufferedReader().use { it.readText() })
+
+        // get publish code
+        config.publishCode = "12345"
+
+        // copy origin folder
+        val target = File(readOnlyPath, Const.FILE_PREFIX_READ+bookId+"_${config.publishCode}")
+        if(target.exists()){
+            target.deleteRecursively()
+        }
+        dir.copyRecursively(target, overwrite = true)
+
+        // encrypt logic
+        val logicFile = File(target, Const.FILE_DIR_CONTENT + File.separator +Const.FILE_PREFIX_LOGIC+".json")
+        if(logicFile.exists()){
+            val logic = Json.decodeFromString<Logic>(FileInputStream(logicFile).bufferedReader().use { it.readText() })
+            logicFile.delete()
+            FileOutputStream(logicFile).use {
+                it.write(encryptCBC(Json.encodeToString(logic)).toByteArray())
+            }
+        }else{
+            target.deleteRecursively()
+            return false
+        }
+
+        // compress folder
+        zipFolder(target.absolutePath + File.separator + Const.FILE_DIR_CONTENT, target.absolutePath + File.separator+ Const.FILE_DIR_CONTENT+".zip")
+        File(target, Const.FILE_DIR_CONTENT).deleteRecursively()
+
+        // upload
+
+        // delete zip file
+        //File(bookPath, Const.FILE_PREFIX_READ+12345+"_12345").deleteRecursively()
+        return true
     }
 
-    fun encrypt(){
-
+    fun extractBook(target:File){
+        val content = File(target, Const.FILE_DIR_CONTENT)
+        if(!content.exists()){
+            content.mkdir()
+        }
+        unzip(target.absolutePath+File.separator+Const.FILE_DIR_CONTENT+".zip",
+            content.absolutePath)
+        File(target, Const.FILE_DIR_CONTENT+".zip").delete()
     }
 
-    fun compressBookFolder(){
+    // encrypt / decrypt
 
+    private val SECRET_KEY = "kvE4bhrMPqadsfer345dv39fmbAnyuwO"
+    private val SECRET_IV = SECRET_KEY.substring(0, 16)
+
+    private fun encryptCBC(target: String): String {
+        val iv = IvParameterSpec(SECRET_IV.toByteArray())
+        val keySpec = SecretKeySpec(
+            SECRET_KEY.toByteArray(),
+            "AES"
+        )
+        val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING").apply {
+            init(Cipher.ENCRYPT_MODE, keySpec, iv)
+        }
+
+        val crypted = cipher.doFinal(target.toByteArray())
+        val encodedByte = Base64.encode(crypted, Base64.DEFAULT)
+        return String(encodedByte)
     }
 
-    fun moveBookFolder(){
-
+    private fun decryptCBC(target: String): String {
+        val decodedByte: ByteArray = Base64.decode(target, Base64.DEFAULT)
+        val iv = IvParameterSpec(SECRET_IV.toByteArray())
+        val keySpec = SecretKeySpec(SECRET_KEY.toByteArray(), "AES")
+        val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING").apply {
+            init(Cipher.DECRYPT_MODE, keySpec, iv)
+        }
+        val output = cipher.doFinal(decodedByte)
+        return String(output)
     }
 
-    fun uncompressBookFolder(){
+    // compress / uncompress
+    private fun zipFolder(folderPath: String, zipPath: String) {
+        val zipFile = ZipFile(zipPath)
+        val parameters = ZipParameters().apply {
+            compressionMethod = CompressionMethod.getCompressionMethodFromCode(CompressionMethod.DEFLATE.code)
+            compressionLevel = CompressionLevel.NORMAL
+        }
+        zipFile.addFolder(File(folderPath), parameters)
+    }
 
+    fun unzip(zipPath: String, dirPath: String) {
+        val zipFile = ZipFile(zipPath)
+        zipFile.extractAll(dirPath)
     }
 
     // Book Folder
@@ -201,7 +287,7 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
                 it.write(Json.encodeToString(logic).toByteArray())
             }
         }catch (e: Exception){
-            Log.d(Const.TAG, ""+e.printStackTrace())
+            Log.d(TAG, ""+e.printStackTrace())
             return false
         }
         return true
@@ -217,12 +303,16 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
             }
 
             if(file.exists()){
-                val logicJson = FileInputStream(file).bufferedReader().use { it.readText() }
+                val logicJson = if(isReadOnly){
+                    decryptCBC(FileInputStream(file).bufferedReader().use { it.readText() })
+                }else{
+                    FileInputStream(file).bufferedReader().use { it.readText() }
+                }
                 logic = Json.decodeFromString<Logic>(logicJson)
             }
 
         }catch (e: Exception){
-            Log.d(Const.TAG, ""+e.printStackTrace())
+            Log.d(TAG, ""+e.printStackTrace())
         }
         return logic
     }

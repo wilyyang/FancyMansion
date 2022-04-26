@@ -55,7 +55,7 @@ class Const {
         const val FILE_DIR_CONTENT = "content"
 
         const val FILE_DIR_READONLY = "readonly"
-
+        const val FILE_DIR_TEMP = "temp"
 
         const val FILE_PREFIX_BOOK = "book_"
         const val FILE_PREFIX_CONFIG = "config"

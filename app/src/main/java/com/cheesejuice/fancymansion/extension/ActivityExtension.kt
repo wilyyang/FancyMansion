@@ -173,5 +173,15 @@ fun Activity.createEditSampleFiles(){
 }
 
 fun Activity.createReadOnlySampleFiles(){
+    val fileUtil = FileUtil(this)
+    if (fileUtil.uploadBook(12345)) {
+        val path = getExternalFilesDir(null)
+        val bookPath = File(path, Const.FILE_DIR_BOOK)
+        val readOnlyPath = File(path, Const.FILE_DIR_READONLY)
 
+        File(bookPath, Const.FILE_PREFIX_READ+12345+"_12345").copyRecursively(File(readOnlyPath, Const.FILE_PREFIX_READ+12345+"_12345"))
+        File(bookPath, Const.FILE_PREFIX_READ+12345+"_12345").deleteRecursively()
+
+        fileUtil.extractBook(File(readOnlyPath, Const.FILE_PREFIX_READ+12345+"_12345"))
+    }
 }
