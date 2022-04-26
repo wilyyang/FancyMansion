@@ -17,7 +17,8 @@ class Sample {
             "description":"나의 고양이 존 크리스탈을 찾아주세요.. \n누군가 데려간걸까요? \n크리스탈의 친구들을 유심히 살펴보면 단서를 얻을지도 모르죠..",
             "coverImage":"image_1.gif",
             "defaultEndId":100000000,
-            "readMode":"edit"
+            "readMode":"edit",
+            "tagList":[]
         }
         """.trimIndent()
 

@@ -52,8 +52,10 @@ class Const {
         const val FILE_DIR_BOOK = "book"
         const val FILE_DIR_MEDIA = "media"
         const val FILE_DIR_SLIDE = "slide"
+        const val FILE_DIR_CONTENT = "content"
 
         const val FILE_DIR_READONLY = "readonly"
+
 
         const val FILE_PREFIX_BOOK = "book_"
         const val FILE_PREFIX_CONFIG = "config"

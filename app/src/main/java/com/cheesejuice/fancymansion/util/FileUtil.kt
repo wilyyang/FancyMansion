@@ -95,6 +95,27 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         return (makeBookFolder(bookId) && makeConfigFile(config) && makeLogicFile(logic) && makeSlideFile(bookId, slide))
     }
 
+    // ReadOnly File
+    fun copyBookFolder(origin:String, target:String){
+
+    }
+
+    fun encrypt(){
+
+    }
+
+    fun compressBookFolder(){
+
+    }
+
+    fun moveBookFolder(){
+
+    }
+
+    fun uncompressBookFolder(){
+
+    }
+
     // Book Folder
     fun makeBookFolder(bookId: Long): Boolean{
         try{
@@ -103,13 +124,15 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
                 dir.deleteRecursively()
             }
             dir.mkdirs()
-            val media = File(dir, Const.FILE_DIR_MEDIA)
+            val content = File(dir, Const.FILE_DIR_CONTENT)
+            content.mkdirs()
+            val media = File(content, Const.FILE_DIR_MEDIA)
             media.mkdirs()
-            val slide = File(dir, Const.FILE_DIR_SLIDE)
+            val slide = File(content, Const.FILE_DIR_SLIDE)
             slide.mkdirs()
             return true
         }catch (e: Exception){
-            Log.d(Const.TAG, ""+e.printStackTrace())
+            Log.d(TAG, ""+e.printStackTrace())
             return false
         }
     }
@@ -170,7 +193,7 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
     // Logic File
     fun makeLogicFile(logic: Logic): Boolean{
         try{
-            val file = File(bookPath, Const.FILE_PREFIX_BOOK+logic.bookId +File.separator+ Const.FILE_PREFIX_LOGIC+".json")
+            val file = File(bookPath, Const.FILE_PREFIX_BOOK+logic.bookId +File.separator+ Const.FILE_DIR_CONTENT + File.separator + Const.FILE_PREFIX_LOGIC+".json")
             if(file.exists()){
                 file.delete()
             }
@@ -188,9 +211,9 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         var logic: Logic? = null
         try{
             val file = if(isReadOnly){
-                File(readOnlyPath, Const.FILE_PREFIX_BOOK+bookId + "_$publishCode" +File.separator+ Const.FILE_PREFIX_LOGIC+".json")
+                File(readOnlyPath, Const.FILE_PREFIX_BOOK+bookId + "_$publishCode" +File.separator + Const.FILE_DIR_CONTENT+File.separator+ Const.FILE_PREFIX_LOGIC+".json")
             }else{
-                File(bookPath, Const.FILE_PREFIX_BOOK+bookId +File.separator+ Const.FILE_PREFIX_LOGIC+".json")
+                File(bookPath, Const.FILE_PREFIX_BOOK+bookId +File.separator+ Const.FILE_DIR_CONTENT + File.separator+Const.FILE_PREFIX_LOGIC+".json")
             }
 
             if(file.exists()){
@@ -207,7 +230,7 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
     // Slide File
     fun makeSlideFile(bookId: Long, slide: Slide): Boolean{
         try{
-            val file = File(bookPath, Const.FILE_PREFIX_BOOK+bookId +File.separator + Const.FILE_DIR_SLIDE + File.separator+Const.FILE_PREFIX_SLIDE+slide.slideId+".json")
+            val file = File(bookPath, Const.FILE_PREFIX_BOOK+bookId +File.separator + Const.FILE_DIR_CONTENT +File.separator + Const.FILE_DIR_SLIDE + File.separator+Const.FILE_PREFIX_SLIDE+slide.slideId+".json")
             if(file.exists()){
                 file.delete()
             }
@@ -225,9 +248,9 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         var slide: Slide? = null
         try{
             val file = if(isReadOnly){
-                File(readOnlyPath, Const.FILE_PREFIX_BOOK +bookId + "_$publishCode" + File.separator+ Const.FILE_DIR_SLIDE+File.separator+Const.FILE_PREFIX_SLIDE+slideId+".json")
+                File(readOnlyPath, Const.FILE_PREFIX_BOOK +bookId + "_$publishCode" + File.separator+ Const.FILE_DIR_CONTENT + File.separator+ Const.FILE_DIR_SLIDE+File.separator+Const.FILE_PREFIX_SLIDE+slideId+".json")
             }else{
-                File(bookPath, Const.FILE_PREFIX_BOOK +bookId+File.separator+ Const.FILE_DIR_SLIDE+File.separator+Const.FILE_PREFIX_SLIDE+slideId+".json")
+                File(bookPath, Const.FILE_PREFIX_BOOK +bookId + File.separator+ Const.FILE_DIR_CONTENT+File.separator+ Const.FILE_DIR_SLIDE+File.separator+Const.FILE_PREFIX_SLIDE+slideId+".json")
             }
             if(file.exists()){
                 val slideJson = FileInputStream(file).bufferedReader().use { it.readText() }
@@ -243,9 +266,9 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
     fun deleteSlideFile(bookId: Long, slideId: Long, isReadOnly:Boolean = false, publishCode:String = ""): Boolean{
         try{
             val file = if(isReadOnly){
-                File(readOnlyPath, Const.FILE_PREFIX_BOOK+bookId + "_$publishCode" + File.separator+ Const.FILE_DIR_SLIDE+File.separator+Const.FILE_PREFIX_SLIDE+slideId+".json")
+                File(readOnlyPath, Const.FILE_PREFIX_BOOK+bookId + "_$publishCode" + File.separator+ Const.FILE_DIR_CONTENT + File.separator+ Const.FILE_DIR_SLIDE+File.separator+Const.FILE_PREFIX_SLIDE+slideId+".json")
             }else{
-                File(bookPath, Const.FILE_PREFIX_BOOK+bookId +File.separator+ Const.FILE_DIR_SLIDE+File.separator+Const.FILE_PREFIX_SLIDE+slideId+".json")
+                File(bookPath, Const.FILE_PREFIX_BOOK+bookId + File.separator+ Const.FILE_DIR_CONTENT +File.separator+ Const.FILE_DIR_SLIDE+File.separator+Const.FILE_PREFIX_SLIDE+slideId+".json")
             }
             if(file.exists()){
                 file.delete()
@@ -258,14 +281,17 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
     }
 
     // Image File
-    fun makeImageFile(drawable: Drawable?, bookId: Long, imageName: String): String{
-        Log.d(Const.TAG, "makeImageFile >> $bookId $imageName $drawable")
+    fun makeImageFile(drawable: Drawable?, bookId: Long, imageName: String, isCover: Boolean = false): String{
         if(drawable == null || imageName == ""){
             return ""
         }
 
         try{
-            val file = File(bookPath, Const.FILE_PREFIX_BOOK+bookId+ File.separator + Const.FILE_DIR_MEDIA + File.separator+ imageName)
+            val file = if(isCover){
+                File(bookPath, Const.FILE_PREFIX_BOOK+bookId + File.separator + imageName)
+            }else{
+                File(bookPath, Const.FILE_PREFIX_BOOK+bookId + File.separator + Const.FILE_DIR_CONTENT + File.separator + Const.FILE_DIR_MEDIA + File.separator+ imageName)
+            }
             val ext = imageName.split(".").last()
 
             val output = FileOutputStream(file)
@@ -281,7 +307,11 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
                     drawable.bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
                 }else{
                     val name = imageName.split(".").first()
-                    drawable.bitmap.compress(Bitmap.CompressFormat.JPEG, 100, FileOutputStream(File(bookPath, Const.FILE_PREFIX_BOOK+bookId+ File.separator+ Const.FILE_DIR_MEDIA + File.separator+ "$name.jpg")))
+                    if(isCover){
+                        drawable.bitmap.compress(Bitmap.CompressFormat.JPEG, 100, FileOutputStream(File(bookPath, Const.FILE_PREFIX_BOOK+bookId + File.separator + "$name.jpg")))
+                    }else{
+                        drawable.bitmap.compress(Bitmap.CompressFormat.JPEG, 100, FileOutputStream(File(bookPath, Const.FILE_PREFIX_BOOK+bookId + File.separator + Const.FILE_DIR_CONTENT + File.separator+ Const.FILE_DIR_MEDIA + File.separator+ "$name.jpg")))
+                    }
                     return "$name.jpg"
                 }
             }
@@ -293,14 +323,13 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         return imageName
     }
 
-    fun getImageFile(bookId: Long, imageName: String, isReadOnly:Boolean = false, publishCode:String = ""): File?{
-        Log.e(TAG, "getImageFile $bookId >> $imageName")
+    fun getImageFile(bookId: Long, imageName: String, isReadOnly:Boolean = false, publishCode:String = "", isCover: Boolean = false): File?{
+        val file = File( if(isReadOnly){ readOnlyPath } else { bookPath },
+            Const.FILE_PREFIX_BOOK + bookId
+                    + if(isReadOnly){ "_$publishCode" } else { "" } + File.separator
+                    + if(isCover){ "" } else {Const.FILE_DIR_CONTENT + File.separator + Const.FILE_DIR_MEDIA + File.separator }
+                    + imageName)
 
-        val file = if(isReadOnly){
-            File(readOnlyPath, Const.FILE_PREFIX_BOOK+ bookId + "_$publishCode" + File.separator + Const.FILE_DIR_MEDIA + File.separator+ imageName)
-        }else{
-            File(bookPath, Const.FILE_PREFIX_BOOK+ bookId + File.separator + Const.FILE_DIR_MEDIA + File.separator+ imageName)
-        }
         return if(imageName != "" && file.exists()){
             file
         }else{

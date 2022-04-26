@@ -106,7 +106,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             binding.etConfigIllustrator.setText(illustrator)
             binding.etConfigDescription.setText(description)
         }
-        fileUtil.getImageFile(conf.bookId, conf.coverImage)?.also {
+        fileUtil.getImageFile(conf.bookId, conf.coverImage, isCover = true)?.also {
             Glide.with(applicationContext).load(it).into(binding.imageViewShowMain)
         }?:also {
             Glide.with(applicationContext).load(R.drawable.add_image).into(binding.imageViewShowMain)
@@ -126,7 +126,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
             if(updateImage){
                 coverImage = fileUtil.makeImageFile(binding.imageViewShowMain.drawable,
-                    bookId, coverImage)
+                    bookId, coverImage, isCover = true)
             }
             fileUtil.makeConfigFile(this)
         }

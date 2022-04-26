@@ -73,7 +73,7 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
             binding.tvConfigIllustrator.text = illustrator
 
         }
-        Glide.with(applicationContext).load(fileUtil.getImageFile(conf.bookId, conf.coverImage)).into(binding.imageViewShowMain)
+        Glide.with(applicationContext).load(fileUtil.getImageFile(conf.bookId, conf.coverImage, isCover = true)).into(binding.imageViewShowMain)
         binding.btnStartBook.isEnabled = true
     }
 

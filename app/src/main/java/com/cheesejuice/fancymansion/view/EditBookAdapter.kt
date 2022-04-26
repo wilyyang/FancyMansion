@@ -46,7 +46,7 @@ class EditBookAdapter(val datas: MutableList<Config>, val fileUtil: FileUtil, va
             binding.tvEditBookWriter.text = writer
             binding.tvEditBookIllustrator.text = illustrator
 
-            fileUtil.getImageFile(bookId, coverImage)?.also {
+            fileUtil.getImageFile(bookId, coverImage, isCover = true)?.also {
                 Glide.with(context).load(it).into(binding.imageCover)
             }?:also {
                 Glide.with(context).load(R.drawable.add_image).into(binding.imageCover)
