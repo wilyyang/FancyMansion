@@ -78,9 +78,14 @@ class ReadSlideActivity : AppCompatActivity() {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
         with(slide){
             // Make Main Content
-            Glide.with(applicationContext)
-                .load(fileUtil.getImageFile(logic.bookId, slideImage, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode))
-                .into(binding.imageViewShowMain)
+            fileUtil.getImageFile(logic.bookId, slideImage, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode)
+                ?.also {
+                    Glide.with(applicationContext).load(it).into(binding.imageViewShowMain)
+                } ?: also {
+                Glide.with(applicationContext).load(R.drawable.add_image)
+                    .into(binding.imageViewShowMain)
+            }
+
             binding.tvSlideTitle.text = slideTitle
             binding.tvSlideDescription.text = description
             binding.tvSlideQuestion.text = question

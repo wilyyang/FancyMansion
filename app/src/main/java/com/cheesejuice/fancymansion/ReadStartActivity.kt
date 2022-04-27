@@ -2,6 +2,7 @@ package com.cheesejuice.fancymansion
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.bumptech.glide.Glide
@@ -75,9 +76,13 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
             binding.tvConfigIllustrator.text = illustrator
 
         }
-        Glide.with(applicationContext)
-            .load(fileUtil.getImageFile(conf.bookId, conf.coverImage, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = config.publishCode, isCover = true))
-            .into(binding.imageViewShowMain)
+        fileUtil.getImageFile(conf.bookId, conf.coverImage, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = config.publishCode, isCover = true)
+            ?.also {
+                Glide.with(applicationContext).load(it).into(binding.imageViewShowMain)
+            } ?: also {
+            Glide.with(applicationContext).load(R.drawable.add_image)
+                .into(binding.imageViewShowMain)
+        }
         binding.btnStartBook.isEnabled = true
     }
 
@@ -89,10 +94,28 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        if(mode != Const.EDIT_PLAY){
+            val inflater = menuInflater
+            inflater.inflate(R.menu.menu_read_config, menu)
+        }
+        return true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
         when(item.itemId) {
             android.R.id.home -> finish()
+
+            R.id.menu_delete -> {
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+                CoroutineScope(Dispatchers.IO).launch {
+                    fileUtil.deleteBookFolder(config.bookId, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = config.publishCode)
+                    withContext(Main) {
+                        finish()
+                    }
+                }
+            }
         }
         return super.onOptionsItemSelected(item)
     }

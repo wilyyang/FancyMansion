@@ -233,7 +233,7 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
     fun deleteBookFolder(bookId: Long, isReadOnly:Boolean = false, publishCode:String = ""): Boolean{
         try{
             val dir = if(isReadOnly){
-                File(readOnlyPath, Const.FILE_PREFIX_BOOK+bookId + "_$publishCode")
+                File(readOnlyPath, Const.FILE_PREFIX_READ+bookId + "_$publishCode")
             }else{
                 File(bookPath, Const.FILE_PREFIX_BOOK+bookId)
             }
@@ -241,7 +241,7 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
                 return dir.deleteRecursively()
             }
         }catch (e: Exception){
-            Log.d(Const.TAG, ""+e.printStackTrace())
+            Log.d(TAG, ""+e.printStackTrace())
             return false
         }
         return true
