@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.cheesejuice.fancymansion">
-
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <application
         android:name=".MainApplication"
         android:allowBackup="true"
@@ -14,20 +13,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FancyMansion">
         <activity
-            android:name=".MainActivity"
+            android:name=".AuthActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
 
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+        </activity>
         <activity
             android:name=".EditStartActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true"/>
         <activity
             android:name=".EditSlideActivity"
             android:exported="false" />
@@ -40,7 +41,6 @@
         <activity
             android:name=".EditConditionActivity"
             android:exported="false" />
-
         <activity
             android:name=".ReadStartActivity"
             android:exported="true" />

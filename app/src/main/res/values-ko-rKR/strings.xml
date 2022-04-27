@@ -22,6 +22,8 @@
     <string name="menu_main_book">나의 책</string>
     <string name="menu_main_store">책방</string>
 
+    <string name="menu_auth_auth">인증</string>
+
     <string name="frag_main_make">책 만들기</string>
     <string name="frag_main_book">내 책 목록</string>
     <string name="frag_main_store">책방</string>

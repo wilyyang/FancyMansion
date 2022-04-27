@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "435120044273-umimo26d3ed8miisjn0fkffj8jdsiara.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cheesejuice.fancymansion",
+            "certificate_hash": "d4905b26fc5106133c16097f7fe5c1b6cea73495"
+          }
+        },
+        {
           "client_id": "435120044273-s22bs8igvotb87djelrib71igr4k944b.apps.googleusercontent.com",
           "client_type": 3
         }

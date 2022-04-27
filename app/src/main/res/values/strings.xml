@@ -33,6 +33,8 @@
     <string name="menu_main_book">my book</string>
     <string name="menu_main_store">book store</string>
 
+    <string name="menu_auth_auth">auth</string>
+
     <string name="frag_main_make">Make Book</string>
     <string name="frag_main_book">My Book List</string>
     <string name="frag_main_store">Book Store</string>
