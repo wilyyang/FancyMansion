@@ -25,6 +25,7 @@ class MainApplication: MultiDexApplication() {
             val currentUser = auth.currentUser
             return currentUser?.let {
                 email = currentUser.email
+
                 currentUser.isEmailVerified
             }?: let{
                 false

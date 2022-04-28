@@ -29,15 +29,19 @@
     <string name="menu_book_delete">Delete Book</string>
     <string name="menu_book_upload">Upload Book</string>
 
+    <string name="menu_user_logout">Log out</string>
+
     <string name="menu_main_make">make book</string>
     <string name="menu_main_book">my book</string>
     <string name="menu_main_store">book store</string>
+    <string name="menu_main_user">my page</string>
 
     <string name="menu_auth_auth">auth</string>
 
     <string name="frag_main_make">Make Book</string>
     <string name="frag_main_book">My Book List</string>
     <string name="frag_main_store">Book Store</string>
+    <string name="frag_main_user">My Page</string>
 
     <string name="fab_add">ADD</string>
 

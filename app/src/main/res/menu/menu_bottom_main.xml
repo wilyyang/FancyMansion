@@ -17,6 +17,13 @@
         android:id="@+id/menu_book"
         app:showAsAction="ifRoom"
         android:enabled="true"
-        android:icon="@android:drawable/ic_menu_my_calendar"
+        android:icon="@android:drawable/ic_menu_agenda"
         android:title="@string/menu_main_book" />
+
+    <item
+        android:id="@+id/menu_user"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_menu_my_calendar"
+        android:title="@string/menu_main_user" />
 </menu>

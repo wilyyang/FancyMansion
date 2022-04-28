@@ -18,15 +18,19 @@
     <string name="menu_book_delete">책 삭제</string>
     <string name="menu_book_upload">책 업로드</string>
 
+    <string name="menu_user_logout">로그아웃</string>
+
     <string name="menu_main_make">만들기</string>
     <string name="menu_main_book">나의 책</string>
     <string name="menu_main_store">책방</string>
+    <string name="menu_main_user">나의 정보</string>
 
     <string name="menu_auth_auth">인증</string>
 
     <string name="frag_main_make">책 만들기</string>
     <string name="frag_main_book">내 책 목록</string>
     <string name="frag_main_store">책방</string>
+    <string name="frag_main_user">나의 정보</string>
 
     <string name="fab_add">추가</string>
 

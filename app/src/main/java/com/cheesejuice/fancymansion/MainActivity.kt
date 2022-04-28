@@ -10,6 +10,7 @@ import com.cheesejuice.fancymansion.extension.createReadOnlySampleFiles
 import com.cheesejuice.fancymansion.fragment.EditListFragment
 import com.cheesejuice.fancymansion.fragment.ReadListFragment
 import com.cheesejuice.fancymansion.fragment.StoreFragment
+import com.cheesejuice.fancymansion.fragment.UserFragment
 import com.cheesejuice.fancymansion.util.BookUtil
 import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FileUtil
@@ -54,6 +55,9 @@ class MainActivity : AppCompatActivity() {
                         }
                         R.id.menu_book -> {
                             ReadListFragment()
+                        }
+                        R.id.menu_user -> {
+                            UserFragment()
                         }
                         else -> {
                             EditListFragment()
