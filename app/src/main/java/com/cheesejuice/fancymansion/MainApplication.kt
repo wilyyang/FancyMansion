@@ -13,6 +13,7 @@ import dagger.hilt.android.HiltAndroidApp
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.firebase.storage.ktx.storage
 
 @HiltAndroidApp
 class MainApplication: MultiDexApplication() {
@@ -27,6 +28,9 @@ class MainApplication: MultiDexApplication() {
         var email: String? = null
         var name: String? = null
         var photoUrl: Uri? = null
+
+        lateinit var db: FirebaseFirestore
+        lateinit var storage: FirebaseStorage
 
         fun checkAuth(): Boolean{
             val currentUser = auth.currentUser
@@ -54,5 +58,8 @@ class MainApplication: MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
         auth = Firebase.auth
+
+        db = FirebaseFirestore.getInstance()
+        storage = Firebase.storage
     }
 }

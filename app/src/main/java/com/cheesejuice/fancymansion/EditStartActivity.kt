@@ -1,12 +1,15 @@
 package com.cheesejuice.fancymansion
 
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -15,6 +18,7 @@ import com.cheesejuice.fancymansion.databinding.ActivityEditStartBinding
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
+import com.cheesejuice.fancymansion.Const.Companion.TAG
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
@@ -25,6 +29,9 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import com.cheesejuice.fancymansion.extension.*
 import com.cheesejuice.fancymansion.view.RoundEditText
+import com.google.firebase.storage.StorageReference
+import java.io.File
+import java.util.*
 
 @AndroidEntryPoint
 class EditStartActivity : AppCompatActivity(), View.OnClickListener {
@@ -170,6 +177,13 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.menu_upload -> {
 
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+                CoroutineScope(IO).launch {
+                    uploadBook()
+                    withContext(Main) {
+                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+                    }
+                }
             }
 
             R.id.menu_play -> {
@@ -216,5 +230,52 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun uploadBook(){
+        MainApplication.auth.uid?.let { userId ->
+            val colRef = MainApplication.db.collection(userId)
+            colRef.add(config)
+                .addOnSuccessListener {
+                    config.apply {
+                        publishCode = it.id
+                        user = MainApplication.name?:""
+                        email = MainApplication.email?:""
+                        uid = userId
+                    }
+                    colRef.document(it.id).set(config).addOnSuccessListener {
+                        fileUtil.makeConfigFile(config)
+                        uploadBookFile()
+
+                    }.addOnFailureListener { exception ->
+                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+                        Toast.makeText(baseContext,"Config update error ${exception.message!!}",Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .addOnFailureListener {
+                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+                    Toast.makeText(baseContext,"Config save error : ${config.bookId}",Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
+    private fun uploadBookFile(){
+        val storage = MainApplication.storage
+        val storageRef: StorageReference = storage.reference
+
+        val localBookFile = fileUtil.compressBook(bookId = config.bookId)
+        localBookFile?.listFiles()?.forEach {  subFile ->
+            val subFileRef: StorageReference = storageRef.child("${config.uid}/${config.publishCode}/${subFile.name}")
+
+            subFileRef.putFile(Uri.fromFile(subFile))
+                .addOnFailureListener{
+                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+                    Toast.makeText(baseContext, "File upload failed", Toast.LENGTH_SHORT).show()
+                }
+                .addOnSuccessListener {
+                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+                    Toast.makeText(baseContext, "File success", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 }

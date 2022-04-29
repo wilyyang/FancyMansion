@@ -174,7 +174,7 @@ fun Activity.createEditSampleFiles(){
 
 fun Activity.createReadOnlySampleFiles(){
     val fileUtil = FileUtil(this)
-    if (fileUtil.uploadBook(12345)) {
+    if (fileUtil.compressBook(12345) != null) {
         val path = getExternalFilesDir(null)
         val bookPath = File(path, Const.FILE_DIR_BOOK)
         val readOnlyPath = File(path, Const.FILE_DIR_READONLY)

@@ -11,6 +11,9 @@ class Sample {
             "version":101001,
             "updateTime":234256544566,
             "publishCode":"",
+            "email":"",
+            "user":"",
+            "uid":"",
             "title":"나의 고양이 찾기",
             "writer":"팀 치즈쥬스",
             "illustrator":"무료 이미지",
@@ -400,7 +403,7 @@ class Sample {
                       "slideId":900000000,
                       "slideTitle":"아니 이 녀석 집에 있었잖아?",
                       "slideImage":"image_4.gif",
-                      "description":"이럴수가! 그렇게 찾았던 존이 언제 돌아와 집에서 자고 있었을까요?\n후.. 걱정도 많이 했지만 귀여우니까 봐준다.\n존 크리스탈.. 오늘도 수고했어..",
+                      "description":"이럴수가! 그렇게 찾았던 존이 언제 돌아와 집에서 자고 있었을까요?\n후.. 걱정도 많이 했지만 귀여우니까 봐준다.\n존 크리스탈.. 넌 내꺼야!..",
                       "question":""
                     } 
                     """.trimIndent()

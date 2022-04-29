@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         if(!bookUtil.isSampleMake()){
             createEditSampleFiles()
-            createReadOnlySampleFiles()
+//            createReadOnlySampleFiles()
         }
         // [end] temp code
 

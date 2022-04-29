@@ -102,10 +102,10 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
     }
 
     // ReadOnly File
-    fun uploadBook(bookId: Long):Boolean{
+    fun compressBook(bookId: Long):File?{
         val dir = File(bookPath, Const.FILE_PREFIX_BOOK+bookId)
         if(!dir.exists()){
-            return false
+            return null
         }
 
         // get config
@@ -140,18 +140,14 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
             }
         }else{
             target.deleteRecursively()
-            return false
+            return null
         }
 
         // compress folder
         zipFolder(target.absolutePath + File.separator + Const.FILE_DIR_CONTENT, target.absolutePath + File.separator+ Const.FILE_DIR_CONTENT+".zip")
         File(target, Const.FILE_DIR_CONTENT).deleteRecursively()
 
-        // upload
-
-        // delete zip file
-        //File(bookPath, Const.FILE_PREFIX_READ+12345+"_12345").deleteRecursively()
-        return true
+        return target
     }
 
     fun extractBook(target:File){

@@ -6,13 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.cheesejuice.fancymansion.R
-import com.cheesejuice.fancymansion.databinding.ItemReadBookBinding
+import com.cheesejuice.fancymansion.MainApplication
+import com.cheesejuice.fancymansion.databinding.ItemStoreBookBinding
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.CommonUtil
-import com.cheesejuice.fancymansion.util.FileUtil
 
-class ReadBookAdapter(val datas: MutableList<Config>, val fileUtil: FileUtil, val context: Context):
+class StoreBookAdapter(val datas: MutableList<Config>, val context: Context):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     // OnItemClickListener
@@ -28,27 +27,24 @@ class ReadBookAdapter(val datas: MutableList<Config>, val fileUtil: FileUtil, va
 
     // Override
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
-            = ReadBookViewHolder(ItemReadBookBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+            = StoreBookViewHolder(ItemStoreBookBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
     override fun getItemCount(): Int{
         return datas.size
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val binding=(holder as ReadBookViewHolder).binding
+        val binding=(holder as StoreBookViewHolder).binding
         with(datas[position]){
-            binding.tvReadBookId.text = "#${bookId}"
-            binding.tvReadBookUpdate.text = CommonUtil.longToTimeFormatss(updateTime)
+            binding.tvStoreBookId.text = "#${bookId}"
+            binding.tvStoreBookUpdate.text = CommonUtil.longToTimeFormatss(updateTime)
 
-            binding.tvReadBookTitle.text = title
-            binding.tvReadBookWriter.text = writer
-            binding.tvReadBookIllustrator.text = illustrator
+            binding.tvStoreBookTitle.text = title
+            binding.tvStoreBookWriter.text = writer
+            binding.tvStoreBookIllustrator.text = illustrator
 
-            fileUtil.getImageFile(bookId, coverImage, isCover = true, isReadOnly = true, publishCode = publishCode)?.also {
-                Glide.with(context).load(it).into(binding.imageCover)
-            }?:also {
-                Glide.with(context).load(R.drawable.add_image).into(binding.imageCover)
-            }
+            val imgRef = MainApplication.storage.reference.child("$uid/$publishCode/$coverImage")
+            Glide.with(context).load(imgRef).into(holder.binding.imageCover)
         }
 
         holder.apply {
@@ -59,5 +55,5 @@ class ReadBookAdapter(val datas: MutableList<Config>, val fileUtil: FileUtil, va
     }
 
     // ViewHolder
-    inner class ReadBookViewHolder(val binding: ItemReadBookBinding): RecyclerView.ViewHolder(binding.root)
+    inner class StoreBookViewHolder(val binding: ItemStoreBookBinding): RecyclerView.ViewHolder(binding.root)
 }

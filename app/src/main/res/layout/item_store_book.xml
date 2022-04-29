@@ -25,13 +25,13 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/tvReadBookId"
+                android:id="@+id/tvStoreBookId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/size_small_brief_id"/>
 
             <TextView
-                android:id="@+id/tvReadBookUpdate"
+                android:id="@+id/tvStoreBookUpdate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_default"
@@ -42,7 +42,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/tvReadBookTitle"
+            android:id="@+id/tvStoreBookTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="@dimen/size_item"
@@ -63,7 +63,7 @@
                 android:textStyle="bold"/>
 
             <TextView
-                android:id="@+id/tvReadBookWriter"
+                android:id="@+id/tvStoreBookWriter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_default"
@@ -86,7 +86,7 @@
                 android:textStyle="bold"/>
 
             <TextView
-                android:id="@+id/tvReadBookIllustrator"
+                android:id="@+id/tvStoreBookIllustrator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_default"
