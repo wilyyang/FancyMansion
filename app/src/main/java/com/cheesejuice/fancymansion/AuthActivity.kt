@@ -1,16 +1,13 @@
 package com.cheesejuice.fancymansion
 
-import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.databinding.ActivityAuthBinding
-import com.cheesejuice.fancymansion.extension.startReadSlideActivity
+import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -21,7 +18,7 @@ class AuthActivity : AppCompatActivity() {
 
     private val googleLoginForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-
+            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutBody)
             val task = GoogleSignIn.getSignedInAccountFromIntent(result?.data)
             try {
                 val account = task.getResult(ApiException::class.java)!!
@@ -30,11 +27,14 @@ class AuthActivity : AppCompatActivity() {
                 MainApplication.auth.signInWithCredential(credential)
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
+                            MainApplication.name = account.displayName
                             MainApplication.email = account.email
+                            MainApplication.photoUrl = account.photoUrl
                             val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
                         } else {
-                            Toast.makeText(this, "Failed sign in", Toast.LENGTH_SHORT).show()
+                            showLoadingScreen(false, binding.layoutLoading.root, binding.layoutBody)
+                            Toast.makeText(this, "Failed login", Toast.LENGTH_SHORT).show()
                         }
                     }
             } catch (e: ApiException) {
@@ -50,7 +50,9 @@ class AuthActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         if(MainApplication.checkAuth()){
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
             startActivity(intent)
         }
 

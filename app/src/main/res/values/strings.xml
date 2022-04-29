@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">FancyMansion</string>
 
+    <string name="google_login">Google Login</string>
+    <string name="menu_user_logout">Log out</string>
+
     <string name="book_default_title">New Book</string>
 
     <string name="toolbar_title_create">New CreateBook</string>
@@ -28,8 +31,6 @@
     <string name="menu_book_save">Save Book</string>
     <string name="menu_book_delete">Delete Book</string>
     <string name="menu_book_upload">Upload Book</string>
-
-    <string name="menu_user_logout">Log out</string>
 
     <string name="menu_main_make">make book</string>
     <string name="menu_main_book">my book</string>
