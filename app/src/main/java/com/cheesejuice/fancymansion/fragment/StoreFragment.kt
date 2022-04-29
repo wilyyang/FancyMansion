@@ -19,6 +19,7 @@ import com.cheesejuice.fancymansion.util.BookUtil
 import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FileUtil
 import com.cheesejuice.fancymansion.view.ReadBookAdapter
+import com.cheesejuice.fancymansion.view.StoreBookAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +41,9 @@ class StoreFragment : Fragment(), View.OnClickListener {
     @Inject
     lateinit var fileUtil: FileUtil
 
+    // ui
+    private lateinit var storeBookAdapter: StoreBookAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -59,7 +63,32 @@ class StoreFragment : Fragment(), View.OnClickListener {
     override fun onStart() {
         super.onStart()
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+
+        MainApplication.db.collection("book").get()
+            .addOnSuccessListener { result ->
+                storeBookList = mutableListOf<Config>()
+                for (document in result.documents){
+                    val item = document.toObject(Config::class.java)
+                    if (item != null) {
+                        storeBookList.add(item)
+                    }
+                }
+
+                storeBookAdapter = StoreBookAdapter(storeBookList, requireActivity())
+                storeBookAdapter.setItemClickListener(object: StoreBookAdapter.OnItemClickListener{
+                    override fun onClick(v: View, config: Config) {
+
+                    }
+                })
+
+                binding.recyclerStoreBook.layoutManager = LinearLayoutManager(context)
+                binding.recyclerStoreBook.adapter = storeBookAdapter
+                showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(context, "서버로부터 데이터 획득에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+            }
     }
 
     private fun makeStoreBookList(readList : MutableList<Config>) {

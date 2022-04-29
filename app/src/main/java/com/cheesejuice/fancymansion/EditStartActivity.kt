@@ -234,7 +234,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun uploadBook(){
         MainApplication.auth.uid?.let { userId ->
-            val colRef = MainApplication.db.collection(userId)
+            val colRef = MainApplication.db.collection("book")
             colRef.add(config)
                 .addOnSuccessListener {
                     config.apply {
@@ -265,7 +265,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
         val localBookFile = fileUtil.compressBook(bookId = config.bookId)
         localBookFile?.listFiles()?.forEach {  subFile ->
-            val subFileRef: StorageReference = storageRef.child("${config.uid}/${config.publishCode}/${subFile.name}")
+            val subFileRef: StorageReference = storageRef.child("/book/${config.uid}/${config.publishCode}/${subFile.name}")
 
             subFileRef.putFile(Uri.fromFile(subFile))
                 .addOnFailureListener{

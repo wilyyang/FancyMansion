@@ -43,7 +43,8 @@ class StoreBookAdapter(val datas: MutableList<Config>, val context: Context):
             binding.tvStoreBookWriter.text = writer
             binding.tvStoreBookIllustrator.text = illustrator
 
-            val imgRef = MainApplication.storage.reference.child("$uid/$publishCode/$coverImage")
+            val imgRef = MainApplication.storage.reference.child("/book/$uid/$publishCode/$coverImage")
+
             Glide.with(context).load(imgRef).into(holder.binding.imageCover)
         }
 
