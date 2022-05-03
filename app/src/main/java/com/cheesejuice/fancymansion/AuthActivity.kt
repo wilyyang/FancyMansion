@@ -38,6 +38,7 @@ class AuthActivity : AppCompatActivity() {
                         }
                     }
             } catch (e: ApiException) {
+                e.printStackTrace()
                 Toast.makeText(this, "Failed ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }

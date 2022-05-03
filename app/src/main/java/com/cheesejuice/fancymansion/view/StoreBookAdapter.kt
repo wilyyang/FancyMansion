@@ -1,15 +1,19 @@
 package com.cheesejuice.fancymansion.view
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.MainApplication
+import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.databinding.ItemStoreBookBinding
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.CommonUtil
+import kotlinx.coroutines.tasks.await
 
 class StoreBookAdapter(val datas: MutableList<Config>, val context: Context):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
@@ -42,10 +46,14 @@ class StoreBookAdapter(val datas: MutableList<Config>, val context: Context):
             binding.tvStoreBookTitle.text = title
             binding.tvStoreBookWriter.text = writer
             binding.tvStoreBookIllustrator.text = illustrator
-
-            val imgRef = MainApplication.storage.reference.child("/book/$uid/$publishCode/$coverImage")
-
-            Glide.with(context).load(imgRef).into(holder.binding.imageCover)
+            Glide.with(context).load(R.drawable.add_image).into(holder.binding.imageCover)
+            if(coverImage != ""){
+                MainApplication.storage.reference.child("/book/$uid/$publishCode/$coverImage").downloadUrl.addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        Glide.with(context).load(it.result).into(holder.binding.imageCover)
+                    }
+                }
+            }
         }
 
         holder.apply {

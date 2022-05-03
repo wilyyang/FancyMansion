@@ -50,7 +50,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
     lateinit var fileUtil: FileUtil
 
     private var makeBook = false
-    private var isUpload = false
+    private var newUpload = true
 
     private lateinit var gallaryForResult: ActivityResultLauncher<Intent>
 
@@ -99,7 +99,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                         .whereEqualTo("uid", conf.uid).get().await()
 
                     if(uploadConfig.documents.size > 0){
-                        isUpload = true
+                        newUpload = false
                     }
                 }
             }
@@ -119,7 +119,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
     private fun makeEditReadyScreen(conf: Config) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
 
-        if(isUpload){
+        if(!newUpload){
             val menuItem = binding.toolbar.menu.findItem(R.id.menu_upload)
             menuItem.title = getString(R.string.menu_book_update)
         }
@@ -291,11 +291,15 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                 email = MainApplication.email ?: ""
                 uid = userId
             }
+            saveConfigFile(config)
 
             val colRef = MainApplication.db.collection("book")
-            colRef.add(config).await().id.let {
-                config.publishCode = it
+            if(newUpload){
+                colRef.add(config).await().id.let {
+                    config.publishCode = it
+                }
             }
+
             if(config.publishCode != ""){
                 colRef.document(config.publishCode).set(config).await()
                 fileUtil.makeConfigFile(config)

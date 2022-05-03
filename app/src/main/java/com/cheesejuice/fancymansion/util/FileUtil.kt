@@ -40,10 +40,10 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
             return File(bookPath, MainApplication.email!!)
         }
 
-    private val readOnlyUserPath: File
+    val readOnlyUserPath: File
         get() {
             MainApplication.checkAuth()
-            return File(bookPath, MainApplication.email!!)
+            return File(readOnlyPath, MainApplication.email!!)
         }
 
     fun initRootFolder():Boolean{
