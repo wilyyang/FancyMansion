@@ -22,10 +22,9 @@ import com.cheesejuice.fancymansion.util.FileUtil
 import com.cheesejuice.fancymansion.view.ReadBookAdapter
 import com.cheesejuice.fancymansion.view.StoreBookAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -72,24 +71,20 @@ class StoreFragment : Fragment() {
         }
 
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
-        MainApplication.db.collection("book").get()
-            .addOnSuccessListener { result ->
-                for (document in result.documents){
-                    val item = document.toObject(Config::class.java)
-                    if (item != null) {
-                        storeBookList.add(item)
-                    }
-                }
-                _binding?.let {
-                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
-                }
 
-            }
-            .addOnFailureListener {
-                _binding?.let {
-                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        CoroutineScope(Dispatchers.IO).launch {
+            val documents = MainApplication.db.collection("book").get().await().documents
+            for (document in documents){
+                val item = document.toObject(Config::class.java)
+                if (item != null) {
+                    storeBookList.add(item)
                 }
             }
+            withContext(Main){
+                showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+            }
+        }
+
 
         return binding.root
     }

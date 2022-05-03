@@ -20,6 +20,7 @@
     <string name="menu_book_save">책 저장</string>
     <string name="menu_book_delete">책 삭제</string>
     <string name="menu_book_upload">책 업로드</string>
+    <string name="menu_book_update">책 업데이트</string>
     <string name="menu_book_copy">책 복사</string>
 
     <string name="menu_main_make">만들기</string>
@@ -140,4 +141,8 @@
     <string name="cond_text_or">또는</string>
 
     <string name="title_endwith_copy">(복사)</string>
+
+    <string name="toast_query_success">데이터 업데이트 성공</string>
+    <string name="toast_db_fail">데이터 업데이트 실패</string>
+    <string name="toast_storage_fail">파일 업데이트 실패</string>
 </resources>

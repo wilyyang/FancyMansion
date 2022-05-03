@@ -28,6 +28,7 @@ import com.cheesejuice.fancymansion.extension.*
 import com.cheesejuice.fancymansion.view.RoundEditText
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.*
+import kotlinx.coroutines.tasks.await
 import java.io.File
 import java.util.*
 
@@ -91,6 +92,19 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             val conf = fileUtil.getConfigFromFile(bookId)
+            conf?.let {
+                if(conf.publishCode != ""){
+                    val colRef = MainApplication.db.collection("book")
+                    val uploadConfig = colRef.whereEqualTo("publishCode", conf.publishCode)
+                        .whereEqualTo("uid", conf.uid).get().await()
+
+                    if(uploadConfig.documents.size > 0){
+                        isUpload = true
+                    }
+                }
+            }
+
+
             withContext(Main) {
                 conf?.also{
                     config = it
@@ -104,6 +118,11 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun makeEditReadyScreen(conf: Config) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+
+        if(isUpload){
+            val menuItem = binding.toolbar.menu.findItem(R.id.menu_upload)
+            menuItem.title = getString(R.string.menu_book_update)
+        }
 
         with(conf){
             binding.tvConfigId.text = "#$bookId (v $version)"
@@ -182,9 +201,18 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                 this@EditStartActivity.currentFocus?.clearFocus()
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
                 CoroutineScope(IO).launch {
-                    uploadBook()
+                    val dbSuccess = uploadBook()
+                    val fileSuccess = uploadBookFile()
                     withContext(Main) {
                         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+
+                        if(!dbSuccess){
+                            Toast.makeText(this@EditStartActivity, getString(R.string.toast_db_fail), Toast.LENGTH_SHORT).show()
+                        }else if(!fileSuccess){
+                            Toast.makeText(this@EditStartActivity, getString(R.string.toast_storage_fail), Toast.LENGTH_SHORT).show()
+                        }else{
+                            Toast.makeText(this@EditStartActivity, getString(R.string.toast_query_success), Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }
@@ -255,50 +283,41 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun uploadBook(){
+    private suspend fun uploadBook():Boolean{
+        var result = false
         MainApplication.auth.uid?.let { userId ->
-            val colRef = MainApplication.db.collection("book")
-            colRef.add(config)
-                .addOnSuccessListener {
-                    config.apply {
-                        publishCode = it.id
-                        user = MainApplication.name?:""
-                        email = MainApplication.email?:""
-                        uid = userId
-                    }
-                    colRef.document(it.id).set(config).addOnSuccessListener {
-                        fileUtil.makeConfigFile(config)
-                        uploadBookFile()
+            config.apply {
+                user = MainApplication.name ?: ""
+                email = MainApplication.email ?: ""
+                uid = userId
+            }
 
-                    }.addOnFailureListener { exception ->
-                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
-                        Toast.makeText(baseContext,"Config update error ${exception.message!!}",Toast.LENGTH_SHORT).show()
-                    }
-                }
-                .addOnFailureListener {
-                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
-                    Toast.makeText(baseContext,"Config save error : ${config.bookId}",Toast.LENGTH_SHORT).show()
-                }
+            val colRef = MainApplication.db.collection("book")
+            colRef.add(config).await().id.let {
+                config.publishCode = it
+            }
+            if(config.publishCode != ""){
+                colRef.document(config.publishCode).set(config).await()
+                fileUtil.makeConfigFile(config)
+                result = true
+            }
         }
+        return result
     }
 
-    private fun uploadBookFile(){
+    private suspend fun uploadBookFile(): Boolean{
+        var result = true
         val storage = MainApplication.storage
         val storageRef: StorageReference = storage.reference
 
         val localBookFile = fileUtil.compressBook(bookId = config.bookId)
         localBookFile?.listFiles()?.forEach {  subFile ->
             val subFileRef: StorageReference = storageRef.child("/book/${config.uid}/${config.publishCode}/${subFile.name}")
-
             subFileRef.putFile(Uri.fromFile(subFile))
                 .addOnFailureListener{
-                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
-                    Toast.makeText(baseContext, "File upload failed", Toast.LENGTH_SHORT).show()
-                }
-                .addOnSuccessListener {
-                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
-                    Toast.makeText(baseContext, "File success", Toast.LENGTH_SHORT).show()
-                }
+                    result = false
+                }.await()
         }
+        return result
     }
 }

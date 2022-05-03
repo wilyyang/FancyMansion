@@ -31,6 +31,7 @@
     <string name="menu_book_save">Save Book</string>
     <string name="menu_book_delete">Delete Book</string>
     <string name="menu_book_upload">Upload Book</string>
+    <string name="menu_book_update">Update Book</string>
     <string name="menu_book_copy">Copy Book</string>
 
     <string name="menu_main_make">make book</string>
@@ -142,4 +143,8 @@
     <string name="cond_text_or">or</string>
 
     <string name="title_endwith_copy">(copy)</string>
+
+    <string name="toast_query_success">Data update success</string>
+    <string name="toast_db_fail">Data update failed</string>
+    <string name="toast_storage_fail">File update failed</string>
 </resources>
