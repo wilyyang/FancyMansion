@@ -31,6 +31,7 @@
     <string name="menu_book_save">Save Book</string>
     <string name="menu_book_delete">Delete Book</string>
     <string name="menu_book_upload">Upload Book</string>
+    <string name="menu_book_copy">Copy Book</string>
 
     <string name="menu_main_make">make book</string>
     <string name="menu_main_book">my book</string>
@@ -139,4 +140,6 @@
 
     <string name="cond_text_and">and</string>
     <string name="cond_text_or">or</string>
+
+    <string name="title_endwith_copy">(copy)</string>
 </resources>

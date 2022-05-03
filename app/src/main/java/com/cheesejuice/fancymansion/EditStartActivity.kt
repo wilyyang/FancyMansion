@@ -20,18 +20,20 @@ import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
 import com.cheesejuice.fancymansion.Const.Companion.TAG
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import com.cheesejuice.fancymansion.extension.*
 import com.cheesejuice.fancymansion.view.RoundEditText
 import com.google.firebase.storage.StorageReference
+import kotlinx.coroutines.*
 import java.io.File
 import java.util.*
+
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @AndroidEntryPoint
 class EditStartActivity : AppCompatActivity(), View.OnClickListener {
@@ -47,6 +49,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
     lateinit var fileUtil: FileUtil
 
     private var makeBook = false
+    private var isUpload = false
 
     private lateinit var gallaryForResult: ActivityResultLauncher<Intent>
 
@@ -120,11 +123,11 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
         binding.btnEditBook.isEnabled = true
     }
 
-    private fun saveConfigFile(conf : Config) {
+    private fun saveConfigFile(conf : Config, isCopy : Boolean = false) {
         with(conf){
             updateTime = System.currentTimeMillis()
             version += 1
-            title = binding.etConfigTitle.text.toString()
+            title = binding.etConfigTitle.text.toString() + if(isCopy){ getString(R.string.title_endwith_copy) } else { "" }
             writer = binding.etConfigWriter.text.toString()
             illustrator = binding.etConfigIllustrator.text.toString()
             description = binding.etConfigDescription.text.toString()
@@ -176,7 +179,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.menu_upload -> {
-
+                this@EditStartActivity.currentFocus?.clearFocus()
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
                 CoroutineScope(IO).launch {
                     uploadBook()
@@ -202,7 +205,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.menu_save -> {
-                this@EditStartActivity.currentFocus?.let { it.clearFocus() }
+                this@EditStartActivity.currentFocus?.clearFocus()
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
                 CoroutineScope(IO).launch {
                     saveConfigFile(config)
@@ -214,7 +217,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.menu_delete -> {
-                this@EditStartActivity.currentFocus?.let { it.clearFocus() }
+                this@EditStartActivity.currentFocus?.clearFocus()
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
                 CoroutineScope(IO).launch {
                     fileUtil.deleteBookFolder(config.bookId)
@@ -225,6 +228,26 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                             setResult(Const.RESULT_DELETE)
                         }
                         finish()
+                    }
+                }
+            }
+
+            R.id.menu_copy -> {
+                this@EditStartActivity.currentFocus?.clearFocus()
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+                CoroutineScope(IO).launch {
+                    val copyBookId = fileUtil.getNewEditBookId()
+                    if (copyBookId != -1L) {
+                        val targetDir = File(fileUtil.bookUserPath, Const.FILE_PREFIX_BOOK + config.bookId)
+                        val copyDir = File(fileUtil.bookUserPath, Const.FILE_PREFIX_BOOK + copyBookId)
+                        targetDir.copyRecursively(copyDir, overwrite = true)
+                        val copyConfig = Json.decodeFromString<Config>(Json.encodeToString(config)).apply {
+                            bookId = copyBookId
+                        }
+                        saveConfigFile(copyConfig, isCopy = true)
+                    }
+                    withContext(Main) {
+                        showLoadingScreen(false,binding.layoutLoading.root,binding.layoutActive)
                     }
                 }
             }

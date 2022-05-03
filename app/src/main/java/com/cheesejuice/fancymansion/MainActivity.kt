@@ -33,15 +33,14 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // [start] temp code
-        util.checkRequestPermissions()
-        fileUtil.initRootFolder()
-
-        if(!bookUtil.isSampleMake()){
-            createEditSampleFiles()
-//            createReadOnlySampleFiles()
+        if(MainApplication.checkAuth()){
+            fileUtil.initRootFolder()
+            if(!bookUtil.isSampleMake()){
+                createEditSampleFiles(MainApplication.email!!)
+            }
         }
-        // [end] temp code
+
+        util.checkRequestPermissions()
 
         binding.bottomMenuMain.apply {
             setOnItemSelectedListener { item ->

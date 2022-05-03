@@ -25,4 +25,10 @@
         android:icon="@android:drawable/ic_menu_upload"
         android:title="@string/menu_book_upload"
         app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/menu_copy"
+        android:icon="@android:drawable/ic_menu_report_image"
+        android:title="@string/menu_book_copy"
+        app:showAsAction="ifRoom"/>
 </menu>
