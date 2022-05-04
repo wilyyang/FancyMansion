@@ -34,6 +34,9 @@
     <string name="menu_book_update">Update Book</string>
     <string name="menu_book_copy">Copy Book</string>
 
+    <string name="menu_remove_store">Remove from store</string>
+    <string name="menu_download">Download</string>
+
     <string name="menu_main_make">make book</string>
     <string name="menu_main_book">my book</string>
     <string name="menu_main_store">book store</string>
