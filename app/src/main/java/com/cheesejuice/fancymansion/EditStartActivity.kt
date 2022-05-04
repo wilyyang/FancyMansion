@@ -271,6 +271,10 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                         targetDir.copyRecursively(copyDir, overwrite = true)
                         val copyConfig = Json.decodeFromString<Config>(Json.encodeToString(config)).apply {
                             bookId = copyBookId
+                            publishCode = ""
+                            user = ""
+                            email = ""
+                            uid = ""
                         }
                         saveConfigFile(copyConfig, isCopy = true)
                     }
@@ -291,7 +295,6 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                 email = MainApplication.email ?: ""
                 uid = userId
             }
-            saveConfigFile(config)
 
             val colRef = MainApplication.db.collection("book")
             if(newUpload){
@@ -301,8 +304,8 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             if(config.publishCode != ""){
+                saveConfigFile(config)
                 colRef.document(config.publishCode).set(config).await()
-                fileUtil.makeConfigFile(config)
                 result = true
             }
         }

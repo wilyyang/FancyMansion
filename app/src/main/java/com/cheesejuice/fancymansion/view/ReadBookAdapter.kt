@@ -44,6 +44,7 @@ class ReadBookAdapter(val datas: MutableList<Config>, val fileUtil: FileUtil, va
             binding.tvReadBookWriter.text = writer
             binding.tvReadBookIllustrator.text = illustrator
 
+
             fileUtil.getImageFile(bookId, coverImage, isCover = true, isReadOnly = true, publishCode = publishCode)?.also {
                 Glide.with(context).load(it).into(binding.imageCover)
             }?:also {

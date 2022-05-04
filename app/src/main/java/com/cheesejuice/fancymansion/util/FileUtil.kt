@@ -131,9 +131,6 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         val configFile = File(dir, Const.FILE_PREFIX_CONFIG+".json")
         val config = Json.decodeFromString<Config>(FileInputStream(configFile).bufferedReader().use { it.readText() })
 
-        // get publish code
-        config.publishCode = "$bookId"
-
         // copy origin folder
         val target = File(bookUserPath, Const.FILE_PREFIX_READ+bookId+"_${config.publishCode}")
         if(target.exists()){
