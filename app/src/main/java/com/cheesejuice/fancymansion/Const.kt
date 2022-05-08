@@ -13,6 +13,10 @@ class Const {
         const val NOT_SUPPORT_COND_ID_2 = -1L
         const val ID_1_SLIDE = 1_00_00_00_00L
         const val FIRST_SLIDE = 1L
+        const val VIEW_HOLDER_LOADING = -5L
+
+        const val PAGE_COUNT = 10
+        const val PAGE_COUNT_LONG = 10L
 
         const val COUNT_SLIDE = 1_00_00_00_00L
         const val COUNT_CHOICE = 1_00_00_00L

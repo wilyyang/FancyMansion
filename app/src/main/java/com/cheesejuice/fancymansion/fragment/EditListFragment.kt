@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.cheesejuice.fancymansion.*
 import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
 import com.cheesejuice.fancymansion.Const.Companion.TAG
@@ -25,10 +26,7 @@ import com.cheesejuice.fancymansion.util.FileUtil
 import com.cheesejuice.fancymansion.view.EditBookAdapter
 import com.cheesejuice.fancymansion.view.EditConditionListAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -39,7 +37,10 @@ class EditListFragment : Fragment(), View.OnClickListener {
     private var _binding: FragmentEditListBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var editList : MutableList<Config>
+    private val editList : MutableList<Config> = mutableListOf()
+
+    private var page = 1
+    private var isListLoading = false
 
     @Inject
     lateinit var util: CommonUtil
@@ -55,10 +56,16 @@ class EditListFragment : Fragment(), View.OnClickListener {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
             CoroutineScope(Dispatchers.Default).launch {
-                val init = loadData()
+                editList.clear()
+                page = 1
+
+                val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1)
                 withContext(Dispatchers.Main) {
-                    if(init) {
-                        makeEditList(editList)
+                    if(list != null) {
+                        editList.addAll(list)
+                        _binding?.let {
+                            makeEditList(editList)
+                        }
                     }else{
                         util.getAlertDailog(activity as AppCompatActivity).show()
                     }
@@ -83,10 +90,13 @@ class EditListFragment : Fragment(), View.OnClickListener {
         binding.toolbar.title = getString(R.string.frag_main_make)
 
         CoroutineScope(Dispatchers.Default).launch {
-            val init = loadData()
+            val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1)
             withContext(Dispatchers.Main) {
-                if(init) {
-                    makeEditList(editList)
+                if(list != null) {
+                    editList.addAll(list)
+                    _binding?.let {
+                        makeEditList(editList)
+                    }
                 }else{
                     util.getAlertDailog(activity as AppCompatActivity).show()
                 }
@@ -100,21 +110,10 @@ class EditListFragment : Fragment(), View.OnClickListener {
         _binding = null
     }
 
-    private fun loadData(): Boolean{
-        val list = fileUtil.getConfigList()
-        return if(list != null){
-            editList = list
-            editList.sortBy { it.title }
-            true
-        }else{
-            false
-        }
-    }
-
-    private fun makeEditList(editList : MutableList<Config>) {
+    private fun makeEditList(_editList : MutableList<Config>) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
 
-        editBookAdapter = EditBookAdapter(editList, fileUtil, requireActivity())
+        editBookAdapter = EditBookAdapter(_editList, fileUtil, requireActivity())
         editBookAdapter.setItemClickListener(object: EditBookAdapter.OnItemClickListener{
             override fun onClick(v: View, config: Config) {
                 val intent = Intent(activity, EditStartActivity::class.java).apply {
@@ -128,6 +127,18 @@ class EditListFragment : Fragment(), View.OnClickListener {
 
         binding.recyclerEditBook.layoutManager = LinearLayoutManager(context)
         binding.recyclerEditBook.adapter = editBookAdapter
+
+        binding.recyclerEditBook.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                if(!isListLoading){
+                    if ((recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition() == editList.size - 1){
+                        addMoreEditBook()
+                    }
+                }
+            }
+        })
     }
 
     override fun onClick(view: View?) {
@@ -138,6 +149,30 @@ class EditListFragment : Fragment(), View.OnClickListener {
                     putExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
                 }
                 editStartForResult.launch(intent)
+            }
+        }
+    }
+
+    private fun addMoreEditBook(){
+        isListLoading = true
+
+        editList.add(Config(bookId = Const.VIEW_HOLDER_LOADING))
+        editBookAdapter.notifyItemInserted(editList.size -1)
+
+        CoroutineScope(Dispatchers.Default).launch {
+            delay(500L)
+            val list = fileUtil.getConfigListRange(page * Const.PAGE_COUNT, ++page * Const.PAGE_COUNT -1)
+            withContext(Dispatchers.Main) {
+                if(list != null) {
+                    val beforeSize = editList.size
+                    editList.removeAt(beforeSize - 1)
+                    editBookAdapter.notifyItemRemoved(beforeSize - 1)
+                    editList.addAll(list)
+                    editBookAdapter.notifyItemRangeInserted(beforeSize, list.size)
+                }else{
+                    util.getAlertDailog(activity as AppCompatActivity).show()
+                }
+                isListLoading = false
             }
         }
     }

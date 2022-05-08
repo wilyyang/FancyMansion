@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.cheesejuice.fancymansion.*
 import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.databinding.FragmentStoreBinding
@@ -22,6 +23,7 @@ import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FileUtil
 import com.cheesejuice.fancymansion.view.ReadBookAdapter
 import com.cheesejuice.fancymansion.view.StoreBookAdapter
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.storage.StorageReference
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -35,7 +37,9 @@ class StoreFragment : Fragment() {
     private var _binding: FragmentStoreBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var storeBookList : MutableList<Config>
+    private var storeBookList : MutableList<Config> = mutableListOf()
+
+    private var isListLoading = false
 
     @Inject
     lateinit var util: CommonUtil
@@ -48,25 +52,7 @@ class StoreFragment : Fragment() {
     private lateinit var storeBookAdapter: StoreBookAdapter
 
     private val displayBookForResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
-            CoroutineScope(Dispatchers.IO).launch {
-                storeBookList.clear()
-                val documents = MainApplication.db.collection("book").get().await().documents
-                for (document in documents){
-                    val item = document.toObject(Config::class.java)
-                    if (item != null) {
-                        storeBookList.add(item)
-                    }
-                }
-                storeBookAdapter.notifyDataSetChanged()
-                withContext(Main){
-                    _binding?.let {
-                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
-                    }
-                }
-            }
-        }
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -74,6 +60,7 @@ class StoreFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentStoreBinding.inflate(inflater, container, false)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
 
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -81,26 +68,9 @@ class StoreFragment : Fragment() {
 
         binding.toolbar.title = getString(R.string.frag_main_store)
 
-        storeBookList = mutableListOf()
-        context?.let { itContext ->
-            storeBookAdapter = StoreBookAdapter(storeBookList, itContext)
-            storeBookAdapter.setItemClickListener(object: StoreBookAdapter.OnItemClickListener{
-                override fun onClick(v: View, config: Config) {
-                    val intent = Intent(activity, DisplayBookActivity::class.java).apply {
-                        putExtra(Const.INTENT_PUBLISH_CODE, config.publishCode)
-                    }
-                    displayBookForResult.launch(intent)
-                }
-            })
-
-            binding.recyclerStoreBook.layoutManager = LinearLayoutManager(itContext)
-            binding.recyclerStoreBook.adapter = storeBookAdapter
-        }
-
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val documents = MainApplication.db.collection("book").get().await().documents
+        CoroutineScope(Dispatchers.Default).launch {
+            val documents = MainApplication.db.collection("book").orderBy("title").orderBy("publishCode")
+                .limit(Const.PAGE_COUNT_LONG).get().await().documents
             for (document in documents){
                 val item = document.toObject(Config::class.java)
                 if (item != null) {
@@ -109,7 +79,7 @@ class StoreFragment : Fragment() {
             }
             withContext(Main){
                 _binding?.let {
-                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+                    makeStoreList(storeBookList)
                 }
             }
         }
@@ -120,5 +90,73 @@ class StoreFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun makeStoreList(_storeList : MutableList<Config>) {
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+
+        storeBookAdapter = StoreBookAdapter(_storeList, requireActivity())
+        storeBookAdapter.setItemClickListener(object: StoreBookAdapter.OnItemClickListener{
+            override fun onClick(v: View, config: Config) {
+                val intent = Intent(activity, DisplayBookActivity::class.java).apply {
+                    putExtra(Const.INTENT_PUBLISH_CODE, config.publishCode)
+                }
+                displayBookForResult.launch(intent)
+            }
+        })
+
+        binding.recyclerStoreBook.layoutManager = LinearLayoutManager(context)
+        binding.recyclerStoreBook.adapter = storeBookAdapter
+
+        binding.recyclerStoreBook.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                if(!isListLoading){
+                    if ((recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition() == storeBookList.size - 1){
+                        addMoreStoreBook()
+                    }
+                }
+            }
+        })
+    }
+
+    private fun addMoreStoreBook(){
+        isListLoading = true
+
+        val lastConfig = storeBookList.lastOrNull()
+
+        storeBookList.add(Config(bookId = Const.VIEW_HOLDER_LOADING))
+        storeBookAdapter.notifyItemInserted(storeBookList.size -1)
+
+        CoroutineScope(Dispatchers.Default).launch {
+            delay(500L)
+
+            val documents = if(lastConfig == null){
+                MainApplication.db.collection("book").orderBy("title").orderBy("publishCode")
+                    .limit(Const.PAGE_COUNT_LONG).get().await().documents
+            }else{
+                MainApplication.db.collection("book").orderBy("title").orderBy("publishCode")
+                    .startAfter(lastConfig.title, lastConfig.publishCode).limit(Const.PAGE_COUNT_LONG).get().await().documents
+            }
+
+            val addList = mutableListOf<Config>()
+            for (document in documents){
+                val item = document.toObject(Config::class.java)
+                if (item != null) {
+                    addList.add(item)
+                }
+            }
+
+            withContext(Main) {
+                val beforeSize = storeBookList.size
+                storeBookList.removeAt(beforeSize - 1)
+                storeBookAdapter.notifyItemRemoved(beforeSize - 1)
+                storeBookList.addAll(addList)
+                storeBookAdapter.notifyItemRangeInserted(beforeSize, addList.size)
+
+                isListLoading = false
+            }
+        }
     }
 }

@@ -108,6 +108,7 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-storage:7.1.0'
 
     implementation 'com.google.firebase:firebase-messaging-ktx'
+    implementation 'com.google.firebase:firebase-functions-ktx'
 
     // test
     testImplementation 'junit:junit:4.13.2'

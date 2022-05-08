@@ -111,6 +111,27 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         return null
     }
 
+    fun getConfigListRange(start:Int, end:Int, isReadOnly:Boolean = false): MutableList<Config>?{
+        try {
+            val addList = mutableListOf<Config>()
+            val allList = if (isReadOnly) { readOnlyUserPath.listFiles { _, name -> name.startsWith(Const.FILE_PREFIX_READ) } }
+            else { bookUserPath.listFiles { _, name -> name.startsWith(Const.FILE_PREFIX_BOOK) } }
+                ?.map { File(it.absolutePath, Const.FILE_PREFIX_CONFIG + ".json") }!!
+                .filter { it.exists() }.sortedBy { it.lastModified() }.reversed()
+
+            if(allList.size > start){
+                val limit = if(allList.size > end) end else (allList.size-1)
+                for(i in start .. limit){
+                    addList.add(Json.decodeFromString(FileInputStream(allList[i]).bufferedReader().use { it.readText() }))
+                }
+            }
+            return addList
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
     fun makeEmptyBook(bookId: Long): Boolean{
         val config = Config(bookId = bookId, title = "${context.getString(R.string.book_default_title)} $bookId")
         val slide = Slide(slideId = Const.ID_1_SLIDE, slideTitle = context.getString(R.string.name_slide_prefix)+1, question = context.getString(R.string.text_question_default))

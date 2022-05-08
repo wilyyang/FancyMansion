@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.cheesejuice.fancymansion.*
 import com.cheesejuice.fancymansion.databinding.FragmentReadListBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
@@ -18,10 +19,7 @@ import com.cheesejuice.fancymansion.util.FileUtil
 import com.cheesejuice.fancymansion.view.EditBookAdapter
 import com.cheesejuice.fancymansion.view.ReadBookAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -29,7 +27,10 @@ class ReadListFragment : Fragment() {
     private var _binding: FragmentReadListBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var readList : MutableList<Config>
+    private var readList : MutableList<Config> = mutableListOf()
+
+    private var page = 1
+    private var isListLoading = false
 
     @Inject
     lateinit var util: CommonUtil
@@ -45,10 +46,16 @@ class ReadListFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
             CoroutineScope(Dispatchers.Default).launch {
-                val init = loadData()
+                readList.clear()
+                page = 1
+
+                val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isReadOnly = true)
                 withContext(Dispatchers.Main) {
-                    if(init) {
-                        makeReadList(readList)
+                    if(list != null) {
+                        readList.addAll(list)
+                        _binding?.let {
+                            makeReadList(readList)
+                        }
                     }else{
                         util.getAlertDailog(activity as AppCompatActivity).show()
                     }
@@ -71,10 +78,13 @@ class ReadListFragment : Fragment() {
         binding.toolbar.title = getString(R.string.frag_main_book)
 
         CoroutineScope(Dispatchers.Default).launch {
-            val init = loadData()
+            val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isReadOnly = true)
             withContext(Dispatchers.Main) {
-                if(init) {
-                    makeReadList(readList)
+                if(list != null) {
+                    readList.addAll(list)
+                    _binding?.let {
+                        makeReadList(readList)
+                    }
                 }else{
                     util.getAlertDailog(activity as AppCompatActivity).show()
                 }
@@ -88,21 +98,10 @@ class ReadListFragment : Fragment() {
         _binding = null
     }
 
-    private fun loadData(): Boolean{
-        val list = fileUtil.getConfigList(isReadOnly = true)
-        return if(list != null){
-            readList = list
-            readList.sortBy { it.title }
-            true
-        }else{
-            false
-        }
-    }
-
-    private fun makeReadList(readList : MutableList<Config>) {
+    private fun makeReadList(_readList : MutableList<Config>) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
 
-        readBookAdapter = ReadBookAdapter(readList, fileUtil, requireActivity())
+        readBookAdapter = ReadBookAdapter(_readList, fileUtil, requireActivity())
         readBookAdapter.setItemClickListener(object: ReadBookAdapter.OnItemClickListener{
             override fun onClick(v: View, config: Config) {
                 bookUtil.setEditPlay(false)
@@ -117,5 +116,41 @@ class ReadListFragment : Fragment() {
 
         binding.recyclerReadBook.layoutManager = LinearLayoutManager(context)
         binding.recyclerReadBook.adapter = readBookAdapter
+
+        binding.recyclerReadBook.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                if(!isListLoading){
+                    if ((recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition() == readList.size - 1){
+                        addMoreReadBook()
+                    }
+                }
+            }
+        })
+    }
+
+    private fun addMoreReadBook(){
+        isListLoading = true
+
+        readList.add(Config(bookId = Const.VIEW_HOLDER_LOADING))
+        readBookAdapter.notifyItemInserted(readList.size -1)
+
+        CoroutineScope(Dispatchers.Default).launch {
+            delay(500L)
+            val list = fileUtil.getConfigListRange(page * Const.PAGE_COUNT, ++page * Const.PAGE_COUNT -1, isReadOnly = true)
+            withContext(Dispatchers.Main) {
+                if(list != null) {
+                    val beforeSize = readList.size
+                    readList.removeAt(beforeSize - 1)
+                    readBookAdapter.notifyItemRemoved(beforeSize - 1)
+                    readList.addAll(list)
+                    readBookAdapter.notifyItemRangeInserted(beforeSize, list.size)
+                }else{
+                    util.getAlertDailog(activity as AppCompatActivity).show()
+                }
+                isListLoading = false
+            }
+        }
     }
 }
