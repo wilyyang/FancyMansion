@@ -70,6 +70,15 @@ class Const {
         const val FILE_PREFIX_IMAGE = "image_"
 
         const val FILE_PREFIX_READ = "read_"
+
+        // Firebase
+        const val FB_DB_KEY_BOOK = "book"
+        const val FB_STORAGE_BOOK = "book"
+        const val FB_DB_KEY_TITLE = "title"
+        const val FB_DB_KEY_PUBLISH = "publishCode"
+        const val FB_DB_KEY_DOWNLOADS = "downloads"
+        const val FB_DB_KEY_UID = "uid"
+        const val FB_DB_KEY_GOOD = "good"
     }
 }
 

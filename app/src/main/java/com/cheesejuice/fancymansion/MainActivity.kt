@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         if(MainApplication.checkAuth()){
             fileUtil.initRootFolder()
             if(!bookUtil.isSampleMake()){
-                createEditSampleFiles(MainApplication.email!!)
+                createEditSampleFiles(MainApplication.auth.uid!!)
             }
         }
 

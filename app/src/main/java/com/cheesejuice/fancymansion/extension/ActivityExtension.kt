@@ -118,7 +118,7 @@ fun Activity.showDialogAndStart(isShow: Boolean, loading: View? = null, main: Vi
 }
 
 // Create Sample
-fun Activity.createEditSampleFiles(email:String){
+fun Activity.createEditSampleFiles(uid:String){
     val fileUtil = FileUtil(this)
     val config = Json.decodeFromString<Config>(Sample.getConfigSample(12345))
     val logic = Json.decodeFromString<Logic>(Sample.getLogicSample(12345))
@@ -138,7 +138,7 @@ fun Activity.createEditSampleFiles(email:String){
 //    }
 
     fileUtil.makeLogicFile(logic)
-    val bookUserPath = File(getExternalFilesDir(null), Const.FILE_DIR_BOOK+File.separator+email)
+    val bookUserPath = File(getExternalFilesDir(null), Const.FILE_DIR_BOOK+File.separator+uid)
     val array = arrayOf("image_1.gif", "image_2.gif", "image_3.gif", "image_4.gif", "image_5.gif", "image_6.gif", "fish_cat.jpg", "game_end.jpg")
     for (fileName in array){
         val file = File(bookUserPath, Const.FILE_PREFIX_BOOK+ config.bookId + File.separator+ Const.FILE_DIR_CONTENT + File.separator+ Const.FILE_DIR_MEDIA + File.separator+ fileName)

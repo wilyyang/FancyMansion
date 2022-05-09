@@ -1,10 +1,12 @@
 package com.cheesejuice.fancymansion
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.databinding.ActivityDisplayBookBinding
@@ -23,9 +25,11 @@ import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DisplayBookActivity : AppCompatActivity() {
+class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
     private lateinit var binding: ActivityDisplayBookBinding
     private lateinit var config: Config
+
+    private var isClickGood:Boolean = false
 
     @Inject
     lateinit var util: CommonUtil
@@ -47,17 +51,27 @@ class DisplayBookActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             var item:Config? = null
+            var downloads = 0
+            var good = 0
             if(publishCode != ""){
-                val documents = MainApplication.db.collection("book").whereEqualTo("publishCode", publishCode).get().await().documents
+                val colRef = MainApplication.db.collection(Const.FB_DB_KEY_BOOK)
+                val documents = colRef.whereEqualTo(Const.FB_DB_KEY_PUBLISH, publishCode).get().await().documents
                 if(documents.size > 0){
-                    item = documents[0].toObject(Config::class.java)
+                    item = documents[0].toObject(Config::class.java)?.also {
+                        with(colRef.document(it.publishCode)){
+                            downloads = collection(Const.FB_DB_KEY_DOWNLOADS).get().await().size()
+                            good = collection(Const.FB_DB_KEY_GOOD).get().await().size()
+
+                            isClickGood = (collection(Const.FB_DB_KEY_GOOD).whereEqualTo(Const.FB_DB_KEY_UID, MainApplication.auth.uid).get().await().size() > 0)
+                        }
+                    }
                 }
             }
             withContext(Main) {
                 showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
                 item?.also {
                     config = it
-                    makeViewReadyScreen(config)
+                    makeViewReadyScreen(config, downloads, good, isClickGood)
                 }?:also {
                     util.getAlertDailog(this@DisplayBookActivity).show()
                 }
@@ -65,19 +79,20 @@ class DisplayBookActivity : AppCompatActivity() {
         }
     }
 
-    private fun makeViewReadyScreen(conf: Config) {
+    private fun makeViewReadyScreen(conf: Config, downloads:Int, good:Int, isGood:Boolean) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
         with(conf){
             binding.toolbar.title = title
             binding.tvConfigTitle.text = title
             binding.tvConfigDescription.text = description
 
-            binding.tvConfigPublishCode.text = "#$publishCode"
+            binding.tvConfigDownloads.text = "${getString(R.string.display_downloads)} : $downloads"
+            binding.tvConfigGood.text = "$good"
             binding.tvConfigTime.text = CommonUtil.longToTimeFormatss(updateTime)
             binding.tvConfigWriter.text = writer
             binding.tvConfigIllustrator.text = illustrator
 
-            MainApplication.storage.reference.child("/book/$uid/$publishCode/$coverImage").downloadUrl.addOnCompleteListener {
+            MainApplication.storage.reference.child("/${Const.FB_STORAGE_BOOK}/$uid/$publishCode/$coverImage").downloadUrl.addOnCompleteListener {
                 if (it.isSuccessful) {
                     Glide.with(baseContext).load(it.result).into(binding.imageViewShowMain)
                 }
@@ -87,6 +102,14 @@ class DisplayBookActivity : AppCompatActivity() {
                 binding.toolbar.menu.findItem(R.id.menu_remove_store).isVisible = false
             }
         }
+
+        if(isGood){
+            Glide.with(baseContext).load(android.R.drawable.btn_star_big_on).into(binding.imageViewGood)
+        }else{
+            Glide.with(baseContext).load(android.R.drawable.btn_star_big_off).into(binding.imageViewGood)
+        }
+
+        binding.imageViewGood.setOnClickListener(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -103,9 +126,9 @@ class DisplayBookActivity : AppCompatActivity() {
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
                 CoroutineScope(Dispatchers.IO).launch {
                     if(MainApplication.checkAuth() && config.uid == MainApplication.auth.uid) {
-                        MainApplication.db.collection("book").document(config.publishCode).delete().await()
+                        MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).delete().await()
 
-                        val deleteRef = MainApplication.storage.reference.child("/book/${config.uid}/${config.publishCode}")
+                        val deleteRef = MainApplication.storage.reference.child("/${Const.FB_STORAGE_BOOK}/${config.uid}/${config.publishCode}")
                         try {
                             val list = deleteRef.listAll().await()
                             for(ref in list.items){
@@ -117,6 +140,7 @@ class DisplayBookActivity : AppCompatActivity() {
                     }
 
                     withContext(Main){
+                        setResult(Const.RESULT_DELETE)
                         finish()
                     }
                 }
@@ -125,7 +149,7 @@ class DisplayBookActivity : AppCompatActivity() {
             R.id.menu_download -> {
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
                 CoroutineScope(Dispatchers.IO).launch {
-                    val bookRef = MainApplication.storage.reference.child("/book/${config.uid}/${config.publishCode}")
+                    val bookRef = MainApplication.storage.reference.child("/${Const.FB_STORAGE_BOOK}/${config.uid}/${config.publishCode}")
                     val list = bookRef.listAll().await()
 
                     val dir = File(fileUtil.readOnlyUserPath, Const.FILE_PREFIX_READ+config.bookId+"_${config.publishCode}")
@@ -140,14 +164,55 @@ class DisplayBookActivity : AppCompatActivity() {
                         subRef.getFile(subFile).await()
                     }
 
+                    var downloads: Int
+                    with(MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_DOWNLOADS)){
+                        if(whereEqualTo(Const.FB_DB_KEY_UID, MainApplication.auth.uid).get().await().size() < 1){
+                            add( hashMapOf(Const.FB_DB_KEY_UID to MainApplication.auth.uid) ).await()
+                        }
+                        downloads = get().await().size()
+                    }
+
                     fileUtil.extractBook(dir)
 
                     withContext(Main){
+                        binding.tvConfigDownloads.text = "${getString(R.string.display_downloads)} : $downloads"
                         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
                     }
                 }
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onClick(view: View?) {
+        when(view?.id) {
+            R.id.imageViewGood -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    var good = 0
+                    with(MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_GOOD)){
+                        whereEqualTo(Const.FB_DB_KEY_UID, MainApplication.auth.uid).get().await().let {  result ->
+                            if(result.size() < 1){
+                                add( hashMapOf(Const.FB_DB_KEY_UID to MainApplication.auth.uid) ).await()
+                            }else{
+                                document(result.documents[0].id).delete().await()
+                            }
+                        }
+                        isClickGood = (whereEqualTo(Const.FB_DB_KEY_UID, MainApplication.auth.uid).get().await().size() > 0)
+                        good = get().await().size()
+
+
+                    }
+
+                    withContext(Main){
+                        if(isClickGood){
+                            Glide.with(baseContext).load(android.R.drawable.btn_star_big_on).into(binding.imageViewGood)
+                        }else{
+                            Glide.with(baseContext).load(android.R.drawable.btn_star_big_off).into(binding.imageViewGood)
+                        }
+                        binding.tvConfigGood.text = "$good"
+                    }
+                }
+            }
+        }
     }
 }

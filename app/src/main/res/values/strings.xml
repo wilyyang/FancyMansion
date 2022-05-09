@@ -150,4 +150,6 @@
     <string name="toast_query_success">Data update success</string>
     <string name="toast_db_fail">Data update failed</string>
     <string name="toast_storage_fail">File update failed</string>
+
+    <string name="display_downloads">Downloads</string>
 </resources>

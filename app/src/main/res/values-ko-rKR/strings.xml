@@ -148,4 +148,6 @@
     <string name="toast_query_success">데이터 업데이트 성공</string>
     <string name="toast_db_fail">데이터 업데이트 실패</string>
     <string name="toast_storage_fail">파일 업데이트 실패</string>
+
+    <string name="display_downloads">다운로드 횟수</string>
 </resources>

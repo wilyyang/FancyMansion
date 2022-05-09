@@ -26,7 +26,6 @@ import kotlinx.coroutines.Dispatchers.Main
 import javax.inject.Inject
 import com.cheesejuice.fancymansion.extension.*
 import com.cheesejuice.fancymansion.view.RoundEditText
-import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
@@ -95,9 +94,9 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             val conf = fileUtil.getConfigFromFile(bookId)
             conf?.let {
                 if(conf.publishCode != ""){
-                    val colRef = MainApplication.db.collection("book")
-                    val uploadConfig = colRef.whereEqualTo("publishCode", conf.publishCode)
-                        .whereEqualTo("uid", conf.uid).get().await()
+                    val colRef = MainApplication.db.collection(Const.FB_DB_KEY_BOOK)
+                    val uploadConfig = colRef.whereEqualTo(Const.FB_DB_KEY_PUBLISH, conf.publishCode)
+                        .whereEqualTo(Const.FB_DB_KEY_UID, conf.uid).get().await()
 
                     if(uploadConfig.documents.size > 0){
                         newUpload = false
@@ -202,7 +201,9 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                 this@EditStartActivity.currentFocus?.clearFocus()
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
                 CoroutineScope(IO).launch {
+                    Log.d(TAG, "Start fire store update")
                     val dbSuccess = uploadBook()
+                    Log.d(TAG, "Start fire storage upload")
                     val fileSuccess = uploadBookFile()
                     withContext(Main) {
                         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
@@ -295,9 +296,10 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                 user = MainApplication.name ?: ""
                 email = MainApplication.email ?: ""
                 uid = userId
+                updateTime = System.currentTimeMillis()
             }
 
-            val colRef = MainApplication.db.collection("book")
+            val colRef = MainApplication.db.collection(Const.FB_DB_KEY_BOOK)
             if(newUpload){
                 colRef.add(config).await().id.let {
                     config.publishCode = it
@@ -320,7 +322,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
         val localBookFile = fileUtil.compressBook(bookId = config.bookId)
         localBookFile?.listFiles()?.forEach {  subFile ->
-            val subFileRef: StorageReference = storageRef.child("/book/${config.uid}/${config.publishCode}/${subFile.name}")
+            val subFileRef: StorageReference = storageRef.child("/${Const.FB_STORAGE_BOOK}/${config.uid}/${config.publishCode}/${subFile.name}")
             subFileRef.putFile(Uri.fromFile(subFile))
                 .addOnFailureListener{
                     result = false

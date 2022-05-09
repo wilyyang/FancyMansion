@@ -29,6 +29,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.tasks.await
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.io.File
 import javax.inject.Inject
 
@@ -52,7 +55,29 @@ class StoreFragment : Fragment() {
     private lateinit var storeBookAdapter: StoreBookAdapter
 
     private val displayBookForResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            when (result.resultCode) {
+                Const.RESULT_DELETE -> {
+                    showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+                    CoroutineScope(Dispatchers.Default).launch {
+                        storeBookList.clear()
+                        val documents = MainApplication.db.collection(Const.FB_DB_KEY_BOOK).orderBy(Const.FB_DB_KEY_TITLE).orderBy(Const.FB_DB_KEY_PUBLISH)
+                            .limit(Const.PAGE_COUNT_LONG).get().await().documents
+                        for (document in documents){
+                            val item = document.toObject(Config::class.java)
+                            if (item != null) {
+                                storeBookList.add(item)
+                            }
+                        }
+                        withContext(Main){
+                            _binding?.let {
+                                makeStoreList(storeBookList)
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,7 +94,7 @@ class StoreFragment : Fragment() {
         binding.toolbar.title = getString(R.string.frag_main_store)
 
         CoroutineScope(Dispatchers.Default).launch {
-            val documents = MainApplication.db.collection("book").orderBy("title").orderBy("publishCode")
+            val documents = MainApplication.db.collection(Const.FB_DB_KEY_BOOK).orderBy(Const.FB_DB_KEY_TITLE).orderBy(Const.FB_DB_KEY_PUBLISH)
                 .limit(Const.PAGE_COUNT_LONG).get().await().documents
             for (document in documents){
                 val item = document.toObject(Config::class.java)
@@ -133,10 +158,10 @@ class StoreFragment : Fragment() {
             delay(500L)
 
             val documents = if(lastConfig == null){
-                MainApplication.db.collection("book").orderBy("title").orderBy("publishCode")
+                MainApplication.db.collection(Const.FB_DB_KEY_BOOK).orderBy(Const.FB_DB_KEY_TITLE).orderBy(Const.FB_DB_KEY_PUBLISH)
                     .limit(Const.PAGE_COUNT_LONG).get().await().documents
             }else{
-                MainApplication.db.collection("book").orderBy("title").orderBy("publishCode")
+                MainApplication.db.collection(Const.FB_DB_KEY_BOOK).orderBy(Const.FB_DB_KEY_TITLE).orderBy(Const.FB_DB_KEY_PUBLISH)
                     .startAfter(lastConfig.title, lastConfig.publishCode).limit(Const.PAGE_COUNT_LONG).get().await().documents
             }
 
