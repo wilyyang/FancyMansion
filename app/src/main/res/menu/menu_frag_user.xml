@@ -4,6 +4,8 @@
 
     <item
         android:id="@+id/menu_logout"
+        app:showAsAction="always"
         android:title="@string/menu_user_logout"
-        app:showAsAction="always"/>
+        android:enabled="true"
+        android:icon="@drawable/ic_log_out" />
 </menu>

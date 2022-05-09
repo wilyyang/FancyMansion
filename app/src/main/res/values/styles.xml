@@ -4,4 +4,12 @@
         <item name="android:padding">@dimen/padding_item</item>
         <item name="android:background">@drawable/bg_round_base</item>
     </style>
+
+    <style name="BottomNavigationView" parent="@style/TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">9sp</item>
+    </style>
+
+    <style name="BottomNavigationView.Active" parent="@style/TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">10sp</item>
+    </style>
 </resources>

@@ -4,13 +4,13 @@
 
     <item
         android:id="@+id/menu_remove_store"
-        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:icon="@drawable/ic_trash"
         android:title="@string/menu_remove_store"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/menu_download"
-        android:icon="@android:drawable/ic_menu_more"
+        android:icon="@drawable/ic_download"
         android:title="@string/menu_download"
         app:showAsAction="always"/>
 </menu>

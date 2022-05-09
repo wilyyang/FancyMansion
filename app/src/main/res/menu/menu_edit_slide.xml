@@ -3,23 +3,36 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_save"
-        android:icon="@android:drawable/ic_menu_save"
-        android:title="@string/menu_slide_save"
-        app:showAsAction="always"/>
+        app:showAsAction="always"
+        android:title="more"
+        android:icon="@drawable/ic_more_vertical"
+        android:orderInCategory="1">
 
-    <item
-        android:id="@+id/menu_add"
-        android:icon="@android:drawable/ic_menu_add"
-        android:title="@string/menu_slide_add" />
+        <menu>
+            <item
+                android:id="@+id/menu_save"
+                android:icon="@drawable/ic_save"
+                android:title="@string/menu_slide_save"
+                app:showAsAction="always"/>
 
-    <item
-        android:id="@+id/menu_delete"
-        android:icon="@android:drawable/ic_menu_delete"
-        android:title="@string/menu_slide_delete" />
+            <item
+                android:id="@+id/menu_add"
+                android:icon="@drawable/ic_file_plus"
+                android:title="@string/menu_slide_add"
+                app:showAsAction="always"/>
 
-    <item
-        android:id="@+id/menu_play"
-        android:icon="@android:drawable/ic_media_play"
-        android:title="@string/menu_slide_play"/>
+            <item
+                android:id="@+id/menu_delete"
+                android:icon="@drawable/ic_file_minus"
+                android:title="@string/menu_slide_delete"
+                app:showAsAction="always"/>
+
+            <item
+                android:id="@+id/menu_play"
+                android:icon="@drawable/ic_play"
+                android:title="@string/menu_slide_play"
+                app:showAsAction="always"/>
+        </menu>
+
+    </item>
 </menu>

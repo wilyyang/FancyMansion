@@ -124,9 +124,9 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
         }
 
         if(isGood){
-            Glide.with(baseContext).load(android.R.drawable.btn_star_big_on).into(binding.imageViewGood)
+            Glide.with(baseContext).load(R.drawable.ic_thumbs_up_check).into(binding.imageViewGood)
         }else{
-            Glide.with(baseContext).load(android.R.drawable.btn_star_big_off).into(binding.imageViewGood)
+            Glide.with(baseContext).load(R.drawable.ic_thumbs_up).into(binding.imageViewGood)
         }
 
         binding.imageViewGood.setOnClickListener(this)
@@ -255,9 +255,9 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
             withContext(Main){
                 if(isClickGood){
-                    Glide.with(baseContext).load(android.R.drawable.btn_star_big_on).into(binding.imageViewGood)
+                    Glide.with(baseContext).load(R.drawable.ic_thumbs_up_check).into(binding.imageViewGood)
                 }else{
-                    Glide.with(baseContext).load(android.R.drawable.btn_star_big_off).into(binding.imageViewGood)
+                    Glide.with(baseContext).load(R.drawable.ic_thumbs_up).into(binding.imageViewGood)
                 }
                 binding.tvConfigGood.text = "$good"
             }
