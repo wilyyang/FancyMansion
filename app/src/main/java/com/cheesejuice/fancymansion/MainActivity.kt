@@ -46,11 +46,11 @@ class MainActivity : AppCompatActivity() {
             setOnItemSelectedListener { item ->
                 replaceFragment(
                     when (item.itemId) {
-                        R.id.menu_make -> {
-                            EditListFragment()
-                        }
                         R.id.menu_store -> {
                             StoreFragment()
+                        }
+                        R.id.menu_make -> {
+                            EditListFragment()
                         }
                         R.id.menu_book -> {
                             ReadListFragment()
@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
                 )
                 true
             }
-            selectedItemId = R.id.menu_make
+            selectedItemId = R.id.menu_store
         }
     }
 

@@ -206,18 +206,50 @@
                                     app:layout_constraintTop_toTopOf="parent"
                                     android:maxLength="@integer/count_config_description"/>
 
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/recyclerComment"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    app:layout_constraintTop_toBottomOf="@id/tvConfigDescription"
+                                    app:layout_constraintBottom_toBottomOf="parent"/>
+
                             </androidx.constraintlayout.widget.ConstraintLayout>
 
                         </ScrollView>
-
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
+                    <LinearLayout
                         android:id="@+id/layoutTail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:layout_constraintBottom_toBottomOf="parent"/>
+                        android:layout_margin="@dimen/margin_default"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.8"
+                            android:layout_marginEnd="@dimen/margin_default"
+                            android:textSize="@dimen/size_item">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etAddComment"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:maxLength="@integer/count_slide_choice"
+                                android:padding="5dp" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <Button
+                            android:id="@+id/btnAddComment"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.2"
+                            android:text="@string/display_comment_add"/>
+
+                    </LinearLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

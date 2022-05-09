@@ -20,6 +20,10 @@
     <dimen name="size_bsub">18sp</dimen>
     <dimen name="size_bmain">20sp</dimen>
 
+    <dimen name="size_comment_user">12sp</dimen>
+    <dimen name="size_comment_date">10sp</dimen>
+    <dimen name="size_comment_comment">16sp</dimen>
+
     <dimen name="margin_small">5dp</dimen>
     <dimen name="margin_default">10dp</dimen>
     <dimen name="margin_default_left">20dp</dimen>

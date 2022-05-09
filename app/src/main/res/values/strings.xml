@@ -152,4 +152,5 @@
     <string name="toast_storage_fail">File update failed</string>
 
     <string name="display_downloads">Downloads</string>
+    <string name="display_comment_add">Comment</string>
 </resources>

@@ -150,4 +150,5 @@
     <string name="toast_storage_fail">파일 업데이트 실패</string>
 
     <string name="display_downloads">다운로드 횟수</string>
+    <string name="display_comment_add">댓글</string>
 </resources>

@@ -7,20 +7,22 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.databinding.ActivityDisplayBookBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
+import com.cheesejuice.fancymansion.model.Comment
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FileUtil
+import com.cheesejuice.fancymansion.view.CommentAdapter
+import com.cheesejuice.fancymansion.view.StoreBookAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 
@@ -31,10 +33,17 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
     private var isClickGood:Boolean = false
 
+    private var commentList : MutableList<Comment> = mutableListOf()
+
+    private var isListLoading = false
+
     @Inject
     lateinit var util: CommonUtil
     @Inject
     lateinit var fileUtil: FileUtil
+
+    // ui
+    private lateinit var commentAdapter: CommentAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +72,16 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                             good = collection(Const.FB_DB_KEY_GOOD).get().await().size()
 
                             isClickGood = (collection(Const.FB_DB_KEY_GOOD).whereEqualTo(Const.FB_DB_KEY_UID, MainApplication.auth.uid).get().await().size() > 0)
+
+
+                            val comments = collection(Const.FB_DB_KEY_COMMENT).orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID).limit(Const.COMMENT_COUNT).get().await().documents
+                            for (comment in comments){
+                                val temp = comment.toObject(Comment::class.java)
+                                if (temp != null) {
+                                    commentList.add(temp)
+                                    Log.e(TAG, temp.toString())
+                                }
+                            }
                         }
                     }
                 }
@@ -71,7 +90,8 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                 showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
                 item?.also {
                     config = it
-                    makeViewReadyScreen(config, downloads, good, isClickGood)
+                    makeBookDisplayScreen(config, downloads, good, isClickGood)
+                    makeCommentList(commentList)
                 }?:also {
                     util.getAlertDailog(this@DisplayBookActivity).show()
                 }
@@ -79,7 +99,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
         }
     }
 
-    private fun makeViewReadyScreen(conf: Config, downloads:Int, good:Int, isGood:Boolean) {
+    private fun makeBookDisplayScreen(conf: Config, downloads:Int, good:Int, isGood:Boolean) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
         with(conf){
             binding.toolbar.title = title
@@ -110,6 +130,33 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
         }
 
         binding.imageViewGood.setOnClickListener(this)
+        binding.btnAddComment.setOnClickListener(this)
+    }
+
+    private fun makeCommentList(_commentList : MutableList<Comment>) {
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+
+        commentAdapter = CommentAdapter(_commentList, baseContext)
+        commentAdapter.setItemClickListener(object: CommentAdapter.OnItemClickListener{
+            override fun onClick(v: View, comment: Comment) {
+
+            }
+        })
+
+        binding.recyclerComment.layoutManager = LinearLayoutManager(baseContext)
+        binding.recyclerComment.adapter = commentAdapter
+
+        binding.recyclerComment.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+//                if(!isListLoading){
+//                    if ((recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition() == commentList.size - 1){
+//                        addMoreComment()
+//                    }
+//                }
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -186,32 +233,105 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
     override fun onClick(view: View?) {
         when(view?.id) {
-            R.id.imageViewGood -> {
-                CoroutineScope(Dispatchers.IO).launch {
-                    var good = 0
-                    with(MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_GOOD)){
-                        whereEqualTo(Const.FB_DB_KEY_UID, MainApplication.auth.uid).get().await().let {  result ->
-                            if(result.size() < 1){
-                                add( hashMapOf(Const.FB_DB_KEY_UID to MainApplication.auth.uid) ).await()
-                            }else{
-                                document(result.documents[0].id).delete().await()
-                            }
-                        }
-                        isClickGood = (whereEqualTo(Const.FB_DB_KEY_UID, MainApplication.auth.uid).get().await().size() > 0)
-                        good = get().await().size()
+            R.id.imageViewGood -> clickBookIsGood()
+            R.id.btnAddComment -> clickAddComment()
+        }
+    }
 
-
-                    }
-
-                    withContext(Main){
-                        if(isClickGood){
-                            Glide.with(baseContext).load(android.R.drawable.btn_star_big_on).into(binding.imageViewGood)
-                        }else{
-                            Glide.with(baseContext).load(android.R.drawable.btn_star_big_off).into(binding.imageViewGood)
-                        }
-                        binding.tvConfigGood.text = "$good"
+    private fun clickBookIsGood(){
+        CoroutineScope(Dispatchers.IO).launch {
+            var good = 0
+            with(MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_GOOD)){
+                whereEqualTo(Const.FB_DB_KEY_UID, MainApplication.auth.uid).get().await().let {  result ->
+                    if(result.size() < 1){
+                        add( hashMapOf(Const.FB_DB_KEY_UID to MainApplication.auth.uid) ).await()
+                    }else{
+                        document(result.documents[0].id).delete().await()
                     }
                 }
+                isClickGood = (whereEqualTo(Const.FB_DB_KEY_UID, MainApplication.auth.uid).get().await().size() > 0)
+                good = get().await().size()
+            }
+
+            withContext(Main){
+                if(isClickGood){
+                    Glide.with(baseContext).load(android.R.drawable.btn_star_big_on).into(binding.imageViewGood)
+                }else{
+                    Glide.with(baseContext).load(android.R.drawable.btn_star_big_off).into(binding.imageViewGood)
+                }
+                binding.tvConfigGood.text = "$good"
+            }
+        }
+    }
+
+    private fun clickAddComment(){
+        CoroutineScope(Dispatchers.IO).launch {
+            if(MainApplication.checkAuth()){
+                val comment = Comment(id = "", uid = MainApplication.auth.uid!!, email = MainApplication.email!!, userName = MainApplication.name!!,
+                    photoUrl = MainApplication.photoUrl.toString(), comment = binding.etAddComment.text.toString(),
+                    updateTime = System.currentTimeMillis(), bookPublishCode = config.publishCode)
+
+                with(MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_COMMENT)){
+                    add(comment).await().id.let { id ->
+                        comment.id = id
+                    }
+                    document(comment.id).set(comment).await()
+
+                    commentList.clear()
+                    val updates = orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID).limit(Const.COMMENT_COUNT).get().await().documents
+                    for (update in updates){
+                        val temp = update.toObject(Comment::class.java)
+                        if (temp != null) {
+                            commentList.add(temp)
+                            Log.e(TAG, temp.toString())
+                        }
+                    }
+                }
+            }
+
+            withContext(Main){
+                commentAdapter.notifyDataSetChanged()
+            }
+        }
+    }
+
+    private fun addMoreComment(){
+        isListLoading = true
+
+        val lastComment = commentList.lastOrNull()
+
+        commentList.add(Comment(id = Const.VIEW_HOLDER_LOADING_COMMENT))
+        commentAdapter.notifyItemInserted(commentList.size -1)
+
+        CoroutineScope(Dispatchers.Default).launch {
+            delay(500L)
+
+            val documents = if(lastComment == null){
+                MainApplication.db.collection(Const.FB_DB_KEY_COMMENT)
+                    .orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID)
+                    .limit(Const.COMMENT_COUNT).get().await().documents
+            }else{
+                MainApplication.db.collection(Const.FB_DB_KEY_COMMENT)
+                    .orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID)
+                    .startAfter(lastComment.updateTime, lastComment.id).limit(Const.COMMENT_COUNT).get().await().documents
+            }
+
+            val addList = mutableListOf<Comment>()
+            for (document in documents){
+                val item = document.toObject(Comment::class.java)
+                if (item != null) {
+                    addList.add(item)
+                }
+            }
+
+            withContext(Main) {
+                val beforeSize = commentList.size
+                commentList.removeAt(beforeSize - 1)
+                commentAdapter.notifyItemRemoved(beforeSize - 1)
+                commentList.addAll(addList)
+                commentAdapter.notifyItemRangeInserted(beforeSize, addList.size)
+
+                isListLoading = false
             }
         }
     }
