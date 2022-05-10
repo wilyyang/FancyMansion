@@ -13,6 +13,27 @@
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:statusBarColor" tools:targetApi="l">@android:color/transparent</item>
         <!-- Customize your theme here. -->
+        <item name="android:navigationBarColor" tools:targetApi="p">@color/white</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="p">true</item>
+
+        <item name="radioButtonStyle">@style/customRadioFontStyle</item>
+        <item name="materialButtonStyle">@style/customButtonFontStyle</item>
+        <item name="android:textViewStyle">@style/customTextViewFontStyle</item>
+
+    </style>
+
+    <style name="customRadioFontStyle" parent="Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:fontFamily">@font/notosans_regular</item>
+    </style>
+
+    <style name="customButtonFontStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:fontFamily">@font/notosans_regular</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="customTextViewFontStyle" parent="@android:style/Widget.DeviceDefault.TextView">
+        <item name="android:fontFamily">@font/notosans_regular</item>
+        <item name="android:includeFontPadding">false</item>
     </style>
 
     <style name="BookInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">

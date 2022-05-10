@@ -2,10 +2,12 @@ package com.cheesejuice.fancymansion.view
 
 import android.content.Context
 import android.graphics.Rect
+import android.graphics.Typeface
 import android.text.InputType.*
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.setPadding
 import com.cheesejuice.fancymansion.R
 import com.google.android.material.textfield.TextInputEditText
@@ -19,6 +21,8 @@ class RoundEditText @JvmOverloads constructor(
 
     init {
         this.setPadding(context.resources.getDimensionPixelSize(R.dimen.padding_default_edit))
+        typeface = ResourcesCompat.getFont(context, R.font.notosans_regular)
+        includeFontPadding = false
     }
 
     override fun onFocusChanged(focused: Boolean, direction: Int, previouslyFocusedRect: Rect?) {
