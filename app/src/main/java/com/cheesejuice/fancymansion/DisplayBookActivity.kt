@@ -8,11 +8,13 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.databinding.ActivityDisplayBookBinding
+import com.cheesejuice.fancymansion.databinding.LayoutEditCommentBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.Comment
 import com.cheesejuice.fancymansion.model.Config
@@ -20,6 +22,7 @@ import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FileUtil
 import com.cheesejuice.fancymansion.view.CommentAdapter
 import com.cheesejuice.fancymansion.view.StoreBookAdapter
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
@@ -48,8 +51,6 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_display_book)
-
         binding = ActivityDisplayBookBinding.inflate(layoutInflater)
         setContentView(binding.root)
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
@@ -139,8 +140,80 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
         commentAdapter = CommentAdapter(_commentList, baseContext, config.uid)
         commentAdapter.setItemClickListener(object: CommentAdapter.OnItemClickListener{
             override fun onClick(v: View, comment: Comment) {
+                binding.etAddComment.clearFocus()
+                if(MainApplication.checkAuth()){
+                    if(comment.uid == MainApplication.auth.uid){
+                        BottomSheetDialog(this@DisplayBookActivity).also {  dialog ->
+                            val dialogView = LayoutEditCommentBinding.inflate(layoutInflater).apply {
+                                etAddComment.setText(comment.comment)
+                                tvCommentEdit.setOnClickListener {
+                                    progressbarComment.visibility = View.VISIBLE
+                                    layoutCommentUpdate.visibility = View.GONE
+                                    comment.comment = etAddComment.text.toString()
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_COMMENT)
+                                            .document(comment.id).set(comment)
+                                            .addOnSuccessListener {
 
+                                                CoroutineScope(Dispatchers.IO).launch {
+                                                    val updates = MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_COMMENT).
+                                                    orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID).limit(commentList.size.toLong()).get().await().documents
 
+                                                    commentList.clear()
+                                                    for (update in updates){
+                                                        update.toObject(Comment::class.java)?.let {  temp ->
+                                                            commentList.add(temp)
+                                                        }
+                                                    }
+
+                                                    withContext(Main){
+                                                        commentAdapter.notifyDataSetChanged()
+                                                        dialog.dismiss()
+                                                        Toast.makeText(this@DisplayBookActivity,getString(R.string.display_comment_update_success),Toast.LENGTH_SHORT).show()
+                                                    }
+                                                }
+                                            }.addOnFailureListener {
+                                                dialog.dismiss()
+                                                Toast.makeText(this@DisplayBookActivity,getString(R.string.display_comment_update_fail),Toast.LENGTH_SHORT).show()
+                                            }
+                                    }
+                                }
+                                tvCommentDelete.setOnClickListener {
+                                    progressbarComment.visibility = View.VISIBLE
+                                    layoutCommentUpdate.visibility = View.GONE
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_COMMENT)
+                                            .document(comment.id).delete()
+                                            .addOnSuccessListener {
+                                                CoroutineScope(Dispatchers.IO).launch {
+                                                    val updates = MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_COMMENT).
+                                                    orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID).limit(commentList.size.toLong()).get().await().documents
+
+                                                    commentList.clear()
+                                                    for (update in updates){
+                                                        update.toObject(Comment::class.java)?.let {  temp ->
+                                                            commentList.add(temp)
+                                                        }
+                                                    }
+
+                                                    withContext(Main){
+                                                        commentAdapter.notifyDataSetChanged()
+                                                        dialog.dismiss()
+                                                        Toast.makeText(this@DisplayBookActivity,getString(R.string.display_comment_update_success),Toast.LENGTH_SHORT).show()
+                                                    }
+                                                }
+
+                                            }.addOnFailureListener {
+                                                dialog.dismiss()
+                                                Toast.makeText(this@DisplayBookActivity,getString(R.string.display_comment_update_fail),Toast.LENGTH_SHORT).show()
+                                            }
+                                    }
+                                }
+                            }
+                            dialog.setContentView(dialogView.root)
+                        }.show()
+                    }
+                }
             }
         })
 
@@ -238,7 +311,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
     private fun clickBookIsGood(){
         CoroutineScope(Dispatchers.IO).launch {
-            var good = 0
+            var good:Int
             with(MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_GOOD)){
                 whereEqualTo(Const.FB_DB_KEY_UID, MainApplication.auth.uid).get().await().let {  result ->
                     if(result.size() < 1){

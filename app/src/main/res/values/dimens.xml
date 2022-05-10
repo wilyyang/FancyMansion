@@ -46,6 +46,8 @@
 
     <dimen name="padding_item">10dp</dimen>
     <dimen name="padding_default_edit">5dp</dimen>
+    <dimen name="padding_comment_dialog">20dp</dimen>
 
     <dimen name="size_get_gallery">30dp</dimen>
+    <dimen name="size_image_comment">20dp</dimen>
 </resources>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/padding_comment_dialog"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ProgressBar
+        android:id="@+id/progressbarComment"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:layout_marginBottom="@dimen/margin_default"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutCommentUpdate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutCommentBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_default"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/layoutEditText">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/display_comment_edit_title"
+                android:textSize="@dimen/size_item"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/imageCommentEdit"/>
+
+            <ImageView
+                android:id="@+id/imageCommentEdit"
+                android:layout_width="@dimen/size_image_comment"
+                android:layout_height="@dimen/size_image_comment"
+                android:src="@drawable/ic_edit"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/tvCommentEdit"/>
+
+            <TextView
+                android:id="@+id/tvCommentEdit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/display_comment_edit"
+                android:textSize="@dimen/size_item"
+                android:layout_marginEnd="@dimen/padding_comment_dialog"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/imageCommentDelete"/>
+
+            <ImageView
+                android:id="@+id/imageCommentDelete"
+                android:layout_width="@dimen/size_image_comment"
+                android:layout_height="@dimen/size_image_comment"
+                android:src="@drawable/ic_trash"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/tvCommentDelete"/>
+
+            <TextView
+                android:id="@+id/tvCommentDelete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/display_comment_delete"
+                android:textSize="@dimen/size_item"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutEditText"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_default"
+            app:layout_constraintTop_toBottomOf="@+id/layoutCommentBtn"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:textSize="@dimen/size_item">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etAddComment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="@integer/count_slide_choice"
+                android:padding="5dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

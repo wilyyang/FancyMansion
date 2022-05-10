@@ -63,7 +63,9 @@
                             android:id="@+id/layoutDescriptionContent"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            app:layout_constraintTop_toTopOf="parent">
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:clickable="true"
+                            android:focusableInTouchMode="true">
 
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:id="@+id/layoutShow"
@@ -224,7 +226,7 @@
                             android:layout_marginEnd="@dimen/margin_default"
                             android:textSize="@dimen/size_item">
 
-                            <com.google.android.material.textfield.TextInputEditText
+                            <com.cheesejuice.fancymansion.view.RoundEditText
                                 android:id="@+id/etAddComment"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"

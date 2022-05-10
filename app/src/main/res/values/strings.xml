@@ -153,4 +153,11 @@
 
     <string name="display_downloads">Downloads</string>
     <string name="display_comment_add">add</string>
+    <string name="display_comment_edit_title">Edit Comment</string>
+
+    <string name="display_comment_edit">Edit</string>
+    <string name="display_comment_delete">Delete</string>
+
+    <string name="display_comment_update_success">Comment update success</string>
+    <string name="display_comment_update_fail">Comment update fail</string>
 </resources>
