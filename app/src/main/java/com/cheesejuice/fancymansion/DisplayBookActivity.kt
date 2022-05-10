@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -73,7 +74,6 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
                             isClickGood = (collection(Const.FB_DB_KEY_GOOD).whereEqualTo(Const.FB_DB_KEY_UID, MainApplication.auth.uid).get().await().size() > 0)
 
-
                             val comments = collection(Const.FB_DB_KEY_COMMENT).orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID).limit(Const.COMMENT_COUNT).get().await().documents
                             for (comment in comments){
                                 val temp = comment.toObject(Comment::class.java)
@@ -136,9 +136,10 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
     private fun makeCommentList(_commentList : MutableList<Comment>) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
 
-        commentAdapter = CommentAdapter(_commentList, baseContext)
+        commentAdapter = CommentAdapter(_commentList, baseContext, config.uid)
         commentAdapter.setItemClickListener(object: CommentAdapter.OnItemClickListener{
             override fun onClick(v: View, comment: Comment) {
+
 
             }
         })
@@ -146,17 +147,14 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
         binding.recyclerComment.layoutManager = LinearLayoutManager(baseContext)
         binding.recyclerComment.adapter = commentAdapter
 
-        binding.recyclerComment.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
+        binding.layoutBody.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
 
-//                if(!isListLoading){
-//                    if ((recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition() == commentList.size - 1){
-//                        addMoreComment()
-//                    }
-//                }
+            if(!isListLoading){
+                if(!v.canScrollVertically(1)){
+                    addMoreComment()
+                }
             }
-        })
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -277,20 +275,33 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                     }
                     document(comment.id).set(comment).await()
 
-                    commentList.clear()
-                    val updates = orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID).limit(Const.COMMENT_COUNT).get().await().documents
+                    val beforeSize = commentList.size
+                    val lastComment = commentList.lastOrNull()
+
+                    val updates = if(lastComment == null){
+                        orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID).get().await().documents
+                    }else{
+                        orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID)
+                            .startAfter(lastComment.updateTime, lastComment.id).get().await().documents
+                    }
+
                     for (update in updates){
-                        val temp = update.toObject(Comment::class.java)
-                        if (temp != null) {
+                        update.toObject(Comment::class.java)?.let {  temp ->
                             commentList.add(temp)
-                            Log.e(TAG, temp.toString())
                         }
                     }
-                }
-            }
 
-            withContext(Main){
-                commentAdapter.notifyDataSetChanged()
+                    withContext(Main){
+                        commentAdapter.notifyItemRangeInserted(beforeSize, commentList.size)
+                        binding.etAddComment.let {
+                            it.text?.clear()
+                            it.clearFocus()
+                            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                            imm.hideSoftInputFromWindow(it.windowToken, 0)
+                        }
+                        binding.layoutBody.fullScroll(View.FOCUS_DOWN)
+                    }
+                }
             }
         }
     }
@@ -307,11 +318,11 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
             delay(500L)
 
             val documents = if(lastComment == null){
-                MainApplication.db.collection(Const.FB_DB_KEY_COMMENT)
+                MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_COMMENT)
                     .orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID)
                     .limit(Const.COMMENT_COUNT).get().await().documents
             }else{
-                MainApplication.db.collection(Const.FB_DB_KEY_COMMENT)
+                MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_COMMENT)
                     .orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID)
                     .startAfter(lastComment.updateTime, lastComment.id).limit(Const.COMMENT_COUNT).get().await().documents
             }

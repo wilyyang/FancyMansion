@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/menu_remove_store"
-        android:icon="@drawable/ic_trash"
+        android:icon="@drawable/ic_trash_2"
         android:title="@string/menu_remove_store"
         app:showAsAction="always"/>
 

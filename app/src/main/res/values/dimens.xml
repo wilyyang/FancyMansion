@@ -22,7 +22,7 @@
 
     <dimen name="size_comment_user">12sp</dimen>
     <dimen name="size_comment_date">10sp</dimen>
-    <dimen name="size_comment_comment">16sp</dimen>
+    <dimen name="size_comment_comment">14sp</dimen>
 
     <dimen name="margin_small">5dp</dimen>
     <dimen name="margin_default">10dp</dimen>
@@ -46,4 +46,6 @@
 
     <dimen name="padding_item">10dp</dimen>
     <dimen name="padding_default_edit">5dp</dimen>
+
+    <dimen name="size_get_gallery">30dp</dimen>
 </resources>

@@ -18,7 +18,7 @@ class Const {
 
         const val PAGE_COUNT = 10
         const val PAGE_COUNT_LONG = 10L
-        const val COMMENT_COUNT = 3L
+        const val COMMENT_COUNT = 10L
 
         const val COUNT_SLIDE = 1_00_00_00_00L
         const val COUNT_CHOICE = 1_00_00_00L

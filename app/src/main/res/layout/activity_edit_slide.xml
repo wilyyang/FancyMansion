@@ -87,8 +87,8 @@
 
                                     <ImageView
                                         android:id="@+id/imageViewSlideAdd"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
+                                        android:layout_width="@dimen/size_get_gallery"
+                                        android:layout_height="@dimen/size_get_gallery"
                                         android:layout_marginEnd="@dimen/margin_default"
                                         android:layout_marginBottom="@dimen/margin_default"
                                         app:layout_constraintBottom_toBottomOf="parent"

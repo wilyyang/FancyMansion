@@ -1,6 +1,8 @@
 package com.cheesejuice.fancymansion.view
 
 import android.content.Context
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.OvalShape
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -17,12 +19,13 @@ import com.cheesejuice.fancymansion.model.Comment
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.CommonUtil
 
-class CommentAdapter(val datas: MutableList<Comment>, val context: Context):
+class CommentAdapter(val datas: MutableList<Comment>, val context: Context, val bookUid:String):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     companion object {
         private const val TYPE_ITEM = 0
         private const val TYPE_LOADING = 1
+        private const val TYPE_ME = 2
     }
 
     // OnItemClickListener
@@ -40,13 +43,19 @@ class CommentAdapter(val datas: MutableList<Comment>, val context: Context):
     override fun getItemViewType(position: Int): Int {
         return when (datas[position].id) {
             Const.VIEW_HOLDER_LOADING_COMMENT -> TYPE_LOADING
-            else -> TYPE_ITEM
+            else -> {
+                if(MainApplication.auth.uid == datas[position].uid) {
+                    TYPE_ME
+                }else{
+                    TYPE_ITEM
+                }
+            }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
     {
-        return if (viewType == TYPE_ITEM){
+        return if (viewType == TYPE_ITEM || viewType == TYPE_ME){
             CommentViewHolder(ItemCommentBinding.inflate(LayoutInflater.from(parent.context), parent, false))
         }else{
             LoadingViewHolder(ItemLoadingBinding.inflate(LayoutInflater.from(parent.context), parent, false))
@@ -56,16 +65,18 @@ class CommentAdapter(val datas: MutableList<Comment>, val context: Context):
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is CommentViewHolder){
             val binding=(holder).binding
+            binding.imageViewCommentUserIcon.visibility = if(datas[position].uid == bookUid) View.VISIBLE else View.GONE
+
             with(datas[position]){
+
                 binding.tvCommentUserName.text = userName
                 binding.tvCommentDate.text = CommonUtil.longToTimeFormatss(updateTime)
-
                 binding.tvComment.text = comment
 
-                Glide.with(context).load(R.drawable.add_image).into(holder.binding.imageProfilePhoto)
+                Glide.with(context).load(R.drawable.add_image).circleCrop().into(holder.binding.imageProfilePhoto)
                 if(photoUrl != ""){
                     val uri = Uri.parse(photoUrl)
-                    Glide.with(context).load(uri).into(holder.binding.imageProfilePhoto)
+                    Glide.with(context).load(uri).circleCrop().into(holder.binding.imageProfilePhoto)
                 }
             }
 
@@ -74,8 +85,11 @@ class CommentAdapter(val datas: MutableList<Comment>, val context: Context):
                     itemClickListener.onClick(it, datas[this.bindingAdapterPosition])
                 }
             }
-        }else if (holder is ReadBookAdapter.LoadingViewHolder){
 
+            if(holder.itemViewType == TYPE_ME){
+                binding.imageViewCommentEdit.visibility = View.VISIBLE
+                binding.imageViewCommentDelete.visibility = View.VISIBLE
+            }
         }
     }
 
