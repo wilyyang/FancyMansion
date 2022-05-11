@@ -1,5 +1,8 @@
 package com.cheesejuice.fancymansion
 
+import com.cheesejuice.fancymansion.Const.Companion.FB_DB_KEY_COMMENT_TIME
+import com.cheesejuice.fancymansion.Const.Companion.FB_DB_KEY_TITLE
+
 class Const {
     companion object{
         // Const
@@ -84,7 +87,14 @@ class Const {
         const val FB_DB_KEY_COMMENT = "comment"
         const val FB_DB_KEY_COMMENT_ID = "id"
         const val FB_DB_KEY_COMMENT_TIME = "updateTime"
+
+        const val FB_ALL_BOOK = -10L
+        const val FB_ALL_COMMENT = -10L
     }
+}
+
+enum class BookOrderBy (val keyName:String) {
+    TITLE(FB_DB_KEY_TITLE), TIME(FB_DB_KEY_COMMENT_TIME)
 }
 
 enum class CondOp(

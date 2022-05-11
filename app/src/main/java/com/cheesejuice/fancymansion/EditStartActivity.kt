@@ -96,7 +96,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             val conf = fileUtil.getConfigFromFile(bookId)
             conf?.let {
                 if(conf.publishCode != ""){
-                    newUpload = firebaseUtil.isBookUpload(config.publishCode, conf.uid)
+                    newUpload = firebaseUtil.isBookUpload(conf.publishCode, conf.uid)
                 }
             }
 

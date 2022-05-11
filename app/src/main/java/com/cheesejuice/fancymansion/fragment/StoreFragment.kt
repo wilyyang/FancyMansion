@@ -64,14 +64,8 @@ class StoreFragment : Fragment() {
                     showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
                     CoroutineScope(Dispatchers.Default).launch {
                         storeBookList.clear()
-                        val documents = MainApplication.db.collection(Const.FB_DB_KEY_BOOK).orderBy(Const.FB_DB_KEY_TITLE).orderBy(Const.FB_DB_KEY_PUBLISH)
-                            .limit(Const.PAGE_COUNT_LONG).get().await().documents
-                        for (document in documents){
-                            val item = document.toObject(Config::class.java)
-                            if (item != null) {
-                                storeBookList.add(item)
-                            }
-                        }
+                        val addList = firebaseUtil.getBookList(order = BookOrderBy.TITLE, limit = Const.PAGE_COUNT_LONG)
+                        storeBookList.addAll(addList)
                         withContext(Main){
                             _binding?.let {
                                 makeStoreList(storeBookList)
@@ -97,14 +91,8 @@ class StoreFragment : Fragment() {
         binding.toolbar.title = getString(R.string.frag_main_store)
 
         CoroutineScope(Dispatchers.Default).launch {
-            val documents = MainApplication.db.collection(Const.FB_DB_KEY_BOOK).orderBy(Const.FB_DB_KEY_TITLE).orderBy(Const.FB_DB_KEY_PUBLISH)
-                .limit(Const.PAGE_COUNT_LONG).get().await().documents
-            for (document in documents){
-                val item = document.toObject(Config::class.java)
-                if (item != null) {
-                    storeBookList.add(item)
-                }
-            }
+            val addList = firebaseUtil.getBookList(order = BookOrderBy.TITLE, limit = Const.PAGE_COUNT_LONG)
+            storeBookList.addAll(addList)
             withContext(Main){
                 _binding?.let {
                     makeStoreList(storeBookList)
@@ -159,22 +147,7 @@ class StoreFragment : Fragment() {
 
         CoroutineScope(Dispatchers.Default).launch {
             delay(500L)
-
-            val documents = if(lastConfig == null){
-                MainApplication.db.collection(Const.FB_DB_KEY_BOOK).orderBy(Const.FB_DB_KEY_TITLE).orderBy(Const.FB_DB_KEY_PUBLISH)
-                    .limit(Const.PAGE_COUNT_LONG).get().await().documents
-            }else{
-                MainApplication.db.collection(Const.FB_DB_KEY_BOOK).orderBy(Const.FB_DB_KEY_TITLE).orderBy(Const.FB_DB_KEY_PUBLISH)
-                    .startAfter(lastConfig.title, lastConfig.publishCode).limit(Const.PAGE_COUNT_LONG).get().await().documents
-            }
-
-            val addList = mutableListOf<Config>()
-            for (document in documents){
-                val item = document.toObject(Config::class.java)
-                if (item != null) {
-                    addList.add(item)
-                }
-            }
+            val addList = firebaseUtil.getBookList(order = BookOrderBy.TITLE, limit = Const.PAGE_COUNT_LONG, startConfig = lastConfig)
 
             withContext(Main) {
                 val beforeSize = storeBookList.size

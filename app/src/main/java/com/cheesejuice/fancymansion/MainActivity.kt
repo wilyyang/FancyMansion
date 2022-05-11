@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         if(firebaseUtil.checkAuth()){
             fileUtil.initRootFolder()
             if(!bookUtil.isSampleMake()){
-                createEditSampleFiles(firebaseUtil.auth.uid!!)
+                createEditSampleFiles(FirebaseUtil.auth.uid!!)
             }
         }
 

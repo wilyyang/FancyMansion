@@ -20,6 +20,7 @@ import com.cheesejuice.fancymansion.model.Comment
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FileUtil
+import com.cheesejuice.fancymansion.util.FirebaseUtil
 import com.cheesejuice.fancymansion.view.CommentAdapter
 import com.cheesejuice.fancymansion.view.StoreBookAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -45,6 +46,8 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
     lateinit var util: CommonUtil
     @Inject
     lateinit var fileUtil: FileUtil
+    @Inject
+    lateinit var firebaseUtil: FirebaseUtil
 
     // ui
     private lateinit var commentAdapter: CommentAdapter
@@ -61,35 +64,23 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
         val publishCode = intent.getStringExtra(Const.INTENT_PUBLISH_CODE)?: ""
 
         CoroutineScope(Dispatchers.IO).launch {
-            var item:Config? = null
+            var item : Config? = null
             var downloads = 0
             var good = 0
+
             if(publishCode != ""){
-                val colRef = MainApplication.db.collection(Const.FB_DB_KEY_BOOK)
-                val documents = colRef.whereEqualTo(Const.FB_DB_KEY_PUBLISH, publishCode).get().await().documents
-                if(documents.size > 0){
-                    item = documents[0].toObject(Config::class.java)?.also {
-                        with(colRef.document(it.publishCode)){
-                            downloads = collection(Const.FB_DB_KEY_DOWNLOADS).get().await().size()
-                            good = collection(Const.FB_DB_KEY_GOOD).get().await().size()
-
-                            isClickGood = (collection(Const.FB_DB_KEY_GOOD).whereEqualTo(Const.FB_DB_KEY_UID, MainApplication.auth.uid).get().await().size() > 0)
-
-                            val comments = collection(Const.FB_DB_KEY_COMMENT).orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID).limit(Const.COMMENT_COUNT).get().await().documents
-                            for (comment in comments){
-                                val temp = comment.toObject(Comment::class.java)
-                                if (temp != null) {
-                                    commentList.add(temp)
-                                    Log.e(TAG, temp.toString())
-                                }
-                            }
-                        }
-                    }
+                item = firebaseUtil.getBookConfig(publishCode)?.also {
+                    downloads = firebaseUtil.getDownloads(it.publishCode)
+                    good = firebaseUtil.getBookGoodCount(it.publishCode)
+                    isClickGood = firebaseUtil.isBookGoodUser(it.publishCode)
+                    val addList = firebaseUtil.getCommentList(publishCode = it.publishCode, limit = Const.COMMENT_COUNT)
+                    commentList.addAll(addList)
                 }
             }
+
             withContext(Main) {
-                showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
                 item?.also {
+                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
                     config = it
                     makeBookDisplayScreen(config, downloads, good, isClickGood)
                     makeCommentList(commentList)
@@ -113,13 +104,11 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
             binding.tvConfigWriter.text = writer
             binding.tvConfigIllustrator.text = illustrator
 
-            MainApplication.storage.reference.child("/${Const.FB_STORAGE_BOOK}/$uid/$publishCode/$coverImage").downloadUrl.addOnCompleteListener {
-                if (it.isSuccessful) {
-                    Glide.with(baseContext).load(it.result).into(binding.imageViewShowMain)
-                }
-            }
+            firebaseUtil.returnImageToCallback("/${Const.FB_STORAGE_BOOK}/$uid/$publishCode/$coverImage", { result ->
+                Glide.with(baseContext).load(result).into(binding.imageViewShowMain)
+            })
 
-            if(!MainApplication.checkAuth() || conf.uid != MainApplication.auth.uid) {
+            if(!firebaseUtil.checkAuth() || conf.uid != FirebaseUtil.auth.uid) {
                 binding.toolbar.menu.findItem(R.id.menu_remove_store).isVisible = false
             }
         }
@@ -141,9 +130,9 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
         commentAdapter.setItemClickListener(object: CommentAdapter.OnItemClickListener{
             override fun onClick(v: View, comment: Comment) {
                 binding.etAddComment.clearFocus()
-                if(MainApplication.checkAuth()){
-                    if(comment.uid == MainApplication.auth.uid){
-                        BottomSheetDialog(this@DisplayBookActivity).also {  dialog ->
+                if(firebaseUtil.checkAuth()){
+                    if(comment.uid == FirebaseUtil.auth.uid){
+                        /*BottomSheetDialog(this@DisplayBookActivity).also {  dialog ->
                             val dialogView = LayoutEditCommentBinding.inflate(layoutInflater).apply {
                                 etAddComment.setText(comment.comment)
                                 tvCommentEdit.setOnClickListener {
@@ -211,7 +200,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                                 }
                             }
                             dialog.setContentView(dialogView.root)
-                        }.show()
+                        }.show()*/
                     }
                 }
             }
@@ -239,22 +228,11 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
         when(item.itemId) {
-
             R.id.menu_remove_store -> {
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
                 CoroutineScope(Dispatchers.IO).launch {
-                    if(MainApplication.checkAuth() && config.uid == MainApplication.auth.uid) {
-                        MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).delete().await()
-
-                        val deleteRef = MainApplication.storage.reference.child("/${Const.FB_STORAGE_BOOK}/${config.uid}/${config.publishCode}")
-                        try {
-                            val list = deleteRef.listAll().await()
-                            for(ref in list.items){
-                                ref.delete().await()
-                            }
-                        }catch (e:Exception){
-                            e.printStackTrace()
-                        }
+                    if(firebaseUtil.checkAuth() && config.uid == FirebaseUtil.auth.uid) {
+                        firebaseUtil.deleteBook(config)
                     }
 
                     withContext(Main){
@@ -267,29 +245,11 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
             R.id.menu_download -> {
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
                 CoroutineScope(Dispatchers.IO).launch {
-                    val bookRef = MainApplication.storage.reference.child("/${Const.FB_STORAGE_BOOK}/${config.uid}/${config.publishCode}")
-                    val list = bookRef.listAll().await()
-
                     val dir = File(fileUtil.readOnlyUserPath, Const.FILE_PREFIX_READ+config.bookId+"_${config.publishCode}")
-                    if(!dir.exists()){
-                        dir.mkdir()
-                    }
+                    firebaseUtil.downloadBook(config, dir)
 
-                    for(file in list.items){
-                        val subRef = bookRef.child(file.name)
-
-                        val subFile = File(dir, file.name)
-                        subRef.getFile(subFile).await()
-                    }
-
-                    var downloads: Int
-                    with(MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_DOWNLOADS)){
-                        if(whereEqualTo(Const.FB_DB_KEY_UID, MainApplication.auth.uid).get().await().size() < 1){
-                            add( hashMapOf(Const.FB_DB_KEY_UID to MainApplication.auth.uid) ).await()
-                        }
-                        downloads = get().await().size()
-                    }
-
+                    firebaseUtil.incrementBookDownloads(config.publishCode)
+                    val downloads: Int = firebaseUtil.getDownloads(config.publishCode)
                     fileUtil.extractBook(dir)
 
                     withContext(Main){
@@ -311,19 +271,9 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
     private fun clickBookIsGood(){
         CoroutineScope(Dispatchers.IO).launch {
-            var good:Int
-            with(MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_GOOD)){
-                whereEqualTo(Const.FB_DB_KEY_UID, MainApplication.auth.uid).get().await().let {  result ->
-                    if(result.size() < 1){
-                        add( hashMapOf(Const.FB_DB_KEY_UID to MainApplication.auth.uid) ).await()
-                    }else{
-                        document(result.documents[0].id).delete().await()
-                    }
-                }
-                isClickGood = (whereEqualTo(Const.FB_DB_KEY_UID, MainApplication.auth.uid).get().await().size() > 0)
-                good = get().await().size()
-            }
-
+            var good:Int = firebaseUtil.getBookGoodCount(config.publishCode)
+            firebaseUtil.setBookGoodUser(config.publishCode, !isClickGood)
+            isClickGood = firebaseUtil.isBookGoodUser(config.publishCode)
             withContext(Main){
                 if(isClickGood){
                     Glide.with(baseContext).load(R.drawable.ic_thumbs_up_check).into(binding.imageViewGood)
@@ -337,43 +287,26 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
     private fun clickAddComment(){
         CoroutineScope(Dispatchers.IO).launch {
-            if(MainApplication.checkAuth()){
-                val comment = Comment(id = "", uid = MainApplication.auth.uid!!, email = MainApplication.email!!, userName = MainApplication.name!!,
-                    photoUrl = MainApplication.photoUrl.toString(), comment = binding.etAddComment.text.toString(),
+            if(firebaseUtil.checkAuth()){
+                val comment = Comment(id = "", uid = FirebaseUtil.auth.uid!!, email = firebaseUtil.email!!, userName = firebaseUtil.name!!,
+                    photoUrl = firebaseUtil.photoUrl.toString(), comment = binding.etAddComment.text.toString(),
                     updateTime = System.currentTimeMillis(), bookPublishCode = config.publishCode)
 
-                with(MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_COMMENT)){
-                    add(comment).await().id.let { id ->
-                        comment.id = id
-                    }
-                    document(comment.id).set(comment).await()
+                comment.id = firebaseUtil.addComment(comment)
+                firebaseUtil.updateComment(comment)
 
-                    val beforeSize = commentList.size
-                    val lastComment = commentList.lastOrNull()
+                commentList = firebaseUtil.getCommentList(publishCode = config.publishCode)
 
-                    val updates = if(lastComment == null){
-                        orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID).get().await().documents
-                    }else{
-                        orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID)
-                            .startAfter(lastComment.updateTime, lastComment.id).get().await().documents
-                    }
+                withContext(Main) {
+                    commentAdapter.notifyDataSetChanged()
 
-                    for (update in updates){
-                        update.toObject(Comment::class.java)?.let {  temp ->
-                            commentList.add(temp)
-                        }
+                    binding.etAddComment.let {
+                        it.text?.clear()
+                        it.clearFocus()
+                        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.hideSoftInputFromWindow(it.windowToken, 0)
                     }
-
-                    withContext(Main){
-                        commentAdapter.notifyItemRangeInserted(beforeSize, commentList.size)
-                        binding.etAddComment.let {
-                            it.text?.clear()
-                            it.clearFocus()
-                            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                            imm.hideSoftInputFromWindow(it.windowToken, 0)
-                        }
-                        binding.layoutBody.fullScroll(View.FOCUS_DOWN)
-                    }
+                    binding.layoutBody.fullScroll(View.FOCUS_DOWN)
                 }
             }
         }
@@ -389,24 +322,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
         CoroutineScope(Dispatchers.Default).launch {
             delay(500L)
-
-            val documents = if(lastComment == null){
-                MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_COMMENT)
-                    .orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID)
-                    .limit(Const.COMMENT_COUNT).get().await().documents
-            }else{
-                MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_COMMENT)
-                    .orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID)
-                    .startAfter(lastComment.updateTime, lastComment.id).limit(Const.COMMENT_COUNT).get().await().documents
-            }
-
-            val addList = mutableListOf<Comment>()
-            for (document in documents){
-                val item = document.toObject(Comment::class.java)
-                if (item != null) {
-                    addList.add(item)
-                }
-            }
+            val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = Const.COMMENT_COUNT, startComment = lastComment)
 
             withContext(Main) {
                 val beforeSize = commentList.size
