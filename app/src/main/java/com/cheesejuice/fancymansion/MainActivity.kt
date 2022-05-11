@@ -14,6 +14,7 @@ import com.cheesejuice.fancymansion.fragment.UserFragment
 import com.cheesejuice.fancymansion.util.BookUtil
 import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FileUtil
+import com.cheesejuice.fancymansion.util.FirebaseUtil
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -26,6 +27,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var bookUtil: BookUtil
     @Inject
     lateinit var fileUtil: FileUtil
+    @Inject
+    lateinit var firebaseUtil: FirebaseUtil
 
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,10 +36,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if(MainApplication.checkAuth()){
+        if(firebaseUtil.checkAuth()){
             fileUtil.initRootFolder()
             if(!bookUtil.isSampleMake()){
-                createEditSampleFiles(MainApplication.auth.uid!!)
+                createEditSampleFiles(firebaseUtil.auth.uid!!)
             }
         }
 

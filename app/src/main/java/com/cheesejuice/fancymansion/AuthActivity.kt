@@ -8,13 +8,20 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import com.cheesejuice.fancymansion.databinding.ActivityAuthBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
+import com.cheesejuice.fancymansion.util.FirebaseUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AuthActivity : AppCompatActivity() {
     lateinit var binding: ActivityAuthBinding
+
+    @Inject
+    lateinit var firebaseUtil: FirebaseUtil
 
     private val googleLoginForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -22,14 +29,10 @@ class AuthActivity : AppCompatActivity() {
             val task = GoogleSignIn.getSignedInAccountFromIntent(result?.data)
             try {
                 val account = task.getResult(ApiException::class.java)!!
-
                 val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-                MainApplication.auth.signInWithCredential(credential)
+                FirebaseUtil.auth.signInWithCredential(credential)
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
-                            MainApplication.name = account.displayName
-                            MainApplication.email = account.email
-                            MainApplication.photoUrl = account.photoUrl
                             val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
                         } else {
@@ -50,7 +53,7 @@ class AuthActivity : AppCompatActivity() {
         binding= ActivityAuthBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if(MainApplication.checkAuth()){
+        if(firebaseUtil.checkAuth()){
             val intent = Intent(this, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }

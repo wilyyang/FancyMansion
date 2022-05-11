@@ -18,6 +18,7 @@ import com.cheesejuice.fancymansion.databinding.ItemStoreBookBinding
 import com.cheesejuice.fancymansion.model.Comment
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.CommonUtil
+import com.cheesejuice.fancymansion.util.FirebaseUtil
 
 class CommentAdapter(val datas: MutableList<Comment>, val context: Context, val bookUid:String):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
@@ -44,7 +45,7 @@ class CommentAdapter(val datas: MutableList<Comment>, val context: Context, val 
         return when (datas[position].id) {
             Const.VIEW_HOLDER_LOADING_COMMENT -> TYPE_LOADING
             else -> {
-                if(MainApplication.auth.uid == datas[position].uid) {
+                if(FirebaseUtil.auth.uid == datas[position].uid) {
                     TYPE_ME
                 }else{
                     TYPE_ITEM

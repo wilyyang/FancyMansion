@@ -48,6 +48,8 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
     lateinit var bookUtil: BookUtil
     @Inject
     lateinit var fileUtil: FileUtil
+    @Inject
+    lateinit var firebaseUtil: FirebaseUtil
 
     private var makeBook = false
     private var newUpload = true
@@ -94,13 +96,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             val conf = fileUtil.getConfigFromFile(bookId)
             conf?.let {
                 if(conf.publishCode != ""){
-                    val colRef = MainApplication.db.collection(Const.FB_DB_KEY_BOOK)
-                    val uploadConfig = colRef.whereEqualTo(Const.FB_DB_KEY_PUBLISH, conf.publishCode)
-                        .whereEqualTo(Const.FB_DB_KEY_UID, conf.uid).get().await()
-
-                    if(uploadConfig.documents.size > 0){
-                        newUpload = false
-                    }
+                    newUpload = firebaseUtil.isBookUpload(config.publishCode, conf.uid)
                 }
             }
 
@@ -291,24 +287,21 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
     private suspend fun uploadBook():Boolean{
         var result = false
-        MainApplication.auth.uid?.let { userId ->
+        FirebaseUtil.auth.uid?.let { userId ->
             config.apply {
-                user = MainApplication.name ?: ""
-                email = MainApplication.email ?: ""
+                user = firebaseUtil.name ?: ""
+                email = firebaseUtil.email ?: ""
                 uid = userId
                 updateTime = System.currentTimeMillis()
             }
 
-            val colRef = MainApplication.db.collection(Const.FB_DB_KEY_BOOK)
             if(newUpload){
-                colRef.add(config).await().id.let {
-                    config.publishCode = it
-                }
+                config.publishCode = firebaseUtil.uploadBookConfig(config)
             }
 
             if(config.publishCode != ""){
                 saveConfigFile(config)
-                colRef.document(config.publishCode).set(config).await()
+                firebaseUtil.updateBookConfig(config)
                 result = true
             }
         }
@@ -316,17 +309,16 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private suspend fun uploadBookFile(): Boolean{
-        var result = true
-        val storage = MainApplication.storage
-        val storageRef: StorageReference = storage.reference
-
+        var result = false
         val localBookFile = fileUtil.compressBook(bookId = config.bookId)
-        localBookFile?.listFiles()?.forEach {  subFile ->
-            val subFileRef: StorageReference = storageRef.child("/${Const.FB_STORAGE_BOOK}/${config.uid}/${config.publishCode}/${subFile.name}")
-            subFileRef.putFile(Uri.fromFile(subFile))
-                .addOnFailureListener{
-                    result = false
-                }.await()
+
+        localBookFile?.listFiles()?.let { fileList ->
+            for(subFile in fileList){
+                result = firebaseUtil.uploadBookFile("/${Const.FB_STORAGE_BOOK}/${config.uid}/${config.publishCode}/${subFile.name}", subFile)
+                if(!result){
+                    break
+                }
+            }
         }
         return result
     }

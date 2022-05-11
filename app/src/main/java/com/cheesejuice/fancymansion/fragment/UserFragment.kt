@@ -17,6 +17,7 @@ import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.util.BookUtil
 import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FileUtil
+import com.cheesejuice.fancymansion.util.FirebaseUtil
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +36,8 @@ class UserFragment : Fragment(), View.OnClickListener {
     lateinit var bookUtil: BookUtil
     @Inject
     lateinit var fileUtil: FileUtil
+    @Inject
+    lateinit var firebaseUtil: FirebaseUtil
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,12 +52,10 @@ class UserFragment : Fragment(), View.OnClickListener {
 
         binding.toolbar.title = getString(R.string.frag_main_user)
 
-        if(MainApplication.name != null && MainApplication.email != null && MainApplication.photoUrl != null) {
-            binding.tvProfileName.text = MainApplication.name
-            binding.tvProfileEmail.text = MainApplication.email
-            Glide.with(this)
-                .load(MainApplication.photoUrl)
-                .into(binding.imageProfile)
+        if(firebaseUtil.name != null && firebaseUtil.email != null && firebaseUtil.photoUrl != null) {
+            binding.tvProfileName.text = firebaseUtil.name
+            binding.tvProfileEmail.text = firebaseUtil.email
+            Glide.with(this).load(firebaseUtil.photoUrl).into(binding.imageProfile)
         }else{
             util.getAlertDailog(activity as AppCompatActivity).show()
         }
@@ -75,7 +76,7 @@ class UserFragment : Fragment(), View.OnClickListener {
     {
         when(item.itemId) {
             R.id.menu_logout -> {
-                MainApplication.signOut(requireActivity())
+                firebaseUtil.signOut(requireActivity())
 
                 val intent = Intent(activity, AuthActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

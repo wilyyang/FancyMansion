@@ -16,9 +16,10 @@ import com.cheesejuice.fancymansion.databinding.ItemReadBookBinding
 import com.cheesejuice.fancymansion.databinding.ItemStoreBookBinding
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.CommonUtil
+import com.cheesejuice.fancymansion.util.FirebaseUtil
 import kotlinx.coroutines.tasks.await
 
-class StoreBookAdapter(val datas: MutableList<Config>, val context: Context):
+class StoreBookAdapter(val datas: MutableList<Config>, val context: Context, val firebaseUtil: FirebaseUtil):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     companion object {
@@ -66,11 +67,9 @@ class StoreBookAdapter(val datas: MutableList<Config>, val context: Context):
                 binding.tvStoreBookIllustrator.text = illustrator
                 Glide.with(context).load(R.drawable.add_image).into(holder.binding.imageCover)
                 if(coverImage != ""){
-                    MainApplication.storage.reference.child("/book/$uid/$publishCode/$coverImage").downloadUrl.addOnCompleteListener {
-                        if (it.isSuccessful) {
-                            Glide.with(context).load(it.result).into(holder.binding.imageCover)
-                        }
-                    }
+                    firebaseUtil.returnImageToCallback("/book/$uid/$publishCode/$coverImage",
+                        { result -> Glide.with(context).load(result).into(holder.binding.imageCover)}
+                    )
                 }
             }
 

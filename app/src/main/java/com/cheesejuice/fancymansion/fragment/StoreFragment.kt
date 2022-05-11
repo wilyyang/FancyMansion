@@ -21,6 +21,7 @@ import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.BookUtil
 import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FileUtil
+import com.cheesejuice.fancymansion.util.FirebaseUtil
 import com.cheesejuice.fancymansion.view.ReadBookAdapter
 import com.cheesejuice.fancymansion.view.StoreBookAdapter
 import com.google.firebase.firestore.DocumentSnapshot
@@ -50,6 +51,8 @@ class StoreFragment : Fragment() {
     lateinit var bookUtil: BookUtil
     @Inject
     lateinit var fileUtil: FileUtil
+    @Inject
+    lateinit var firebaseUtil: FirebaseUtil
 
     // ui
     private lateinit var storeBookAdapter: StoreBookAdapter
@@ -120,7 +123,7 @@ class StoreFragment : Fragment() {
     private fun makeStoreList(_storeList : MutableList<Config>) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
 
-        storeBookAdapter = StoreBookAdapter(_storeList, requireActivity())
+        storeBookAdapter = StoreBookAdapter(_storeList, requireActivity(), firebaseUtil)
         storeBookAdapter.setItemClickListener(object: StoreBookAdapter.OnItemClickListener{
             override fun onClick(v: View, config: Config) {
                 val intent = Intent(activity, DisplayBookActivity::class.java).apply {

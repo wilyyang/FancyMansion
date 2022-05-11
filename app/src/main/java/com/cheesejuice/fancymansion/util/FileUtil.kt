@@ -36,14 +36,12 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
     private val readOnlyPath = File(path, Const.FILE_DIR_READONLY)
     val bookUserPath: File
         get() {
-            MainApplication.checkAuth()
-            return File(bookPath, MainApplication.auth.uid!!)
+            return File(bookPath, FirebaseUtil.auth.uid!!)
         }
 
     val readOnlyUserPath: File
         get() {
-            MainApplication.checkAuth()
-            return File(readOnlyPath, MainApplication.auth.uid!!)
+            return File(readOnlyPath, FirebaseUtil.auth.uid!!)
         }
 
     fun initRootFolder():Boolean{
