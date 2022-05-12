@@ -139,14 +139,14 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                                     layoutCommentUpdate.visibility = View.GONE
                                     comment.comment = etAddComment.text.toString()
                                     CoroutineScope(Dispatchers.IO).launch {
-                                        if(firebaseUtil.editComment(comment)){
-                                            val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = commentList.size.toLong())
-                                            commentList.clear()
-                                            commentList.addAll(addList)
-                                        }
+                                        firebaseUtil.editComment(comment)
+                                        val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = commentList.size.toLong())
+                                        commentList.clear()
+                                        commentList.addAll(addList)
 
                                         withContext(Main){
                                             commentAdapter.notifyDataSetChanged()
+                                            binding.layoutBody.fullScroll(View.FOCUS_DOWN)
                                             dialog.dismiss()
                                         }
                                     }
@@ -155,14 +155,14 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                                     progressbarComment.visibility = View.VISIBLE
                                     layoutCommentUpdate.visibility = View.GONE
                                     CoroutineScope(Dispatchers.IO).launch {
-                                        if(firebaseUtil.deleteComment(comment)){
-                                            val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = commentList.size.toLong())
-                                            commentList.clear()
-                                            commentList.addAll(addList)
-                                        }
+                                        firebaseUtil.deleteComment(comment)
+                                        val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = commentList.size.toLong())
+                                        commentList.clear()
+                                        commentList.addAll(addList)
 
                                         withContext(Main){
                                             commentAdapter.notifyDataSetChanged()
+                                            binding.layoutBody.fullScroll(View.FOCUS_DOWN)
                                             dialog.dismiss()
                                         }
                                     }
@@ -269,7 +269,9 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                 comment.id = firebaseUtil.addComment(comment)
                 firebaseUtil.editComment(comment)
 
-                commentList = firebaseUtil.getCommentList(publishCode = config.publishCode)
+                commentList.clear()
+                val addList = firebaseUtil.getCommentList(publishCode = config.publishCode)
+                commentList.addAll(addList)
 
                 withContext(Main) {
                     commentAdapter.notifyDataSetChanged()

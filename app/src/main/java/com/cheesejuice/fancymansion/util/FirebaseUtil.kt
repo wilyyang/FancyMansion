@@ -195,24 +195,14 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
         return db.collection(Const.FB_DB_KEY_BOOK).document(comment.bookPublishCode).collection(Const.FB_DB_KEY_COMMENT).add(comment).await().id
     }
 
-    suspend fun editComment(comment:Comment):Boolean{
-        var result = false
+    suspend fun editComment(comment:Comment){
         db.collection(Const.FB_DB_KEY_BOOK).document(comment.bookPublishCode).collection(Const.FB_DB_KEY_COMMENT)
-            .document(comment.id).set(comment)
-            .addOnSuccessListener {
-                result = true
-            }.await()
-        return result
+            .document(comment.id).set(comment).await()
     }
 
-    suspend fun deleteComment(comment:Comment):Boolean{
-        var result = false
+    suspend fun deleteComment(comment:Comment){
         db.collection(Const.FB_DB_KEY_BOOK).document(comment.bookPublishCode).collection(Const.FB_DB_KEY_COMMENT)
-            .document(comment.id).delete()
-            .addOnSuccessListener {
-                result = true
-            }.await()
-        return result
+            .document(comment.id).delete().await()
     }
 
     suspend fun getCommentList(publishCode:String, limit:Long = FB_ALL_COMMENT, startComment: Comment? = null):MutableList<Comment>{
@@ -230,7 +220,7 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
                 if(limit == FB_ALL_COMMENT){
                     it
                 }else{
-                    it.limit(Const.COMMENT_COUNT)
+                    it.limit(limit)
                 }
             }.get().await().documents
 
