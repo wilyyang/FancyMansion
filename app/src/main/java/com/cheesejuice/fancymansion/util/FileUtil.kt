@@ -185,7 +185,15 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         return target
     }
 
-    fun extractBook(target:File){
+    fun deleteTempFile(bookId: Long, publishCode: String){
+        val target = File(bookUserPath, Const.FILE_PREFIX_READ+bookId+"_$publishCode")
+        target.deleteRecursively()
+    }
+
+    fun extractBook(target:File):Boolean{
+        if(!target.exists()){
+            return false
+        }
         val content = File(target, Const.FILE_DIR_CONTENT)
         if(!content.exists()){
             content.mkdir()
@@ -193,6 +201,7 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         unzip(target.absolutePath+File.separator+Const.FILE_DIR_CONTENT+".zip",
             target.absolutePath)
         File(target, Const.FILE_DIR_CONTENT+".zip").delete()
+        return true
     }
 
     // encrypt / decrypt

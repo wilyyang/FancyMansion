@@ -3,10 +3,12 @@ package com.cheesejuice.fancymansion.util
 import android.app.Activity
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import com.cheesejuice.fancymansion.BookOrderBy
 import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.Const.Companion.FB_ALL_BOOK
 import com.cheesejuice.fancymansion.Const.Companion.FB_ALL_COMMENT
+import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.MainApplication
 import com.cheesejuice.fancymansion.model.Comment
 import com.cheesejuice.fancymansion.model.Config
@@ -62,7 +64,6 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
     suspend fun isBookUpload(publishCode:String, uid:String? = auth.uid ):Boolean{
         val uploadConfig = db.collection(Const.FB_DB_KEY_BOOK).whereEqualTo(Const.FB_DB_KEY_PUBLISH, publishCode)
             .whereEqualTo(Const.FB_DB_KEY_UID, uid).get().await()
-
         return uploadConfig.documents.size > 0
     }
 
@@ -150,12 +151,68 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
         return configList
     }
 
+    suspend fun getBookGoodCount(publishCode: String):Int{
+        return db.collection(Const.FB_DB_KEY_BOOK).document(publishCode).collection(Const.FB_DB_KEY_GOOD).get().await().size()
+    }
+
+    suspend fun isBookGoodUser(publishCode: String):Boolean{
+        return (db.collection(Const.FB_DB_KEY_BOOK).document(publishCode).collection(Const.FB_DB_KEY_GOOD)
+            .whereEqualTo(Const.FB_DB_KEY_UID, auth.uid).get().await().size() > 0)
+    }
+
+    suspend fun setBookGoodUser(publishCode: String, setGood:Boolean){
+        with(db.collection(Const.FB_DB_KEY_BOOK).document(publishCode).collection(Const.FB_DB_KEY_GOOD)){
+            whereEqualTo(Const.FB_DB_KEY_UID, auth.uid).get().await().let { result ->
+                if (result.size() > 0) {
+                    // isBookGood true  & setGood false -> delete
+                    if(!setGood){
+                        document(result.documents[0].id).delete().await()
+                    }
+                } else {
+                    // isBookGood false & setGood true  -> add
+                    if(setGood){
+                        add(hashMapOf(Const.FB_DB_KEY_UID to auth.uid)).await()
+                    }
+                }
+            }
+        }
+    }
+
+    suspend fun getDownloads(publishCode: String):Int{
+        return db.collection(Const.FB_DB_KEY_BOOK).document(publishCode).collection(Const.FB_DB_KEY_DOWNLOADS).get().await().size()
+    }
+
+    suspend fun incrementBookDownloads(publishCode: String){
+        with(db.collection(Const.FB_DB_KEY_BOOK).document(publishCode).collection(Const.FB_DB_KEY_DOWNLOADS)){
+            if(whereEqualTo(Const.FB_DB_KEY_UID, auth.uid).get().await().size() <1){
+                add( hashMapOf(Const.FB_DB_KEY_UID to auth.uid) ).await()
+            }
+        }
+    }
+
+    // Comment
     suspend fun addComment(comment: Comment):String{
         return db.collection(Const.FB_DB_KEY_BOOK).document(comment.bookPublishCode).collection(Const.FB_DB_KEY_COMMENT).add(comment).await().id
     }
 
-    suspend fun updateComment(comment: Comment){
-        db.collection(Const.FB_DB_KEY_BOOK).document(comment.bookPublishCode).collection(Const.FB_DB_KEY_COMMENT).document(comment.id).set(comment).await()
+    suspend fun editComment(comment:Comment):Boolean{
+        var result = false
+        db.collection(Const.FB_DB_KEY_BOOK).document(comment.bookPublishCode).collection(Const.FB_DB_KEY_COMMENT)
+            .document(comment.id).set(comment)
+            .addOnSuccessListener {
+                result = true
+            }.await()
+        return result
+    }
+
+    suspend fun deleteComment(comment:Comment):Boolean{
+        var result = false
+        db.collection(Const.FB_DB_KEY_BOOK).document(comment.bookPublishCode).collection(Const.FB_DB_KEY_COMMENT)
+            .document(comment.id).delete()
+            .addOnSuccessListener {
+                result = true
+            }.await()
+        return result
     }
 
     suspend fun getCommentList(publishCode:String, limit:Long = FB_ALL_COMMENT, startComment: Comment? = null):MutableList<Comment>{
@@ -184,42 +241,5 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
             }
         }
         return commentList
-    }
-
-    suspend fun getBookGoodCount(publishCode: String):Int{
-        return db.collection(Const.FB_DB_KEY_BOOK).document(publishCode).collection(Const.FB_DB_KEY_GOOD).get().await().size()
-    }
-
-    suspend fun isBookGoodUser(publishCode: String):Boolean{
-        return (db.collection(Const.FB_DB_KEY_BOOK).document(publishCode).collection(Const.FB_DB_KEY_GOOD)
-            .whereEqualTo(Const.FB_DB_KEY_UID, auth.uid).get().await().size() > 0)
-    }
-
-    suspend fun setBookGoodUser(publishCode: String, isGood:Boolean){
-        with(db.collection(Const.FB_DB_KEY_BOOK).document(publishCode).collection(Const.FB_DB_KEY_GOOD)){
-            whereEqualTo(Const.FB_DB_KEY_UID, auth.uid).get().await().let { result ->
-                if (result.size() < 1) {
-                    if(isGood){
-                        add(hashMapOf(Const.FB_DB_KEY_UID to auth.uid)).await()
-                    }
-                } else {
-                    if(!isGood){
-                        document(result.documents[0].id).delete().await()
-                    }
-                }
-            }
-        }
-    }
-
-    suspend fun getDownloads(publishCode: String):Int{
-        return db.collection(Const.FB_DB_KEY_BOOK).document(publishCode).collection(Const.FB_DB_KEY_DOWNLOADS).get().await().size()
-    }
-
-    suspend fun incrementBookDownloads(publishCode: String){
-        with(db.collection(Const.FB_DB_KEY_BOOK).document(publishCode).collection(Const.FB_DB_KEY_DOWNLOADS)){
-            if(whereEqualTo(Const.FB_DB_KEY_UID, auth.uid).get().await().size() <1){
-                add( hashMapOf(Const.FB_DB_KEY_UID to auth.uid) ).await()
-            }
-        }
     }
 }

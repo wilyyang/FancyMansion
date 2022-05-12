@@ -14,28 +14,18 @@ import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
 
 class BookUtil @Inject constructor(@ActivityContext private val context: Context){
-    // Check Condition
-    fun checkConditions(bookId: Long, publishCode: String, conditions: MutableList<Condition>, mode: String): Boolean{
-        var result = true
-        var nextLogic = CondNext.AND
-        for(condition in conditions){
-            result = nextLogic.check(result, checkCondition(bookId, publishCode, condition, mode))
-            nextLogic = CondNext.from(condition.conditionNext)
-            if(result && nextLogic == CondNext.OR) break
+    // Setting Pref
+    fun isSampleMake():Boolean{
+        val pref = context.getSharedPreferences(Const.PREF_SETTING, Context.MODE_PRIVATE)
+        if(!pref.getBoolean(Const.PREF_MAKE_SAMPLE, false)){
+            val editor = pref.edit()
+            editor.putBoolean(Const.PREF_MAKE_SAMPLE, true)
+            editor.commit()
+            return false
         }
-        return result
+        return true
     }
 
-    fun checkCondition(bookId: Long, publishCode: String, condition: Condition, mode: String): Boolean =
-        condition.run{
-            val count1 = getIdCount(bookId, publishCode, conditionId1, mode)
-            val count2 = if(conditionId2== Const.NOT_SUPPORT_COND_ID_2) conditionCount else getIdCount(bookId, publishCode, conditionId2, mode)
-            Log.d(Const.TAG, "mode - $mode check : $conditionId1 ($count1) $conditionOp $conditionId2 ($count2)")
-            CondOp.from(conditionOp).check(count1, count2)
-        }
-
-
-    // Setting Pref
     fun getEditPlay(): Boolean{
         val pref = context.getSharedPreferences(Const.PREF_SETTING, Context.MODE_PRIVATE)
         return pref.getBoolean(Const.PREF_EDIT_PLAY, false)
@@ -49,17 +39,17 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
     }
 
     // Reading Book Info
-    fun getSaveSlideId(bookId: Long, publishCode:String): Long{
+    fun getSaveSlideId(bookId: Long, uid:String, publishCode:String): Long{
         val pref = context.getSharedPreferences(
-            Const.PREF_PREFIX_BOOK+bookId+"_"+publishCode,
+            Const.PREF_PREFIX_BOOK+bookId+"_"+uid+"_"+publishCode,
             Context.MODE_PRIVATE
         )
         return pref.getLong(Const.PREF_SAVE_SLIDE_ID, Const.ID_NOT_FOUND)
     }
 
-    fun setSaveSlideId(bookId: Long, publishCode:String, slideId: Long){
+    fun setSaveSlideId(bookId: Long, uid:String, publishCode:String, slideId: Long){
         val pref = context.getSharedPreferences(
-            Const.PREF_PREFIX_BOOK+bookId+"_"+publishCode,
+            Const.PREF_PREFIX_BOOK+bookId+"_"+uid+"_"+publishCode,
             Context.MODE_PRIVATE
         )
         val editor = pref.edit()
@@ -67,20 +57,40 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
         editor.commit()
     }
 
-    fun deleteBookPref(bookId: Long, publishCode:String, mode: String){
-        context.deleteSharedPreferences(mode+ Const.PREF_PREFIX_BOOK+bookId+"_"+publishCode)
+    fun deleteBookPref(bookId: Long, uid:String, publishCode:String, mode: String){
+        context.deleteSharedPreferences(mode+ Const.PREF_PREFIX_BOOK+bookId+"_"+uid+"_"+publishCode)
     }
 
+    // Check Condition
+    fun checkConditions(bookId: Long, uid:String, publishCode: String, conditions: MutableList<Condition>, mode: String): Boolean{
+        var result = true
+        var nextLogic = CondNext.AND
+        for(condition in conditions){
+            result = nextLogic.check(result, checkCondition(bookId, uid, publishCode, condition, mode))
+            nextLogic = CondNext.from(condition.conditionNext)
+            if(result && nextLogic == CondNext.OR) break
+        }
+        return result
+    }
+
+    fun checkCondition(bookId: Long, uid:String, publishCode: String, condition: Condition, mode: String): Boolean =
+        condition.run{
+            val count1 = getIdCount(bookId, uid, publishCode, conditionId1, mode)
+            val count2 = if(conditionId2== Const.NOT_SUPPORT_COND_ID_2) conditionCount else getIdCount(bookId, uid, publishCode, conditionId2, mode)
+            Log.d(Const.TAG, "mode - $mode check : $conditionId1 ($count1) $conditionOp $conditionId2 ($count2)")
+            CondOp.from(conditionOp).check(count1, count2)
+        }
+
     // Book Count
-    private fun getIdCount(bookId: Long, publishCode:String, slideId: Long, mode: String):Int{
-        val pref = context.getSharedPreferences(mode+ Const.PREF_PREFIX_BOOK+bookId+"_"+publishCode,
+    private fun getIdCount(bookId: Long, uid:String, publishCode:String, slideId: Long, mode: String):Int{
+        val pref = context.getSharedPreferences(mode+ Const.PREF_PREFIX_BOOK+bookId+"_"+uid+"_"+publishCode,
             Context.MODE_PRIVATE
         )
         return pref.getInt(Const.PREF_PREFIX_COUNT+slideId, 0)
     }
 
-    private fun setIdCount(bookId: Long, publishCode:String, slideId: Long, count: Int, mode: String){
-        val pref = context.getSharedPreferences(mode+ Const.PREF_PREFIX_BOOK+bookId+"_"+publishCode,
+    private fun setIdCount(bookId: Long, uid:String, publishCode:String, slideId: Long, count: Int, mode: String){
+        val pref = context.getSharedPreferences(mode+ Const.PREF_PREFIX_BOOK+bookId+"_"+uid+"_"+publishCode,
             Context.MODE_PRIVATE
         )
         val editor = pref.edit()
@@ -88,20 +98,9 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
         editor.commit()
     }
 
-    fun isSampleMake():Boolean{
-        val pref = context.getSharedPreferences(Const.PREF_SETTING, Context.MODE_PRIVATE)
-        if(!pref.getBoolean(Const.PREF_MAKE_SAMPLE, false)){
-            val editor = pref.edit()
-            editor.putBoolean(Const.PREF_MAKE_SAMPLE, true)
-            editor.commit()
-            return false
-        }
-        return true
-    }
-
-    fun incrementIdCount(bookId: Long, publishCode:String, id: Long, mode: String){
-        val count = getIdCount(bookId, publishCode, id, mode) + 1
-        setIdCount(bookId, publishCode, id, count, mode)
+    fun incrementIdCount(bookId: Long, uid:String, publishCode:String, id: Long, mode: String){
+        val count = getIdCount(bookId, uid, publishCode, id, mode) + 1
+        setIdCount(bookId, uid, publishCode, id, count, mode)
     }
 
     // Operator language

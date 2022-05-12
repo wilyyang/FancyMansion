@@ -151,6 +151,9 @@
     <string name="toast_db_fail">Data update failed</string>
     <string name="toast_storage_fail">File update failed</string>
 
+    <string name="toast_download_success">File download success</string>
+    <string name="toast_download_fail">File download failed</string>
+
     <string name="display_downloads">Downloads</string>
     <string name="display_comment_add">add</string>
     <string name="display_comment_edit_title">Edit Comment</string>

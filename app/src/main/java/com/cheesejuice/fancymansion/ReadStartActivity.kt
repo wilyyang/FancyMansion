@@ -121,15 +121,15 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun startBookWithSetting(mod: String, con: Config){
-        val saveSlide = bookUtil.getSaveSlideId(con.bookId, config.publishCode)
+        val saveSlide = bookUtil.getSaveSlideId(con.bookId, FirebaseUtil.auth.uid!!, config.publishCode)
 
         showDialogAndStart(isShow = (mod != Const.EDIT_PLAY && saveSlide != ID_NOT_FOUND),
             title = getString(R.string.record_dialog_title), message = getString(R.string.record_dialog_question),
             onlyOk = { startReadSlideActivity(con.bookId, config.publishCode, saveSlide) },  // Start Save Point
-            onlyNo = { bookUtil.deleteBookPref(con.bookId, config.publishCode, ""); startReadSlideActivity(con.bookId, config.publishCode, FIRST_SLIDE) },
+            onlyNo = { bookUtil.deleteBookPref(con.bookId, FirebaseUtil.auth.uid!!, config.publishCode, ""); startReadSlideActivity(con.bookId, config.publishCode, FIRST_SLIDE) },
             noShow = {
                 if(mod == Const.EDIT_PLAY){
-                    bookUtil.deleteBookPref(con.bookId, config.publishCode, Const.EDIT_PLAY)
+                    bookUtil.deleteBookPref(con.bookId, FirebaseUtil.auth.uid!!, config.publishCode, Const.EDIT_PLAY)
                 }
                 startReadSlideActivity(con.bookId, config.publishCode, FIRST_SLIDE)
             }

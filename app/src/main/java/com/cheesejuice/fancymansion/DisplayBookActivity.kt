@@ -10,7 +10,6 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.databinding.ActivityDisplayBookBinding
@@ -132,7 +131,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                 binding.etAddComment.clearFocus()
                 if(firebaseUtil.checkAuth()){
                     if(comment.uid == FirebaseUtil.auth.uid){
-                        /*BottomSheetDialog(this@DisplayBookActivity).also {  dialog ->
+                        BottomSheetDialog(this@DisplayBookActivity).also {  dialog ->
                             val dialogView = LayoutEditCommentBinding.inflate(layoutInflater).apply {
                                 etAddComment.setText(comment.comment)
                                 tvCommentEdit.setOnClickListener {
@@ -140,67 +139,37 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                                     layoutCommentUpdate.visibility = View.GONE
                                     comment.comment = etAddComment.text.toString()
                                     CoroutineScope(Dispatchers.IO).launch {
-                                        MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_COMMENT)
-                                            .document(comment.id).set(comment)
-                                            .addOnSuccessListener {
+                                        if(firebaseUtil.editComment(comment)){
+                                            val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = commentList.size.toLong())
+                                            commentList.clear()
+                                            commentList.addAll(addList)
+                                        }
 
-                                                CoroutineScope(Dispatchers.IO).launch {
-                                                    val updates = MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_COMMENT).
-                                                    orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID).limit(commentList.size.toLong()).get().await().documents
-
-                                                    commentList.clear()
-                                                    for (update in updates){
-                                                        update.toObject(Comment::class.java)?.let {  temp ->
-                                                            commentList.add(temp)
-                                                        }
-                                                    }
-
-                                                    withContext(Main){
-                                                        commentAdapter.notifyDataSetChanged()
-                                                        dialog.dismiss()
-                                                        Toast.makeText(this@DisplayBookActivity,getString(R.string.display_comment_update_success),Toast.LENGTH_SHORT).show()
-                                                    }
-                                                }
-                                            }.addOnFailureListener {
-                                                dialog.dismiss()
-                                                Toast.makeText(this@DisplayBookActivity,getString(R.string.display_comment_update_fail),Toast.LENGTH_SHORT).show()
-                                            }
+                                        withContext(Main){
+                                            commentAdapter.notifyDataSetChanged()
+                                            dialog.dismiss()
+                                        }
                                     }
                                 }
                                 tvCommentDelete.setOnClickListener {
                                     progressbarComment.visibility = View.VISIBLE
                                     layoutCommentUpdate.visibility = View.GONE
                                     CoroutineScope(Dispatchers.IO).launch {
-                                        MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_COMMENT)
-                                            .document(comment.id).delete()
-                                            .addOnSuccessListener {
-                                                CoroutineScope(Dispatchers.IO).launch {
-                                                    val updates = MainApplication.db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).collection(Const.FB_DB_KEY_COMMENT).
-                                                    orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID).limit(commentList.size.toLong()).get().await().documents
+                                        if(firebaseUtil.deleteComment(comment)){
+                                            val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = commentList.size.toLong())
+                                            commentList.clear()
+                                            commentList.addAll(addList)
+                                        }
 
-                                                    commentList.clear()
-                                                    for (update in updates){
-                                                        update.toObject(Comment::class.java)?.let {  temp ->
-                                                            commentList.add(temp)
-                                                        }
-                                                    }
-
-                                                    withContext(Main){
-                                                        commentAdapter.notifyDataSetChanged()
-                                                        dialog.dismiss()
-                                                        Toast.makeText(this@DisplayBookActivity,getString(R.string.display_comment_update_success),Toast.LENGTH_SHORT).show()
-                                                    }
-                                                }
-
-                                            }.addOnFailureListener {
-                                                dialog.dismiss()
-                                                Toast.makeText(this@DisplayBookActivity,getString(R.string.display_comment_update_fail),Toast.LENGTH_SHORT).show()
-                                            }
+                                        withContext(Main){
+                                            commentAdapter.notifyDataSetChanged()
+                                            dialog.dismiss()
+                                        }
                                     }
                                 }
                             }
                             dialog.setContentView(dialogView.root)
-                        }.show()*/
+                        }.show()
                     }
                 }
             }
@@ -250,11 +219,16 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
                     firebaseUtil.incrementBookDownloads(config.publishCode)
                     val downloads: Int = firebaseUtil.getDownloads(config.publishCode)
-                    fileUtil.extractBook(dir)
+                    val isSuccess = fileUtil.extractBook(dir)
 
                     withContext(Main){
                         binding.tvConfigDownloads.text = "${getString(R.string.display_downloads)} : $downloads"
                         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+
+                        Toast.makeText(this@DisplayBookActivity,
+                            if (isSuccess) { getString(R.string.toast_download_success) }
+                            else { getString(R.string.toast_download_fail) },
+                            Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -271,9 +245,9 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
     private fun clickBookIsGood(){
         CoroutineScope(Dispatchers.IO).launch {
-            var good:Int = firebaseUtil.getBookGoodCount(config.publishCode)
             firebaseUtil.setBookGoodUser(config.publishCode, !isClickGood)
             isClickGood = firebaseUtil.isBookGoodUser(config.publishCode)
+            val good:Int = firebaseUtil.getBookGoodCount(config.publishCode)
             withContext(Main){
                 if(isClickGood){
                     Glide.with(baseContext).load(R.drawable.ic_thumbs_up_check).into(binding.imageViewGood)
@@ -293,7 +267,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                     updateTime = System.currentTimeMillis(), bookPublishCode = config.publishCode)
 
                 comment.id = firebaseUtil.addComment(comment)
-                firebaseUtil.updateComment(comment)
+                firebaseUtil.editComment(comment)
 
                 commentList = firebaseUtil.getCommentList(publishCode = config.publishCode)
 

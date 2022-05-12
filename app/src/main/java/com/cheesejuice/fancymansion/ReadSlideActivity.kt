@@ -63,8 +63,8 @@ class ReadSlideActivity : AppCompatActivity() {
                     slide = slideTemp
 
                     // if not play mode and have save, not count save
-                    val isSave = ((mode != Const.EDIT_PLAY) && slideId == bookUtil.getSaveSlideId(logic.bookId, publishCode))
-                    if(!isSave){ bookUtil.incrementIdCount(logic.bookId, publishCode, slide.slideId, mode) }
+                    val isSave = ((mode != Const.EDIT_PLAY) && slideId == bookUtil.getSaveSlideId(logic.bookId, FirebaseUtil.auth.uid!!, publishCode))
+                    if(!isSave){ bookUtil.incrementIdCount(logic.bookId, FirebaseUtil.auth.uid!!, publishCode, slide.slideId, mode) }
 
                     makeSlideScreen(logic, slide)
                 }else{
@@ -94,7 +94,7 @@ class ReadSlideActivity : AppCompatActivity() {
             val passChoiceItems: ArrayList<ChoiceItem> = arrayListOf()
             logic.logics.find { it.slideId == slideId }?.let {
                 for(choiceItem in it.choiceItems){
-                    if(bookUtil.checkConditions(logic.bookId, publishCode, choiceItem.showConditions, mode)){
+                    if(bookUtil.checkConditions(logic.bookId, FirebaseUtil.auth.uid!!, publishCode, choiceItem.showConditions, mode)){
                         passChoiceItems.add(choiceItem)
                     }
                 }
@@ -105,7 +105,7 @@ class ReadSlideActivity : AppCompatActivity() {
             val adapter = ChoiceAdapter(passChoiceItems)
             adapter.setItemClickListener(object : ChoiceAdapter.OnItemClickListener {
                 override fun onClick(v: View, choiceItem: ChoiceItem) {
-                    bookUtil.incrementIdCount(logic.bookId, publishCode, choiceItem.id, mode)
+                    bookUtil.incrementIdCount(logic.bookId, FirebaseUtil.auth.uid!!, publishCode, choiceItem.id, mode)
                     enterNextSlide(logic, choiceItem)
                 }
             })
@@ -113,7 +113,9 @@ class ReadSlideActivity : AppCompatActivity() {
         }
 
         // Save read slide point
-        bookUtil.setSaveSlideId(logic.bookId, publishCode, slide.slideId)
+        if(mode != Const.EDIT_PLAY){
+            bookUtil.setSaveSlideId(logic.bookId, FirebaseUtil.auth.uid!!, publishCode, slide.slideId)
+        }
     }
 
     private fun makeNotHaveSlide() {
@@ -129,8 +131,8 @@ class ReadSlideActivity : AppCompatActivity() {
             // Get Next Slide Id
             var nextSlideId = Const.END_SLIDE_ID
             for(enterItem in choiceItem.enterItems) {
-                if(bookUtil.checkConditions(logic.bookId, publishCode, enterItem.enterConditions, mode)){
-                    bookUtil.incrementIdCount(logic.bookId, publishCode, enterItem.id, mode)
+                if(bookUtil.checkConditions(logic.bookId, FirebaseUtil.auth.uid!!, publishCode, enterItem.enterConditions, mode)){
+                    bookUtil.incrementIdCount(logic.bookId, FirebaseUtil.auth.uid!!, publishCode, enterItem.id, mode)
                     nextSlideId = enterItem.enterSlideId
                     break
                 }
@@ -142,7 +144,7 @@ class ReadSlideActivity : AppCompatActivity() {
             withContext(Main){
                 slideNext?.also {
                     slide = it
-                    bookUtil.incrementIdCount(logic.bookId, publishCode, slide.slideId, mode)
+                    bookUtil.incrementIdCount(logic.bookId, FirebaseUtil.auth.uid!!, publishCode, slide.slideId, mode)
                     makeSlideScreen(logic, slide)
                 }?:also {
                     showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)

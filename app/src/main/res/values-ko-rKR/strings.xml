@@ -149,6 +149,9 @@
     <string name="toast_db_fail">데이터 업데이트 실패</string>
     <string name="toast_storage_fail">파일 업데이트 실패</string>
 
+    <string name="toast_download_success">파일 다운로드 성공</string>
+    <string name="toast_download_fail">파일 다운로드 실패</string>
+
     <string name="display_downloads">다운로드 횟수</string>
     <string name="display_comment_add">댓글</string>
     <string name="display_comment_edit_title">댓글 수정</string>

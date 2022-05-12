@@ -52,7 +52,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
     lateinit var firebaseUtil: FirebaseUtil
 
     private var makeBook = false
-    private var newUpload = true
+    private var isBookUpload = false
 
     private lateinit var gallaryForResult: ActivityResultLauncher<Intent>
 
@@ -96,7 +96,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             val conf = fileUtil.getConfigFromFile(bookId)
             conf?.let {
                 if(conf.publishCode != ""){
-                    newUpload = firebaseUtil.isBookUpload(conf.publishCode, conf.uid)
+                    isBookUpload = firebaseUtil.isBookUpload(conf.publishCode)
                 }
             }
 
@@ -115,7 +115,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
     private fun makeEditReadyScreen(conf: Config) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
 
-        if(!newUpload){
+        if(isBookUpload){
             val menuItem = binding.toolbar.menu.findItem(R.id.menu_upload)
             menuItem.title = getString(R.string.menu_book_update)
         }
@@ -201,6 +201,8 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                     val dbSuccess = uploadBook()
                     Log.d(TAG, "Start fire storage upload")
                     val fileSuccess = uploadBookFile()
+
+                    isBookUpload = firebaseUtil.isBookUpload(config.publishCode)
                     withContext(Main) {
                         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
 
@@ -209,6 +211,10 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                         }else if(!fileSuccess){
                             Toast.makeText(this@EditStartActivity, getString(R.string.toast_storage_fail), Toast.LENGTH_SHORT).show()
                         }else{
+                            if(isBookUpload){
+                                val menuItem = binding.toolbar.menu.findItem(R.id.menu_upload)
+                                menuItem.title = getString(R.string.menu_book_update)
+                            }
                             Toast.makeText(this@EditStartActivity, getString(R.string.toast_query_success), Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -221,7 +227,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                     title = getString(R.string.save_dialog_title), message = getString(R.string.save_dialog_question),
                     onlyOkBackground = { saveConfigFile(config) },
                     onlyNo = { RoundEditText.onceFocus = false; updateImage = false },
-                    always = { bookUtil.setEditPlay(true); bookUtil.deleteBookPref(config.bookId, config.publishCode, Const.EDIT_PLAY);
+                    always = { bookUtil.setEditPlay(true); bookUtil.deleteBookPref(config.bookId, FirebaseUtil.auth.uid!!, config.publishCode, Const.EDIT_PLAY);
                         val intent = Intent(this, ReadStartActivity::class.java).apply {
                             putExtra(Const.INTENT_BOOK_ID, config.bookId)
                         }
@@ -295,7 +301,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                 updateTime = System.currentTimeMillis()
             }
 
-            if(newUpload){
+            if(!isBookUpload){
                 config.publishCode = firebaseUtil.uploadBookConfig(config)
             }
 
@@ -320,6 +326,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                 }
             }
         }
+        fileUtil.deleteTempFile(config.bookId, config.publishCode)
         return result
     }
 }

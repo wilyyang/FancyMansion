@@ -332,7 +332,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             R.id.menu_play -> {
                 startAfterSaveEdits {
                     bookUtil.setEditPlay(true)
-                    bookUtil.deleteBookPref(logic.bookId, "", Const.EDIT_PLAY)
+                    bookUtil.deleteBookPref(logic.bookId, FirebaseUtil.auth.uid!!, "", Const.EDIT_PLAY)
 
                     val intent = Intent(this, ReadSlideActivity::class.java).apply {
                         putExtra(Const.INTENT_BOOK_ID, logic.bookId)
