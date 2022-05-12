@@ -77,7 +77,8 @@
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:orientation="vertical">
+                                android:orientation="vertical"
+                                android:layout_marginStart="@dimen/margin_default">
 
                                 <TextView
                                     android:id="@+id/tvProfileName"
@@ -93,7 +94,6 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:textSize="@dimen/size_item"
-                                    android:textStyle="bold"
                                     android:ellipsize="end"
                                     android:singleLine="true"/>
 
@@ -102,8 +102,8 @@
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@android:color/darker_gray"
+                            android:layout_height="2dp"
+                            android:background="@color/divider"
                             android:layout_marginTop="@dimen/margin_default"
                             app:layout_constraintTop_toBottomOf="@+id/layoutProfile"
                             app:layout_constraintStart_toStartOf="parent"/>

@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/tv_selector"
+    android:background="@drawable/bg_round_lilac"
     android:layout_margin="@dimen/margin_item"
     android:padding="@dimen/padding_item"
     android:layout_width="match_parent"

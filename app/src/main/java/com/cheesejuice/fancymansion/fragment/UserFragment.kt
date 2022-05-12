@@ -55,7 +55,8 @@ class UserFragment : Fragment(), View.OnClickListener {
         if(firebaseUtil.name != null && firebaseUtil.email != null && firebaseUtil.photoUrl != null) {
             binding.tvProfileName.text = firebaseUtil.name
             binding.tvProfileEmail.text = firebaseUtil.email
-            Glide.with(this).load(firebaseUtil.photoUrl).into(binding.imageProfile)
+
+            Glide.with(this).load(firebaseUtil.photoUrl).circleCrop().into(binding.imageProfile)
         }else{
             util.getAlertDailog(activity as AppCompatActivity).show()
         }

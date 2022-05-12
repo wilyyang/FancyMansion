@@ -13,13 +13,14 @@
     <color name="black">#000000</color>
     <color name="navy">#323E4E</color>
 
+    <color name="divider">#D1D1D1</color>
     <color name="not_choice">#D1D1D1</color>
 
     <color name="main_color_1">#BD90B0</color>
     <color name="main_color_2">#7388C6</color>
 
-    <color name="item_choice_select">#323E4E</color>
-    <color name="item_choice">#D1D1D1</color>
+    <color name="item_choice_select">#398C479F</color>
+    <color name="item_choice">#299C63B2</color>
 
     <color name="color_select_menu_item">#323E4E</color>
     <color name="color_menu_item">#D1D1D1</color>
