@@ -3,9 +3,13 @@ package com.cheesejuice.fancymansion.fragment
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatSpinner
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,6 +36,9 @@ class ReadListFragment : Fragment() {
     private var page = 1
     private var isListLoading = false
 
+    private var isLatest = true
+    private lateinit var spinnerOrder: AppCompatSpinner
+
     @Inject
     lateinit var util: CommonUtil
     @Inject
@@ -45,16 +52,19 @@ class ReadListFragment : Fragment() {
     private val readStartForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+
+            isListLoading = true
             CoroutineScope(Dispatchers.Default).launch {
                 readList.clear()
                 page = 1
 
-                val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isReadOnly = true)
+                val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isReadOnly = true, isLatest = isLatest)
                 withContext(Dispatchers.Main) {
                     if(list != null) {
                         readList.addAll(list)
                         _binding?.let {
                             makeReadList(readList)
+                            isListLoading = false
                         }
                     }else{
                         util.getAlertDailog(activity as AppCompatActivity).show()
@@ -77,13 +87,15 @@ class ReadListFragment : Fragment() {
 
         binding.toolbar.title = getString(R.string.frag_main_book)
 
+        isListLoading = true
         CoroutineScope(Dispatchers.Default).launch {
-            val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isReadOnly = true)
+            val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isReadOnly = true, isLatest = isLatest)
             withContext(Dispatchers.Main) {
                 if(list != null) {
                     readList.addAll(list)
                     _binding?.let {
                         makeReadList(readList)
+                        isListLoading = false
                     }
                 }else{
                     util.getAlertDailog(activity as AppCompatActivity).show()
@@ -138,7 +150,7 @@ class ReadListFragment : Fragment() {
 
         CoroutineScope(Dispatchers.Default).launch {
             delay(500L)
-            val list = fileUtil.getConfigListRange(page * Const.PAGE_COUNT, ++page * Const.PAGE_COUNT -1, isReadOnly = true)
+            val list = fileUtil.getConfigListRange(page * Const.PAGE_COUNT, ++page * Const.PAGE_COUNT -1, isReadOnly = true, isLatest = isLatest)
             withContext(Dispatchers.Main) {
                 if(list != null) {
                     val beforeSize = readList.size
@@ -150,6 +162,47 @@ class ReadListFragment : Fragment() {
                     util.getAlertDailog(activity as AppCompatActivity).show()
                 }
                 isListLoading = false
+            }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_frag_read, menu)
+
+        val sortItem = menu.findItem(R.id.action_sort)
+        spinnerOrder = (sortItem)?.actionView as AppCompatSpinner
+        spinnerOrder.apply {
+            layoutParams = ActionBar.LayoutParams(400, ActionBar.LayoutParams.WRAP_CONTENT)
+            val sortOrders = resources.getStringArray(R.array.sort_edit)
+            adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, sortOrders)
+
+            onItemSelectedListener =  object : AdapterView.OnItemSelectedListener{
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    if(!isListLoading){
+                        isListLoading = true
+                        isLatest = (spinnerOrder.selectedItemPosition == 0)
+                        CoroutineScope(Dispatchers.Default).launch {
+                            readList.clear()
+                            page = 1
+
+                            val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isLatest = isLatest)
+                            withContext(Dispatchers.Main) {
+                                if(list != null) {
+                                    readList.addAll(list)
+                                    _binding?.let {
+                                        makeReadList(readList)
+                                        isListLoading = false
+                                    }
+                                }else{
+                                    util.getAlertDailog(activity as AppCompatActivity).show()
+                                }
+                            }
+                        }
+                    }
+                    spinnerOrder.setSelection(if(isLatest){ 0 }else{ 1 })
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
         }
     }

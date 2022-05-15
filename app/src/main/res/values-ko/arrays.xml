@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sort_edit">
+        <item>최신순</item>
+        <item>오래된순</item>
+    </string-array>
+
+    <string-array name="sort_read">
+        <item>최신순</item>
+        <item>오래된순</item>
+    </string-array>
+
+    <string-array name="sort_store">
+        <item>최신순</item>
+        <item>오래된순</item>
+    </string-array>
+</resources>

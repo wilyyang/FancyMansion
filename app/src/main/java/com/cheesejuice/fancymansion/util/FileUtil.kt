@@ -109,13 +109,19 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         return null
     }
 
-    fun getConfigListRange(start:Int, end:Int, isReadOnly:Boolean = false): MutableList<Config>?{
+    fun getConfigListRange(start:Int, end:Int, isReadOnly:Boolean = false, isLatest:Boolean = false): MutableList<Config>?{
         try {
             val addList = mutableListOf<Config>()
             val allList = if (isReadOnly) { readOnlyUserPath.listFiles { _, name -> name.startsWith(Const.FILE_PREFIX_READ) } }
             else { bookUserPath.listFiles { _, name -> name.startsWith(Const.FILE_PREFIX_BOOK) } }
                 ?.map { File(it.absolutePath, Const.FILE_PREFIX_CONFIG + ".json") }!!
-                .filter { it.exists() }.sortedBy { it.lastModified() }.reversed()
+                .filter { it.exists() }.sortedBy { it.lastModified() }.let {
+                    if(isLatest){
+                        it.reversed()
+                    }else{
+                        it
+                    }
+                }
 
             if(allList.size > start){
                 val limit = if(allList.size > end) end else (allList.size-1)
