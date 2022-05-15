@@ -21,16 +21,16 @@ class Const {
 
         const val PAGE_COUNT = 6
         const val PAGE_COUNT_LONG = 6L
-        const val COMMENT_COUNT = 10L
+        const val COMMENT_COUNT = 6L
 
         const val ORDER_LATEST_IDX = 0
         const val ORDER_OLDEST_IDX = 1
         const val ORDER_TITLE_ASC_IDX = 3
         const val ORDER_TITLE_DESC_IDX = 4
-        const val ORDER_DOWNLOADS_ASC_IDX = 3
-        const val ORDER_DOWNLOADS_DESC_IDX = 4
-        const val ORDER_LIKES_ASC_IDX = 3
-        const val ORDER_LIKES_DESC_IDX = 4
+        const val ORDER_DOWNLOADS_ASC_IDX = 5
+        const val ORDER_DOWNLOADS_DESC_IDX = 6
+        const val ORDER_LIKES_ASC_IDX = 7
+        const val ORDER_LIKES_DESC_IDX = 8
 
         const val COUNT_SLIDE = 1_00_00_00_00L
         const val COUNT_CHOICE = 1_00_00_00L
@@ -93,6 +93,8 @@ class Const {
         const val FB_DB_KEY_DOWNLOADS = "downloads"
         const val FB_DB_KEY_UID = "uid"
         const val FB_DB_KEY_GOOD = "good"
+        const val FB_DB_KEY_TIME = "updateTime"
+
         const val FB_DB_KEY_COMMENT = "comment"
         const val FB_DB_KEY_COMMENT_ID = "id"
         const val FB_DB_KEY_COMMENT_TIME = "updateTime"
@@ -100,10 +102,6 @@ class Const {
         const val FB_ALL_BOOK = -10L
         const val FB_ALL_COMMENT = -10L
     }
-}
-
-enum class BookOrderBy (val keyName:String) {
-    TITLE(FB_DB_KEY_TITLE), TIME(FB_DB_KEY_COMMENT_TIME)
 }
 
 enum class CondOp(

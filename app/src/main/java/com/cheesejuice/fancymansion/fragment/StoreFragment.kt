@@ -2,6 +2,7 @@ package com.cheesejuice.fancymansion.fragment
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -16,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cheesejuice.fancymansion.*
+import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.databinding.FragmentStoreBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.Config
@@ -63,7 +65,7 @@ class StoreFragment : Fragment() {
                     isListLoading = true
                     CoroutineScope(Dispatchers.Default).launch {
                         storeBookList.clear()
-                        val addList = firebaseUtil.getBookList(order = BookOrderBy.TITLE, limit = Const.PAGE_COUNT_LONG, orderKey = orderKey, searchKeyword = searchKeyword)
+                        val addList = firebaseUtil.getBookList(limit = Const.PAGE_COUNT_LONG, orderKey = orderKey, searchKeyword = searchKeyword)
                         storeBookList.addAll(addList)
                         withContext(Main){
                             _binding?.let {
@@ -91,7 +93,7 @@ class StoreFragment : Fragment() {
         binding.toolbar.title = getString(R.string.frag_main_store)
         isListLoading = true
         CoroutineScope(Dispatchers.Default).launch {
-            val addList = firebaseUtil.getBookList(order = BookOrderBy.TITLE, limit = Const.PAGE_COUNT_LONG, orderKey = orderKey, searchKeyword = searchKeyword)
+            val addList = firebaseUtil.getBookList(limit = Const.PAGE_COUNT_LONG, orderKey = orderKey, searchKeyword = searchKeyword)
             storeBookList.addAll(addList)
             withContext(Main){
                 _binding?.let {
@@ -148,7 +150,7 @@ class StoreFragment : Fragment() {
 
         CoroutineScope(Dispatchers.Default).launch {
             delay(500L)
-            val addList = firebaseUtil.getBookList(order = BookOrderBy.TITLE, limit = Const.PAGE_COUNT_LONG, startConfig = lastConfig, orderKey = orderKey, searchKeyword = searchKeyword)
+            val addList = firebaseUtil.getBookList(limit = Const.PAGE_COUNT_LONG, startConfig = lastConfig, orderKey = orderKey, searchKeyword = searchKeyword)
 
             withContext(Main) {
                 val beforeSize = storeBookList.size
@@ -170,13 +172,12 @@ class StoreFragment : Fragment() {
         searchView = searchItem?.actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
-                searchKeyword = p0.orEmpty()
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+                searchKeyword = p0.orEmpty()
                 isListLoading = true
-                binding.toolbar.title = getString(R.string.frag_main_store) +" "+searchKeyword
                 CoroutineScope(Dispatchers.Default).launch {
                     storeBookList.clear()
-                    val addList = firebaseUtil.getBookList(order = BookOrderBy.TITLE, limit = Const.PAGE_COUNT_LONG, orderKey = orderKey, searchKeyword = searchKeyword)
+                    val addList = firebaseUtil.getBookList(limit = Const.PAGE_COUNT_LONG, orderKey = orderKey, searchKeyword = searchKeyword)
                     storeBookList.addAll(addList)
                     withContext(Main){
                         _binding?.let {
@@ -191,6 +192,29 @@ class StoreFragment : Fragment() {
             override fun onQueryTextChange(query: String?): Boolean { return true }
         })
 
+        searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+                searchKeyword = ""
+                isListLoading = true
+                CoroutineScope(Dispatchers.Default).launch {
+                    storeBookList.clear()
+                    val addList = firebaseUtil.getBookList(limit = Const.PAGE_COUNT_LONG, orderKey = orderKey, searchKeyword = searchKeyword)
+                    storeBookList.addAll(addList)
+                    withContext(Main) {
+                        _binding?.let {
+                            makeStoreList(storeBookList)
+                            isListLoading = false
+                        }
+                    }
+                }
+                return true
+            }
+        })
 
         // Sort Item
         val sortItem = menu.findItem(R.id.action_sort)

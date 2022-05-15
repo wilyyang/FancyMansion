@@ -3,13 +3,9 @@ package com.cheesejuice.fancymansion.util
 import android.app.Activity
 import android.content.Context
 import android.net.Uri
-import android.util.Log
-import com.cheesejuice.fancymansion.BookOrderBy
 import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.Const.Companion.FB_ALL_BOOK
 import com.cheesejuice.fancymansion.Const.Companion.FB_ALL_COMMENT
-import com.cheesejuice.fancymansion.Const.Companion.TAG
-import com.cheesejuice.fancymansion.MainApplication
 import com.cheesejuice.fancymansion.model.Comment
 import com.cheesejuice.fancymansion.model.Config
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -121,23 +117,37 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
         }
     }
 
-    suspend fun getBookList(order: BookOrderBy = BookOrderBy.TIME, isDescending:Boolean = false, limit:Long = FB_ALL_BOOK, startConfig:Config? = null, orderKey:Int, searchKeyword:String?):MutableList<Config>{
+    suspend fun getBookList(limit:Long = FB_ALL_BOOK, startConfig:Config? = null, orderKey:Int, searchKeyword:String?):MutableList<Config>{
+        var sortKeyword = ""
+        var isAscending = false
+        when(orderKey){
+            Const.ORDER_LATEST_IDX -> { sortKeyword = Const.FB_DB_KEY_TIME; isAscending = true  }
+            Const.ORDER_OLDEST_IDX -> { sortKeyword = Const.FB_DB_KEY_TIME; isAscending = false  }
+            Const.ORDER_TITLE_ASC_IDX -> { sortKeyword = Const.FB_DB_KEY_TITLE; isAscending = true  }
+            Const.ORDER_TITLE_DESC_IDX -> { sortKeyword = Const.FB_DB_KEY_TITLE; isAscending = false  }
+            Const.ORDER_DOWNLOADS_ASC_IDX -> { sortKeyword = Const.FB_DB_KEY_TITLE; isAscending = true  }
+            Const.ORDER_DOWNLOADS_DESC_IDX -> { sortKeyword = Const.FB_DB_KEY_TITLE; isAscending = false  }
+            Const.ORDER_LIKES_ASC_IDX -> { sortKeyword = Const.FB_DB_KEY_TITLE; isAscending = true  }
+            Const.ORDER_LIKES_DESC_IDX -> { sortKeyword = Const.FB_DB_KEY_TITLE; isAscending = false  }
+        }
+
         val configList = mutableListOf<Config>()
         val documents = db.collection(Const.FB_DB_KEY_BOOK)
             .let {
                 if(searchKeyword != null && searchKeyword != ""){
-                    it.whereArrayContains(Const.FB_DB_KEY_TITLE, searchKeyword)
+                    it.whereGreaterThanOrEqualTo(Const.FB_DB_KEY_TITLE, searchKeyword)
+                        .whereLessThanOrEqualTo(Const.FB_DB_KEY_TITLE, searchKeyword+ '\uf8ff')
                 }else{
                     it
                 }
             }
-            .orderBy(order.keyName,
-            if(isDescending){ Query.Direction.DESCENDING } else { Query.Direction.ASCENDING })
+            .orderBy(sortKeyword,
+            if(isAscending){ Query.Direction.ASCENDING } else { Query.Direction.DESCENDING })
             .orderBy(Const.FB_DB_KEY_PUBLISH)
             .let {
                 if(startConfig != null){
                     it.startAfter(
-                        if (order == BookOrderBy.TITLE) { startConfig.title } else { startConfig.updateTime },
+                        if (sortKeyword == Const.FB_DB_KEY_TIME) { startConfig.title } else { startConfig.updateTime },
                         startConfig.publishCode
                     )
                 }else{
