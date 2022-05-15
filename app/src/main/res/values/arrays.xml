@@ -2,16 +2,22 @@
 <resources>
     <string-array name="sort_edit">
         <item>Latest order</item>
-        <item>Old order</item>
+        <item>Oldest order</item>
     </string-array>
 
     <string-array name="sort_read">
         <item>Latest order</item>
-        <item>Old order</item>
+        <item>Oldest order</item>
     </string-array>
 
     <string-array name="sort_store">
         <item>Latest order</item>
-        <item>Old order</item>
+        <item>Oldest order</item>
+        <item>Title ASC</item>
+        <item>Title DESC</item>
+        <item>Downloads ASC</item>
+        <item>Downloads DESC</item>
+        <item>Likes ASC</item>
+        <item>Likes DESC</item>
     </string-array>
 </resources>

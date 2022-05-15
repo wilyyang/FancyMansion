@@ -23,6 +23,15 @@ class Const {
         const val PAGE_COUNT_LONG = 6L
         const val COMMENT_COUNT = 10L
 
+        const val ORDER_LATEST_IDX = 0
+        const val ORDER_OLDEST_IDX = 1
+        const val ORDER_TITLE_ASC_IDX = 3
+        const val ORDER_TITLE_DESC_IDX = 4
+        const val ORDER_DOWNLOADS_ASC_IDX = 3
+        const val ORDER_DOWNLOADS_DESC_IDX = 4
+        const val ORDER_LIKES_ASC_IDX = 3
+        const val ORDER_LIKES_DESC_IDX = 4
+
         const val COUNT_SLIDE = 1_00_00_00_00L
         const val COUNT_CHOICE = 1_00_00_00L
         const val COUNT_SHOW_COND = 1_00_00L

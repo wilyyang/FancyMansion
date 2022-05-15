@@ -62,6 +62,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
         val publishCode = intent.getStringExtra(Const.INTENT_PUBLISH_CODE)?: ""
 
+        isListLoading = true
         CoroutineScope(Dispatchers.IO).launch {
             var item : Config? = null
             var downloads = 0
@@ -83,6 +84,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                     config = it
                     makeBookDisplayScreen(config, downloads, good, isClickGood)
                     makeCommentList(commentList)
+                    isListLoading = false
                 }?:also {
                     util.getAlertDailog(this@DisplayBookActivity).show()
                 }
@@ -135,6 +137,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                             val dialogView = LayoutEditCommentBinding.inflate(layoutInflater).apply {
                                 etAddComment.setText(comment.comment)
                                 tvCommentEdit.setOnClickListener {
+                                    isListLoading = true
                                     progressbarComment.visibility = View.VISIBLE
                                     layoutCommentUpdate.visibility = View.GONE
                                     comment.comment = etAddComment.text.toString()
@@ -148,10 +151,12 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                                             commentAdapter.notifyDataSetChanged()
                                             binding.layoutBody.fullScroll(View.FOCUS_DOWN)
                                             dialog.dismiss()
+                                            isListLoading = false
                                         }
                                     }
                                 }
                                 tvCommentDelete.setOnClickListener {
+                                    isListLoading = true
                                     progressbarComment.visibility = View.VISIBLE
                                     layoutCommentUpdate.visibility = View.GONE
                                     CoroutineScope(Dispatchers.IO).launch {
@@ -164,6 +169,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                                             commentAdapter.notifyDataSetChanged()
                                             binding.layoutBody.fullScroll(View.FOCUS_DOWN)
                                             dialog.dismiss()
+                                            isListLoading = false
                                         }
                                     }
                                 }
@@ -262,6 +268,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
     private fun clickAddComment(){
         CoroutineScope(Dispatchers.IO).launch {
             if(firebaseUtil.checkAuth()){
+                isListLoading = true
                 val comment = Comment(id = "", uid = FirebaseUtil.auth.uid!!, email = firebaseUtil.email!!, userName = firebaseUtil.name!!,
                     photoUrl = firebaseUtil.photoUrl.toString(), comment = binding.etAddComment.text.toString(),
                     updateTime = System.currentTimeMillis(), bookPublishCode = config.publishCode)
@@ -283,6 +290,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                         imm.hideSoftInputFromWindow(it.windowToken, 0)
                     }
                     binding.layoutBody.fullScroll(View.FOCUS_DOWN)
+                    isListLoading = false
                 }
             }
         }

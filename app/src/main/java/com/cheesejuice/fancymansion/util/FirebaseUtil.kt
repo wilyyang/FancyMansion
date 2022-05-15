@@ -121,9 +121,18 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
         }
     }
 
-    suspend fun getBookList(order: BookOrderBy = BookOrderBy.TIME, isDescending:Boolean = false, limit:Long = FB_ALL_BOOK, startConfig:Config? = null):MutableList<Config>{
+    suspend fun getBookList(order: BookOrderBy = BookOrderBy.TIME, isDescending:Boolean = false, limit:Long = FB_ALL_BOOK, startConfig:Config? = null, orderKey:Int, searchKeyword:String?):MutableList<Config>{
         val configList = mutableListOf<Config>()
-        val documents = db.collection(Const.FB_DB_KEY_BOOK).orderBy(order.keyName, if(isDescending){ Query.Direction.DESCENDING } else { Query.Direction.ASCENDING })
+        val documents = db.collection(Const.FB_DB_KEY_BOOK)
+            .let {
+                if(searchKeyword != null && searchKeyword != ""){
+                    it.whereArrayContains(Const.FB_DB_KEY_TITLE, searchKeyword)
+                }else{
+                    it
+                }
+            }
+            .orderBy(order.keyName,
+            if(isDescending){ Query.Direction.DESCENDING } else { Query.Direction.ASCENDING })
             .orderBy(Const.FB_DB_KEY_PUBLISH)
             .let {
                 if(startConfig != null){

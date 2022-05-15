@@ -173,7 +173,7 @@ class ReadListFragment : Fragment() {
         spinnerOrder = (sortItem)?.actionView as AppCompatSpinner
         spinnerOrder.apply {
             layoutParams = ActionBar.LayoutParams(400, ActionBar.LayoutParams.WRAP_CONTENT)
-            val sortOrders = resources.getStringArray(R.array.sort_edit)
+            val sortOrders = resources.getStringArray(R.array.sort_read)
             adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, sortOrders)
 
             onItemSelectedListener =  object : AdapterView.OnItemSelectedListener{
