@@ -15,9 +15,5 @@
         <item>Oldest order</item>
         <item>Title ASC</item>
         <item>Title DESC</item>
-        <item>Downloads ASC</item>
-        <item>Downloads DESC</item>
-        <item>Likes ASC</item>
-        <item>Likes DESC</item>
     </string-array>
 </resources>

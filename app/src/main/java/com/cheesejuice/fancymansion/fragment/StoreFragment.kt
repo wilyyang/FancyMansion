@@ -42,6 +42,8 @@ class StoreFragment : Fragment() {
 
     private var orderKey = Const.ORDER_LATEST_IDX
     private lateinit var spinnerOrder: AppCompatSpinner
+    private lateinit var sortItem:MenuItem
+
     private var searchKeyword = ""
     private lateinit var searchView : SearchView
 
@@ -61,19 +63,7 @@ class StoreFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             when (result.resultCode) {
                 Const.RESULT_DELETE -> {
-                    showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
-                    isListLoading = true
-                    CoroutineScope(Dispatchers.Default).launch {
-                        storeBookList.clear()
-                        val addList = firebaseUtil.getBookList(limit = Const.PAGE_COUNT_LONG, orderKey = orderKey, searchKeyword = searchKeyword)
-                        storeBookList.addAll(addList)
-                        withContext(Main){
-                            _binding?.let {
-                                makeStoreList(storeBookList)
-                                isListLoading = false
-                            }
-                        }
-                    }
+                    bookClearLoad()
                 }
             }
         }
@@ -84,24 +74,12 @@ class StoreFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentStoreBinding.inflate(inflater, container, false)
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
 
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         setHasOptionsMenu(true)
 
         binding.toolbar.title = getString(R.string.frag_main_store)
-        isListLoading = true
-        CoroutineScope(Dispatchers.Default).launch {
-            val addList = firebaseUtil.getBookList(limit = Const.PAGE_COUNT_LONG, orderKey = orderKey, searchKeyword = searchKeyword)
-            storeBookList.addAll(addList)
-            withContext(Main){
-                _binding?.let {
-                    makeStoreList(storeBookList)
-                    isListLoading = false
-                }
-            }
-        }
 
         return binding.root
     }
@@ -131,37 +109,11 @@ class StoreFragment : Fragment() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                if(!isListLoading){
-                    if ((recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition() == storeBookList.size - 1){
-                        addMoreStoreBook()
-                    }
+                if ((recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition() == storeBookList.size - 1){
+                    addMoreStoreBook()
                 }
             }
         })
-    }
-
-    private fun addMoreStoreBook(){
-        isListLoading = true
-
-        val lastConfig = storeBookList.lastOrNull()
-
-        storeBookList.add(Config(bookId = Const.VIEW_HOLDER_LOADING))
-        storeBookAdapter.notifyItemInserted(storeBookList.size -1)
-
-        CoroutineScope(Dispatchers.Default).launch {
-            delay(500L)
-            val addList = firebaseUtil.getBookList(limit = Const.PAGE_COUNT_LONG, startConfig = lastConfig, orderKey = orderKey, searchKeyword = searchKeyword)
-
-            withContext(Main) {
-                val beforeSize = storeBookList.size
-                storeBookList.removeAt(beforeSize - 1)
-                storeBookAdapter.notifyItemRemoved(beforeSize - 1)
-                storeBookList.addAll(addList)
-                storeBookAdapter.notifyItemRangeInserted(beforeSize, addList.size)
-
-                isListLoading = false
-            }
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -172,20 +124,8 @@ class StoreFragment : Fragment() {
         searchView = searchItem?.actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
                 searchKeyword = p0.orEmpty()
-                isListLoading = true
-                CoroutineScope(Dispatchers.Default).launch {
-                    storeBookList.clear()
-                    val addList = firebaseUtil.getBookList(limit = Const.PAGE_COUNT_LONG, orderKey = orderKey, searchKeyword = searchKeyword)
-                    storeBookList.addAll(addList)
-                    withContext(Main){
-                        _binding?.let {
-                            makeStoreList(storeBookList)
-                            isListLoading = false
-                        }
-                    }
-                }
+                bookClearLoad()
                 return true
             }
 
@@ -194,47 +134,76 @@ class StoreFragment : Fragment() {
 
         searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                sortItem.isVisible = false
                 return true
             }
 
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
                 searchKeyword = ""
-                isListLoading = true
-                CoroutineScope(Dispatchers.Default).launch {
-                    storeBookList.clear()
-                    val addList = firebaseUtil.getBookList(limit = Const.PAGE_COUNT_LONG, orderKey = orderKey, searchKeyword = searchKeyword)
-                    storeBookList.addAll(addList)
-                    withContext(Main) {
-                        _binding?.let {
-                            makeStoreList(storeBookList)
-                            isListLoading = false
-                        }
-                    }
-                }
+                sortItem.isVisible = true
+                bookClearLoad()
+
                 return true
             }
         })
 
         // Sort Item
-        val sortItem = menu.findItem(R.id.action_sort)
+        sortItem = menu.findItem(R.id.action_sort)
         spinnerOrder = (sortItem)?.actionView as AppCompatSpinner
         spinnerOrder.apply {
-            layoutParams = ActionBar.LayoutParams(300, ActionBar.LayoutParams.WRAP_CONTENT)
+            layoutParams = ActionBar.LayoutParams(500, ActionBar.LayoutParams.WRAP_CONTENT)
             val sortOrders = resources.getStringArray(R.array.sort_store)
             adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, sortOrders)
 
             onItemSelectedListener =  object : AdapterView.OnItemSelectedListener{
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    if(!isListLoading){
-                        isListLoading = true
-                        orderKey = spinnerOrder.selectedItemPosition
-                        isListLoading = false
-                    }
+                    orderKey = spinnerOrder.selectedItemPosition
+                    bookClearLoad()
                     spinnerOrder.setSelection(orderKey)
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
+        }
+    }
+
+    private fun bookClearLoad(){
+        if(!isListLoading){
+            isListLoading = true
+            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+            CoroutineScope(Dispatchers.Default).launch {
+                storeBookList.clear()
+                val addList = firebaseUtil.getBookList(limit = Const.PAGE_COUNT_LONG, orderKey = orderKey, searchKeyword = searchKeyword)
+                storeBookList.addAll(addList)
+                withContext(Main){
+                    _binding?.let {
+                        makeStoreList(storeBookList)
+                        isListLoading = false
+                    }
+                }
+            }
+        }
+    }
+
+    private fun addMoreStoreBook(){
+        if(!isListLoading){
+            isListLoading = true
+
+            val lastConfig = storeBookList.lastOrNull()
+            storeBookList.add(Config(bookId = Const.VIEW_HOLDER_LOADING))
+            storeBookAdapter.notifyItemInserted(storeBookList.size -1)
+
+            CoroutineScope(Dispatchers.Default).launch {
+                val addList = firebaseUtil.getBookList(limit = Const.PAGE_COUNT_LONG, startConfig = lastConfig, orderKey = orderKey, searchKeyword = searchKeyword)
+
+                withContext(Main) {
+                    val beforeSize = storeBookList.size
+                    storeBookList.removeAt(beforeSize - 1)
+                    storeBookAdapter.notifyItemRemoved(beforeSize - 1)
+                    storeBookList.addAll(addList)
+                    storeBookAdapter.notifyItemRangeInserted(beforeSize, addList.size)
+                    isListLoading = false
+                }
             }
         }
     }
