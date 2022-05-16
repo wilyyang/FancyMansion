@@ -103,6 +103,12 @@
     <string name="book_edit_choice">선택항목 추가</string>
     <string name="book_edit_enter">진입항목 추가</string>
 
+    <string name="book_slide_type">유형 :&#160;</string>
+
+    <string name="slide_type_normal">일반</string>
+    <string name="slide_type_start">시작</string>
+    <string name="slide_type_ending">엔딩</string>
+
     <string name="choice_edit_enter_condition">진입 조건 추가</string>
     <string name="choice_edit_show_condition">나타나기 조건 추가</string>
 

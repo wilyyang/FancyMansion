@@ -44,7 +44,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     private lateinit var slide: Slide
     private lateinit var slideLogic: SlideLogic
     private var updateImage = false
-    private var isChoiceEdit = false
+    private var isEditElement = false
     private var isMenuItemEnabled = true
 
     private lateinit var slideTitleToggle: ActionBarDrawerToggle
@@ -94,7 +94,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                 }
                 (application as MainApplication).choice = null
 
-                isChoiceEdit = true
+                isEditElement = true
                 // Keep user slide edit (not call makeEditSlideScreen)
                 slideTitleListAdapter.datas = logic.logics
                 slideTitleListAdapter.notifyDataSetChanged()
@@ -208,8 +208,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     private fun setSaveFlag(flag:Boolean){
         RoundEditText.onceFocus = flag
         updateImage = flag
-        Log.d(TAG, "setSaveFlag : $updateImage")
-        isChoiceEdit = flag
+        isEditElement = flag
         slideTitleListAdapter.onceMove = flag
         editChoiceListAdapter.onceMove = flag
     }
@@ -236,6 +235,46 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             }
         ).into(binding.imageViewShowMain)
 
+        when(slideLogic.type){
+            Const.SLIDE_TYPE_NORMAL -> {
+                binding.tvSlideType.text = getString(R.string.slide_type_normal)
+                Glide.with(applicationContext).load(R.drawable.ic_sun).into(binding.imageViewSlideType)
+            }
+            Const.SLIDE_TYPE_START -> {
+                binding.tvSlideType.text = getString(R.string.slide_type_start)
+                Glide.with(applicationContext).load(R.drawable.ic_sunrise).into(binding.imageViewSlideType)
+            }
+            Const.SLIDE_TYPE_END -> {
+                binding.tvSlideType.text = getString(R.string.slide_type_ending)
+                Glide.with(applicationContext).load(R.drawable.ic_sunset).into(binding.imageViewSlideType)
+            }
+        }
+
+        binding.layoutSlideType.setOnClickListener {
+            when(slideLogic.type){
+                Const.SLIDE_TYPE_NORMAL -> {
+                    isEditElement = true
+                    slideLogic.type = Const.SLIDE_TYPE_END
+                    binding.tvSlideType.text = getString(R.string.slide_type_ending)
+                    Glide.with(applicationContext).load(R.drawable.ic_sunset).into(binding.imageViewSlideType)
+
+                    logic.logics.indexOfFirst { it.slideId == slideLogic.slideId }.let {
+                        if(it > -1) slideTitleListAdapter.notifyItemChanged(it)
+                    }
+                }
+                Const.SLIDE_TYPE_END -> {
+                    isEditElement = true
+                    slideLogic.type = Const.SLIDE_TYPE_NORMAL
+                    binding.tvSlideType.text = getString(R.string.slide_type_normal)
+                    Glide.with(applicationContext).load(R.drawable.ic_sun).into(binding.imageViewSlideType)
+
+                    logic.logics.indexOfFirst { it.slideId == slideLogic.slideId }.let {
+                        if(it > -1) slideTitleListAdapter.notifyItemChanged(it)
+                    }
+                }
+            }
+        }
+
         editChoiceListAdapter.datas = slideLogic.choiceItems
         editChoiceListAdapter.notifyDataSetChanged()
 
@@ -259,7 +298,6 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             question = binding.etSlideQuestion.text.toString()
 
             if(updateImage){
-                Log.d(TAG, "$updateImage")
                 slideImage = fileUtil.makeImageFile(binding.imageViewShowMain.drawable, logic.bookId, slideImage)
             }
             fileUtil.makeSlideFile(logic.bookId, this)
@@ -429,7 +467,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun startAfterSaveEdits(always:() ->Unit){
-        showDialogAndStart(isShow = (RoundEditText.onceFocus || updateImage || isChoiceEdit || slideTitleListAdapter.onceMove || editChoiceListAdapter.onceMove),
+        showDialogAndStart(isShow = (RoundEditText.onceFocus || updateImage || isEditElement || slideTitleListAdapter.onceMove || editChoiceListAdapter.onceMove),
             loading = binding.layoutLoading.root, main = binding.layoutActive,
             title = getString(R.string.save_dialog_title), message = getString(R.string.save_dialog_question),
             onlyOkBackground = { saveSlideFile(logic, slide) },

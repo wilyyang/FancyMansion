@@ -23,6 +23,10 @@ class Const {
         const val PAGE_COUNT_LONG = 10L
         const val COMMENT_COUNT = 10L
 
+        const val SLIDE_TYPE_NORMAL = 1
+        const val SLIDE_TYPE_START = 2
+        const val SLIDE_TYPE_END = 3
+
         const val ORDER_LATEST_IDX = 0
         const val ORDER_OLDEST_IDX = 1
         const val ORDER_TITLE_ASC_IDX = 2

@@ -1,20 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/margin_item">
 
-    <TextView
-        android:id="@+id/tvItemId"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/imageViewSlideType"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/size_small_brief_id"/>
+        android:src="@drawable/ic_sun"
+        android:layout_gravity="center_vertical"
+        />
 
-    <TextView
-        android:id="@+id/tvItemText"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/size_item"/>
+        android:layout_marginStart="@dimen/margin_default">
+
+        <TextView
+            android:id="@+id/tvItemId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/size_small_brief_id"/>
+
+        <TextView
+            android:id="@+id/tvItemText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/size_item"/>
+    </LinearLayout>
+
 </LinearLayout>

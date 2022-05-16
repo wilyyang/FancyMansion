@@ -185,7 +185,7 @@ class ReadListFragment : Fragment() {
                             readList.clear()
                             page = 1
 
-                            val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isLatest = isLatest)
+                            val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isReadOnly = true, isLatest = isLatest)
                             withContext(Dispatchers.Main) {
                                 if(list != null) {
                                     readList.addAll(list)

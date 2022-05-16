@@ -1,5 +1,6 @@
 package com.cheesejuice.fancymansion
 
+import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -93,6 +94,12 @@ class ReadSlideActivity : AppCompatActivity() {
             // Select Choice Item
             val passChoiceItems: ArrayList<ChoiceItem> = arrayListOf()
             logic.logics.find { it.slideId == slideId }?.let {
+                if(it.type == Const.SLIDE_TYPE_END){
+                    binding.imageViewSlideType.visibility = View.VISIBLE
+                }else{
+                    binding.imageViewSlideType.visibility = View.INVISIBLE
+                }
+
                 for(choiceItem in it.choiceItems){
                     if(bookUtil.checkConditions(logic.bookId, FirebaseUtil.auth.uid!!, publishCode, choiceItem.showConditions, mode)){
                         passChoiceItems.add(choiceItem)

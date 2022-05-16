@@ -19,7 +19,7 @@ data class Logic(val bookId: Long, var logics: MutableList<SlideLogic> = mutable
 
 // (2.2)
 @Serializable
-data class SlideLogic(val slideId: Long, var slideTitle: String, var choiceItems: MutableList<ChoiceItem> = mutableListOf())
+data class SlideLogic(val slideId: Long, var slideTitle: String, var type:Int = Const.SLIDE_TYPE_NORMAL, var choiceItems: MutableList<ChoiceItem> = mutableListOf())
 
 // (2.2.3)
 @Serializable

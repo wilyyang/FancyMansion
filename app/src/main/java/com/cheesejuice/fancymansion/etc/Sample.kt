@@ -29,7 +29,7 @@ class Sample {
         {
             "bookId":$bookId,
             "logics":[
-                { "slideId":200000000, "slideTitle":"대체 어딨는거야!",
+                { "slideId":200000000, "slideTitle":"대체 어딨는거야!", "type":2,
                       "choiceItems":[
                         {
                           "id":201000000,
@@ -94,8 +94,8 @@ class Sample {
                         }
                       ]
                 },
-                { "slideId":100000000, "slideTitle":"더 이상 존 크리스탈을 찾을 수 없습니다...", "choiceItems":[] },
-                { "slideId":300000000, "slideTitle":"하얀 고양이 모야!",
+                { "slideId":100000000, "slideTitle":"더 이상 존 크리스탈을 찾을 수 없습니다...", "type":3, "choiceItems":[] },
+                { "slideId":300000000, "slideTitle":"하얀 고양이 모야!", "type":1,
                       "choiceItems":[
                         {
                           "id":301000000,
@@ -163,7 +163,7 @@ class Sample {
                         }
                       ]
                 },
-                { "slideId":400000000, "slideTitle":"모야가 가져다준 물고기!", 
+                { "slideId":400000000, "slideTitle":"모야가 가져다준 물고기!", "type":1,
                       "choiceItems":[
                         {
                           "id":401000000,
@@ -179,7 +179,7 @@ class Sample {
                         }
                       ]
                 },
-                { "slideId":500000000, "slideTitle":"응꼬를 핥으려는 고양이 웬디!", 
+                { "slideId":500000000, "slideTitle":"응꼬를 핥으려는 고양이 웬디!", "type":1, 
                       "choiceItems":[
                         {
                           "id":501000000,
@@ -207,7 +207,7 @@ class Sample {
                         }
                       ]
                 },
-                { "slideId":600000000, "slideTitle":"빙글빙글 상자속에서 돌고도는 너와 나", 
+                { "slideId":600000000, "slideTitle":"빙글빙글 상자속에서 돌고도는 너와 나", "type":1, 
                       "choiceItems":[
                         {
                           "id":601000000,
@@ -264,7 +264,7 @@ class Sample {
                         }
                       ]
                 },
-                { "slideId":700000000, "slideTitle":"응꼬를 핥으려는 고양이 웬디!", 
+                { "slideId":700000000, "slideTitle":"응꼬를 핥으려는 고양이 웬디!", "type":1, 
                       "choiceItems":[
                         {
                           "id":701000000,
@@ -280,7 +280,7 @@ class Sample {
                         }
                       ]
                 },
-                { "slideId":800000000, "slideTitle":"그 녀석은 용서할 수 없는 녀석이야..", 
+                { "slideId":800000000, "slideTitle":"그 녀석은 용서할 수 없는 녀석이야..", "type":1, 
                       "choiceItems":[
                         {
                           "id":801000000,
@@ -308,7 +308,7 @@ class Sample {
                         }
                       ]
                 },
-                { "slideId":900000000, "slideTitle":"아니 이 녀석 집에 있었잖아?", 
+                { "slideId":900000000, "slideTitle":"아니 이 녀석 집에 있었잖아?", "type":3, 
                       "choiceItems":[]
                 }
             ]

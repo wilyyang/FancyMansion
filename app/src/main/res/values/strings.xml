@@ -102,6 +102,12 @@
     <string name="book_slide_choice">edit choice :&#160;</string>
     <string name="book_slide_enter">edit enter :&#160;</string>
 
+    <string name="book_slide_type">type :&#160;</string>
+
+    <string name="slide_type_normal">Normal</string>
+    <string name="slide_type_start">Start</string>
+    <string name="slide_type_ending">Ending</string>
+
     <string name="book_edit_choice">ADD CHOICE</string>
     <string name="book_edit_enter">ADD ENTER</string>
 

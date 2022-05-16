@@ -5,6 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.cheesejuice.fancymansion.Const
+import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.databinding.ItemSlideTitleBinding
 import com.cheesejuice.fancymansion.model.SlideLogic
 import java.util.*
@@ -35,6 +38,12 @@ class SlideTitleListAdapter(var datas: MutableList<SlideLogic> = mutableListOf()
         val binding=(holder as SlideTitleViewHolder).binding
         binding.tvItemId.text = datas[position].slideId.toString()
         binding.tvItemText.text = datas[position].slideTitle
+
+        when(datas[position].type){
+            Const.SLIDE_TYPE_NORMAL -> binding.imageViewSlideType.setImageResource(R.drawable.ic_sun)
+            Const.SLIDE_TYPE_START -> binding.imageViewSlideType.setImageResource(R.drawable.ic_sunrise)
+            Const.SLIDE_TYPE_END -> binding.imageViewSlideType.setImageResource(R.drawable.ic_sunset)
+        }
         holder.apply {
             itemView.setOnClickListener {
                 itemClickListener.onClick(it, this.bindingAdapterPosition)
@@ -58,8 +67,17 @@ class SlideTitleListAdapter(var datas: MutableList<SlideLogic> = mutableListOf()
     // SlideTitleListDragCallback
     override fun onItemMove(fromPosition: Int, toPosition: Int) {
         onceMove = true
+        if(toPosition == 0){
+            datas[toPosition].type = Const.SLIDE_TYPE_NORMAL
+            datas[fromPosition].type = Const.SLIDE_TYPE_START
+        }else if(fromPosition == 0){
+            datas[toPosition].type = Const.SLIDE_TYPE_START
+            datas[fromPosition].type = Const.SLIDE_TYPE_NORMAL
+        }
         Collections.swap(datas, fromPosition, toPosition)
         notifyItemMoved(fromPosition, toPosition)
+        notifyItemChanged(toPosition)
+        notifyItemChanged(fromPosition)
     }
 }
 

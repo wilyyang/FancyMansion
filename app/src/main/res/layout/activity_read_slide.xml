@@ -73,16 +73,25 @@
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
+                        <ImageView
+                            android:id="@+id/imageViewSlideType"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="@dimen/margin_default_left"
+                            android:layout_marginTop="@dimen/margin_title"
+                            android:src="@drawable/ic_sunset"
+                            app:layout_constraintTop_toBottomOf="@+id/layoutShow"
+                            app:layout_constraintStart_toStartOf="parent"/>
+
                         <TextView
                             android:id="@+id/tvSlideTitle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/margin_default_left"
                             android:layout_marginEnd="@dimen/margin_default_right"
-                            android:layout_marginTop="@dimen/margin_title"
                             android:textSize="@dimen/size_title"
                             android:textStyle="bold"
-                            app:layout_constraintTop_toBottomOf="@+id/layoutShow"
+                            app:layout_constraintTop_toBottomOf="@+id/imageViewSlideType"
                             android:maxLength="@integer/count_slide_title"/>
 
                         <ScrollView

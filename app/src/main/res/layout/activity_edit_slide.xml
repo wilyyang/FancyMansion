@@ -124,6 +124,33 @@
 
                                 </LinearLayout>
 
+                                <LinearLayout
+                                    android:id="@+id/layoutSlideType"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/book_slide_type"
+                                        android:textSize="@dimen/size_book" />
+
+                                    <TextView
+                                        android:id="@+id/tvSlideType"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/slide_type_normal"
+                                        android:textSize="@dimen/size_book" />
+
+                                    <ImageView
+                                        android:id="@+id/imageViewSlideType"
+                                        android:layout_width="30dp"
+                                        android:layout_height="30dp"
+                                        android:layout_marginStart="@dimen/margin_default"
+                                        android:src="@drawable/ic_sun"/>
+                                </LinearLayout>
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
