@@ -59,7 +59,18 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
     private val readStartForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
-            makeEditReadyScreen(config)
+
+            CoroutineScope(Default).launch {
+                val conf = fileUtil.getConfigFromFile(config.bookId)
+                withContext(Main) {
+                    conf?.also{
+                        config = it
+                        makeEditReadyScreen(config)
+                    }?:also{
+                        util.getAlertDailog(this@EditStartActivity).show()
+                    }
+                }
+            }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,6 +89,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         binding.imageViewConfigAdd.setOnClickListener(this)
+        binding.imageViewConfigCrop.setOnClickListener(this)
         binding.btnEditBook.setOnClickListener(this)
 
         val isCreate = intent.getBooleanExtra(Const.INTENT_BOOK_CREATE, false)
@@ -165,7 +177,13 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                 }
                 gallaryForResult.launch(intent)
             }
-
+            R.id.imageViewConfigCrop -> {
+                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
+                    type = "image/*"
+                    putExtra("crop", true)
+                }
+                gallaryForResult.launch(intent)
+            }
             R.id.btnEditBook -> {
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
                 CoroutineScope(IO).launch {
@@ -222,18 +240,13 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.menu_play -> {
-                showDialogAndStart(isShow = (RoundEditText.onceFocus || updateImage),
-                    loading = binding.layoutLoading.root, main = binding.layoutActive,
-                    title = getString(R.string.save_dialog_title), message = getString(R.string.save_dialog_question),
-                    onlyOkBackground = { saveConfigFile(config) },
-                    onlyNo = { RoundEditText.onceFocus = false; updateImage = false },
-                    always = { bookUtil.setEditPlay(true); bookUtil.deleteBookPref(config.bookId, FirebaseUtil.auth.uid!!, config.publishCode, Const.EDIT_PLAY);
-                        val intent = Intent(this, ReadStartActivity::class.java).apply {
-                            putExtra(Const.INTENT_BOOK_ID, config.bookId)
-                        }
-                        readStartForResult.launch(intent)
+                startAfterSaveEdits{
+                    bookUtil.setEditPlay(true); bookUtil.deleteBookPref(config.bookId, FirebaseUtil.auth.uid!!, config.publishCode, Const.EDIT_PLAY);
+                    val intent = Intent(this, ReadStartActivity::class.java).apply {
+                        putExtra(Const.INTENT_BOOK_ID, config.bookId)
                     }
-                )
+                    readStartForResult.launch(intent)
+                }
             }
 
             R.id.menu_save -> {
@@ -289,6 +302,26 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        startAfterSaveEdits{ finish() }
+    }
+
+    private fun startAfterSaveEdits(always:() ->Unit){
+        showDialogAndStart(isShow = (RoundEditText.onceFocus || updateImage),
+            loading = binding.layoutLoading.root, main = binding.layoutActive,
+            title = getString(R.string.save_dialog_title), message = getString(R.string.save_dialog_question),
+            onlyOkBackground = { saveConfigFile(config) },
+            onlyOk = { setSaveFlag(false) },
+            onlyNo = { setSaveFlag(false) },
+            always = always
+        )
+    }
+
+    private fun setSaveFlag(flag:Boolean){
+        RoundEditText.onceFocus = flag
+        updateImage = flag
     }
 
     private suspend fun uploadBook():Boolean{

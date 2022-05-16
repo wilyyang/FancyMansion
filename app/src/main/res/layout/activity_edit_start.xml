@@ -86,6 +86,16 @@
                                         android:layout_height="match_parent"/>
 
                                     <ImageView
+                                        android:id="@+id/imageViewConfigCrop"
+                                        android:layout_width="@dimen/size_get_gallery"
+                                        android:layout_height="@dimen/size_get_gallery"
+                                        android:layout_marginEnd="@dimen/margin_default"
+                                        android:layout_marginBottom="@dimen/margin_default"
+                                        app:layout_constraintBottom_toBottomOf="parent"
+                                        app:layout_constraintEnd_toStartOf="@+id/imageViewConfigAdd"
+                                        app:srcCompat="@drawable/ic_crop" />
+
+                                    <ImageView
                                         android:id="@+id/imageViewConfigAdd"
                                         android:layout_width="@dimen/size_get_gallery"
                                         android:layout_height="@dimen/size_get_gallery"

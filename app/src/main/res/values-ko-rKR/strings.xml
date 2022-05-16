@@ -62,7 +62,7 @@
     <string name="add_common">추가</string>
 
     <string name="save_dialog_title">수정사항 저장</string>
-    <string name="save_dialog_question">재생하기 전에 편집 내용을 저장하시겠습니까?</string>
+    <string name="save_dialog_question">편집 내용을 저장하시겠습니까?</string>
 
     <string name="save_dialog_config_question">편집 내용을 저장하시겠습니까?</string>
 

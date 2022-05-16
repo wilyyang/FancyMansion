@@ -64,7 +64,7 @@
     <string name="drawer_closed" translatable="false">close</string>
 
     <string name="save_dialog_title">Save Edits</string>
-    <string name="save_dialog_question">Save your edits before playing?</string>
+    <string name="save_dialog_question">Save your edits?</string>
 
     <string name="save_dialog_config_question">Save your edits?</string>
 

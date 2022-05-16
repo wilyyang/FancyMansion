@@ -121,6 +121,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         }
 
         binding.imageViewSlideAdd.setOnClickListener(this)
+        binding.imageViewSlideCrop.setOnClickListener(this)
         binding.tvAddChoice.setOnClickListener(this)
 
         val bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
@@ -311,6 +312,13 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             R.id.imageViewSlideAdd -> {
                 val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
                     type = "image/*"
+                }
+                gallaryForResult.launch(intent)
+            }
+            R.id.imageViewSlideCrop -> {
+                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
+                    type = "image/*"
+                    putExtra("crop", true)
                 }
                 gallaryForResult.launch(intent)
             }
