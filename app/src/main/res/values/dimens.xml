@@ -28,6 +28,7 @@
     <dimen name="margin_default">10dp</dimen>
     <dimen name="margin_default_left">20dp</dimen>
     <dimen name="margin_default_right">20dp</dimen>
+    <dimen name="margin_wide">20dp</dimen>
 
     <dimen name="margin_ssub">10dp</dimen>
     <dimen name="margin_smain">15dp</dimen>
