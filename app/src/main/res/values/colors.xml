@@ -13,6 +13,9 @@
     <color name="black">#000000</color>
     <color name="navy">#323E4E</color>
 
+    <color name="divide_dark">#10323E4E</color>
+    <color name="divide_pale">#05323E4E</color>
+
     <color name="divider">#D1D1D1</color>
     <color name="not_choice">#D1D1D1</color>
 

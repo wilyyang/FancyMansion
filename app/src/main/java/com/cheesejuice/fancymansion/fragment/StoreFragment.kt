@@ -151,7 +151,7 @@ class StoreFragment : Fragment() {
         sortItem = menu.findItem(R.id.action_sort)
         spinnerOrder = (sortItem)?.actionView as AppCompatSpinner
         spinnerOrder.apply {
-            layoutParams = ActionBar.LayoutParams(500, ActionBar.LayoutParams.WRAP_CONTENT)
+            layoutParams = ActionBar.LayoutParams(450, ActionBar.LayoutParams.WRAP_CONTENT)
             val sortOrders = resources.getStringArray(R.array.sort_store)
             adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, sortOrders)
 

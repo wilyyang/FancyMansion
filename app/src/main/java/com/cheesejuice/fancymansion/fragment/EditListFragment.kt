@@ -187,7 +187,7 @@ class EditListFragment : Fragment(), View.OnClickListener {
         val sortItem = menu.findItem(R.id.action_sort)
         spinnerOrder = (sortItem)?.actionView as AppCompatSpinner
         spinnerOrder.apply {
-            layoutParams = ActionBar.LayoutParams(400, ActionBar.LayoutParams.WRAP_CONTENT)
+            layoutParams = ActionBar.LayoutParams(450, ActionBar.LayoutParams.WRAP_CONTENT)
             val sortOrders = resources.getStringArray(R.array.sort_edit)
             adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, sortOrders)
 
