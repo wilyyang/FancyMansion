@@ -7,18 +7,20 @@
         android:enabled="true"
         android:icon="@drawable/ic_shopping_bag"
         android:title="@string/menu_main_store" />
-    <item
-        android:id="@+id/menu_make"
-        app:showAsAction="ifRoom"
-        android:enabled="true"
-        android:icon="@drawable/ic_edit"
-        android:title="@string/menu_main_make" />
+
     <item
         android:id="@+id/menu_book"
         app:showAsAction="ifRoom"
         android:enabled="true"
         android:icon="@drawable/ic_book"
         android:title="@string/menu_main_book" />
+
+    <item
+        android:id="@+id/menu_make"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:icon="@drawable/ic_edit"
+        android:title="@string/menu_main_make" />
 
     <item
         android:id="@+id/menu_user"

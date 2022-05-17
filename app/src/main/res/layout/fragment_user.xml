@@ -57,6 +57,7 @@
                         android:id="@+id/layoutBody"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
+                        android:background="@color/divide_pale"
                         app:layout_constraintTop_toBottomOf="@+id/layoutHead"
                         app:layout_constraintBottom_toTopOf="@+id/layoutTail">
 
@@ -66,6 +67,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:padding="@dimen/padding_item"
+                            android:background="@drawable/divider_bottom"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
 
@@ -85,6 +87,7 @@
                                     android:id="@+id/tvProfileName"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:textColor="@color/black"
                                     android:textSize="@dimen/size_item"
                                     android:textStyle="bold"
                                     android:ellipsize="end"
@@ -100,14 +103,6 @@
 
                             </LinearLayout>
                         </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="2dp"
-                            android:background="@color/divider"
-                            android:layout_marginTop="@dimen/margin_default"
-                            app:layout_constraintTop_toBottomOf="@+id/layoutProfile"
-                            app:layout_constraintStart_toStartOf="parent"/>
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 

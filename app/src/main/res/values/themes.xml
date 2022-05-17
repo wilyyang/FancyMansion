@@ -19,7 +19,7 @@
         <item name="radioButtonStyle">@style/customRadioFontStyle</item>
         <item name="materialButtonStyle">@style/customButtonFontStyle</item>
         <item name="android:textViewStyle">@style/customTextViewFontStyle</item>
-
+        <item name="android:alertDialogTheme">@style/customAlertDialogStyle</item>
     </style>
 
     <style name="customRadioFontStyle" parent="Widget.AppCompat.CompoundButton.RadioButton">
@@ -34,6 +34,12 @@
     <style name="customTextViewFontStyle" parent="@android:style/Widget.DeviceDefault.TextView">
         <item name="android:fontFamily">@font/notosans_regular</item>
         <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="customAlertDialogStyle" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/bg_round_white</item>
+        <item name="android:windowMinWidthMajor">80%</item>
+        <item name="android:windowMinWidthMinor">80%</item>
     </style>
     
     <style name="BookInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">

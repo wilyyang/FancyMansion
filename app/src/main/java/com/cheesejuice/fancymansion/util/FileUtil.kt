@@ -140,7 +140,7 @@ class FileUtil @Inject constructor(@ActivityContext private val context: Context
         val config = Config(bookId = bookId, title = "${context.getString(R.string.book_default_title)} $bookId")
         val slide = Slide(slideId = Const.ID_1_SLIDE, slideTitle = context.getString(R.string.name_slide_prefix)+1, question = context.getString(R.string.text_question_default))
         val logic = Logic(bookId = bookId)
-        logic.logics.add(SlideLogic(slide.slideId, slide.slideTitle))
+        logic.logics.add(SlideLogic(slide.slideId, slide.slideTitle, Const.SLIDE_TYPE_START))
 
         return (makeBookFolder(bookId) && makeConfigFile(config) && makeLogicFile(logic) && makeSlideFile(bookId, slide))
     }

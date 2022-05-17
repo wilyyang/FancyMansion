@@ -16,4 +16,17 @@
         <item>Title ASC</item>
         <item>Title DESC</item>
     </string-array>
+
+    <string-array name="cond_operator">
+        <item>over</item>
+        <item>under</item>
+        <item>equal</item>
+        <item>not</item>
+        <item>all</item>
+    </string-array>
+
+    <string-array name="cond_next">
+        <item>and</item>
+        <item>or</item>
+    </string-array>
 </resources>

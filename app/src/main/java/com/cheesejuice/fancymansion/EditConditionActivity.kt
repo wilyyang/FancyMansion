@@ -161,7 +161,7 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
 
         val opAdapter = ArrayAdapter<String>(this@EditConditionActivity, android.R.layout.simple_spinner_item).apply {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            addAll(CondOp.values().map { it.opName })
+            addAll(resources.getStringArray(R.array.cond_operator).toList())
         }
 
         binding.spinnerOperator.apply {
@@ -170,7 +170,7 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
 
         val nextAdapter = ArrayAdapter<String>(this@EditConditionActivity, android.R.layout.simple_spinner_item).apply {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            addAll(CondNext.values().map { it.relName })
+            addAll(resources.getStringArray(R.array.cond_next).toList())
         }
 
         binding.spinnerNext.apply {

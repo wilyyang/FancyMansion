@@ -16,4 +16,17 @@
         <item>제목 오름차</item>
         <item>제목 내림차</item>
     </string-array>
+
+    <string-array name="cond_operator">
+        <item>초과</item>
+        <item>미만</item>
+        <item>같음</item>
+        <item>아님</item>
+        <item>전체</item>
+    </string-array>
+
+    <string-array name="cond_next">
+        <item>그리고</item>
+        <item>또는</item>
+    </string-array>
 </resources>

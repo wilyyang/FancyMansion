@@ -52,11 +52,11 @@ class MainActivity : AppCompatActivity() {
                         R.id.menu_store -> {
                             StoreFragment()
                         }
-                        R.id.menu_make -> {
-                            EditListFragment()
-                        }
                         R.id.menu_book -> {
                             ReadListFragment()
+                        }
+                        R.id.menu_make -> {
+                            EditListFragment()
                         }
                         R.id.menu_user -> {
                             UserFragment()

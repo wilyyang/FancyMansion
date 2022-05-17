@@ -50,7 +50,7 @@ class EditConditionListAdapter(val bookUtil: BookUtil, var datas: MutableList<Co
                 tvCondition2Id.text = "${datas[position].conditionCount}"
                 tvCondition2label.text = bookUtil.translateText("count")
             }
-            tvNext.text = datas[position].conditionNext
+            tvNext.text = bookUtil.translateNext(datas[position].conditionNext)
         }
 
         holder.apply {

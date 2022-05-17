@@ -104,15 +104,14 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
     }
 
     // Operator language
-    fun translateOp(op: String):String = when(op){
-        "over" -> context.getString(R.string.cond_text_over)
-        "under" -> context.getString(R.string.cond_text_under)
-        "equal" -> context.getString(R.string.cond_text_equal)
-        "not" -> context.getString(R.string.cond_text_not)
-        "all" -> context.getString(R.string.cond_text_all)
-        "and" -> context.getString(R.string.cond_text_and)
-        "or" -> context.getString(R.string.cond_text_or)
-        else -> "Unknown"
+    fun translateOp(op: String):String {
+        val opString = context.resources.getStringArray(R.array.cond_operator)
+        return opString.getOrNull(CondOp.from(op).ordinal).toString()
+    }
+
+    fun translateNext(next: String):String {
+        val nextString = context.resources.getStringArray(R.array.cond_next)
+        return nextString.getOrNull(CondNext.from(next).ordinal).toString()
     }
 
     fun translateText(text: String):String = when(text){

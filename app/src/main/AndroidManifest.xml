@@ -14,12 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FancyMansion">
         <activity
-            android:name=".DisplayBookActivity"
-            android:exported="false" />
-        <activity
             android:name=".AuthActivity"
             android:exported="true"
-            android:noHistory="true">
+            android:noHistory="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,28 +26,40 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true"></activity>
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".DisplayBookActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".EditStartActivity"
-            android:exported="true" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".EditSlideActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".EditChoiceActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".EditEnterActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".EditConditionActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ReadStartActivity"
-            android:exported="true" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ReadSlideActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
