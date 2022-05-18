@@ -20,6 +20,8 @@
     <dimen name="size_bsub">18sp</dimen>
     <dimen name="size_bmain">20sp</dimen>
 
+    <dimen name="size_radio_button">12sp</dimen>
+
     <dimen name="size_comment_user">12sp</dimen>
     <dimen name="size_comment_date">10sp</dimen>
     <dimen name="size_comment_comment">14sp</dimen>

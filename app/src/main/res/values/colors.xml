@@ -13,6 +13,9 @@
     <color name="black">#000000</color>
     <color name="navy">#323E4E</color>
 
+    <color name="radio_select">#66BD90B0</color>
+    <color name="radio_not_select">#66D1D1D1</color>
+
     <color name="divide_dark">#10323E4E</color>
     <color name="divide_pale">#05323E4E</color>
 

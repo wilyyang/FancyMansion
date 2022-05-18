@@ -178,8 +178,8 @@
                                         android:id="@+id/radioGroupCondOption"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginHorizontal="70dp"
                                         android:orientation="horizontal"
+                                        android:layout_marginHorizontal="50dp"
                                         android:weightSum="2">
 
                                         <RadioButton
@@ -187,9 +187,11 @@
                                             android:layout_width="0dp"
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
+                                            android:layout_marginEnd="@dimen/margin_small"
                                             android:background="@drawable/bg_btn_selector"
                                             android:button="@android:color/transparent"
                                             android:text="@string/cond_option_count"
+                                            android:textSize="@dimen/size_radio_button"
                                             android:gravity="center"/>
 
                                         <RadioButton
@@ -197,9 +199,11 @@
                                             android:layout_width="0dp"
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
+                                            android:layout_marginStart="@dimen/margin_small"
                                             android:background="@drawable/bg_btn_selector"
                                             android:button="@android:color/transparent"
                                             android:text="@string/cond_option_id"
+                                            android:textSize="@dimen/size_radio_button"
                                             android:gravity="center"/>
                                     </RadioGroup>
                                 </LinearLayout>
