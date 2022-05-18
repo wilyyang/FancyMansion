@@ -3,6 +3,7 @@
     <dimen name="size_title">21sp</dimen>
     <dimen name="size_semi_title">18sp</dimen>
 
+    <dimen name="size_small">12sp</dimen>
     <dimen name="size_detail">14sp</dimen>
     <dimen name="size_question">16sp</dimen>
     <dimen name="size_item">15sp</dimen>
@@ -46,10 +47,14 @@
     <dimen name="margin_question">25dp</dimen>
     <dimen name="margin_item">10dp</dimen>
     <dimen name="margin_edit_item">4dp</dimen>
+    <dimen name="margin_comment_horizontal">5dp</dimen>
 
+    <dimen name="padding_bottom_sheet_vertical">15dp</dimen>
+    <dimen name="padding_bottom_sheet_horizontal">10dp</dimen>
     <dimen name="padding_item">10dp</dimen>
     <dimen name="padding_default_edit">5dp</dimen>
     <dimen name="padding_comment_dialog">20dp</dimen>
+    <dimen name="padding_comment_vertical">15dp</dimen>
 
     <dimen name="size_get_gallery">30dp</dimen>
     <dimen name="size_image_comment">20dp</dimen>

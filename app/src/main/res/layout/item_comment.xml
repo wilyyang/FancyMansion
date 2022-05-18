@@ -4,14 +4,13 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_round_base"
-    android:layout_margin="@dimen/margin_edit_item"
-    android:padding="@dimen/padding_item">
+    android:paddingHorizontal="@dimen/padding_item"
+    android:paddingVertical="@dimen/padding_item">
 
     <ImageView
         android:id="@+id/imageProfilePhoto"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:padding="@dimen/padding_default_edit" />
 
     <LinearLayout
@@ -23,7 +22,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="20dp"
             android:orientation="horizontal">
 
             <ImageView
@@ -34,48 +33,52 @@
 
             <TextView
                 android:id="@+id/tvCommentUserName"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.6"
-                android:textSize="@dimen/size_comment_user"/>
+                android:textSize="@dimen/size_comment_user"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:ellipsize="end"
+                android:singleLine="true"/>
 
-            <TextView
-                android:id="@+id/tvCommentDate"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.4"
-                android:layout_marginStart="@dimen/margin_default"
-                android:textSize="@dimen/size_comment_date"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="end"
+                android:focusableInTouchMode="false">
 
+                <ImageView
+                    android:id="@+id/imageViewCommentEdit"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:visibility="gone"
+                    android:src="@drawable/ic_edit"/>
+
+                <ImageView
+                    android:id="@+id/imageViewCommentDelete"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:visibility="gone"
+                    android:src="@drawable/ic_trash"/>
+            </LinearLayout>
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvCommentDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:textSize="@dimen/size_comment_date"
+            android:ellipsize="end"
+            android:singleLine="true"/>
 
         <TextView
             android:id="@+id/tvComment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
             android:textSize="@dimen/size_comment_comment"
-            android:textStyle="bold"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="end"
-            android:focusableInTouchMode="false">
-
-            <ImageView
-                android:id="@+id/imageViewCommentEdit"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:visibility="gone"
-                android:src="@drawable/ic_edit"/>
-
-            <ImageView
-                android:id="@+id/imageViewCommentDelete"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:visibility="gone"
-                android:src="@drawable/ic_trash"/>
-        </LinearLayout>
+            android:textColor="@color/black"/>
     </LinearLayout>
 </LinearLayout>

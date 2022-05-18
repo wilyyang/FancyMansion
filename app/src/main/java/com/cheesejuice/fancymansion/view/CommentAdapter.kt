@@ -1,8 +1,6 @@
 package com.cheesejuice.fancymansion.view
 
 import android.content.Context
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.OvalShape
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -10,13 +8,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.Const
-import com.cheesejuice.fancymansion.MainApplication
 import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.databinding.ItemCommentBinding
-import com.cheesejuice.fancymansion.databinding.ItemLoadingBinding
-import com.cheesejuice.fancymansion.databinding.ItemStoreBookBinding
+import com.cheesejuice.fancymansion.databinding.ItemCommentLoadingBinding
 import com.cheesejuice.fancymansion.model.Comment
-import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FirebaseUtil
 
@@ -59,7 +54,7 @@ class CommentAdapter(val datas: MutableList<Comment>, val context: Context, val 
         return if (viewType == TYPE_ITEM || viewType == TYPE_ME){
             CommentViewHolder(ItemCommentBinding.inflate(LayoutInflater.from(parent.context), parent, false))
         }else{
-            LoadingViewHolder(ItemLoadingBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+            LoadingViewHolder(ItemCommentLoadingBinding.inflate(LayoutInflater.from(parent.context), parent, false))
         }
     }
 
@@ -101,5 +96,5 @@ class CommentAdapter(val datas: MutableList<Comment>, val context: Context, val 
     // ViewHolder
     inner class CommentViewHolder(val binding: ItemCommentBinding): RecyclerView.ViewHolder(binding.root)
 
-    inner class LoadingViewHolder(var binding: ItemLoadingBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class LoadingViewHolder(var binding: ItemCommentLoadingBinding) : RecyclerView.ViewHolder(binding.root)
 }

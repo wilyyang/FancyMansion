@@ -26,6 +26,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/divider_bottom"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -71,6 +72,7 @@
                                 android:id="@+id/layoutShow"
                                 android:layout_width="match_parent"
                                 android:layout_height="250dp"
+                                android:layout_marginTop="@dimen/margin_default"
                                 app:layout_constraintTop_toTopOf="parent">
 
                                 <ImageView
@@ -80,18 +82,6 @@
 
                             </androidx.constraintlayout.widget.ConstraintLayout>
 
-                            <TextView
-                                android:id="@+id/tvConfigTitle"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/margin_default_left"
-                                android:layout_marginTop="@dimen/margin_title"
-                                android:layout_marginEnd="@dimen/margin_default_right"
-                                android:text="타이틀"
-                                android:textSize="@dimen/size_title"
-                                android:textStyle="bold"
-                                app:layout_constraintTop_toBottomOf="@+id/layoutShow" />
-
                             <LinearLayout
                                 android:id="@+id/layoutConfig"
                                 android:layout_width="match_parent"
@@ -100,7 +90,7 @@
                                 android:layout_marginTop="@dimen/margin_title"
                                 android:layout_marginEnd="@dimen/margin_default_right"
                                 android:orientation="vertical"
-                                app:layout_constraintTop_toBottomOf="@id/tvConfigTitle">
+                                app:layout_constraintTop_toBottomOf="@id/layoutShow">
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
@@ -109,36 +99,53 @@
                                     android:weightSum="1">
 
                                     <TextView
-                                        android:id="@+id/tvConfigDownloads"
-                                        android:layout_width="0dp"
+                                        android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_weight="0.5"
+                                        android:text="@string/display_downloads"
+                                        android:textSize="@dimen/size_config"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/tvConfigDownloads"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:ellipsize="end"
+                                        android:maxLines="1"
                                         android:textSize="@dimen/size_config" />
 
                                     <TextView
                                         android:id="@+id/tvConfigTime"
-                                        android:layout_width="0dp"
+                                        android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:layout_weight="0.5"
-                                        android:gravity="right"
+                                        android:gravity="end"
+                                        android:ellipsize="end"
+                                        android:maxLines="1"
                                         android:textSize="@dimen/size_config" />
                                 </LinearLayout>
 
                                 <LinearLayout
+                                    android:id="@+id/layoutGood"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal">
 
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/display_good"
+                                        android:textSize="@dimen/size_config"
+                                        android:textStyle="bold" />
+
                                     <ImageView
                                         android:id="@+id/imageViewGood"
-                                        android:layout_width="30dp"
-                                        android:layout_height="30dp"
+                                        android:layout_width="20dp"
+                                        android:layout_height="20dp"
                                         android:textSize="@dimen/size_config" />
 
                                     <TextView
                                         android:id="@+id/tvConfigGood"
                                         android:layout_width="wrap_content"
-                                        android:layout_height="30dp"
+                                        android:layout_height="20dp"
                                         android:layout_marginStart="@dimen/margin_default"
                                         android:gravity="center_vertical"
                                         android:textSize="@dimen/size_config" />
@@ -198,14 +205,81 @@
                                     android:textSize="@dimen/size_detail" />
                             </LinearLayout>
 
-                            <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/recyclerComment"
+
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:nestedScrollingEnabled="false"
-                                android:layout_marginTop="@dimen/margin_title"
+                                android:background="@drawable/divider_top"
+                                android:paddingBottom="@dimen/padding_item"
+                                android:layout_marginTop="@dimen/margin_wide"
+                                android:layout_marginHorizontal="@dimen/margin_comment_horizontal"
+                                android:orientation="vertical"
                                 app:layout_constraintTop_toBottomOf="@id/layoutConfig"
-                                app:layout_constraintBottom_toBottomOf="parent"/>
+                                app:layout_constraintBottom_toBottomOf="parent">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:layout_marginTop="@dimen/margin_wide">
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:src="@drawable/ic_dot"/>
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/display_comment_order_oldest"
+                                        android:textSize="@dimen/size_small"
+                                        android:textStyle="bold"
+                                        android:layout_marginBottom="@dimen/margin_default"/>
+
+                                </LinearLayout>
+
+                                <androidx.constraintlayout.widget.ConstraintLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent">
+
+                                    <androidx.constraintlayout.widget.ConstraintLayout
+                                        android:id="@+id/layoutEmptyComment"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:visibility="gone">
+
+                                        <ImageView
+                                            android:id="@+id/imageViewEmpty"
+                                            android:layout_width="150dp"
+                                            android:layout_height="150dp"
+                                            android:src="@drawable/ic_book_open"
+                                            app:layout_constraintStart_toStartOf="parent"
+                                            app:layout_constraintEnd_toEndOf="parent"
+                                            app:layout_constraintTop_toTopOf="parent"
+                                            app:layout_constraintBottom_toBottomOf="parent"/>
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="댓글이 없습니다..."
+                                            android:textSize="@dimen/size_item"
+                                            android:layout_margin="@dimen/margin_default"
+                                            app:layout_constraintStart_toStartOf="parent"
+                                            app:layout_constraintEnd_toEndOf="parent"
+                                            app:layout_constraintTop_toBottomOf="@id/imageViewEmpty"/>
+
+                                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                                    <androidx.recyclerview.widget.RecyclerView
+                                        android:id="@+id/recyclerComment"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:nestedScrollingEnabled="false"
+                                        app:layout_constraintBottom_toBottomOf="parent"/>
+                                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            </LinearLayout>
+
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -215,7 +289,9 @@
                         android:id="@+id/layoutTail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/margin_default"
+                        android:paddingHorizontal="@dimen/padding_bottom_sheet_horizontal"
+                        android:paddingVertical="@dimen/padding_bottom_sheet_vertical"
+                        android:background="@drawable/divider_top"
                         app:layout_constraintBottom_toBottomOf="parent">
 
                         <com.google.android.material.textfield.TextInputLayout
@@ -224,12 +300,14 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="0.8"
                             android:layout_marginEnd="@dimen/margin_default"
+                            android:textColorHint="@color/not_choice"
                             android:textSize="@dimen/size_item">
 
                             <com.cheesejuice.fancymansion.view.RoundEditText
                                 android:id="@+id/etAddComment"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:hint="@string/display_comment_input_comment"
                                 android:maxLength="@integer/count_slide_choice"
                                 android:padding="5dp" />
                         </com.google.android.material.textfield.TextInputLayout>

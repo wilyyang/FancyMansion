@@ -96,10 +96,9 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
         with(conf){
             binding.toolbar.title = title
-            binding.tvConfigTitle.text = title
             binding.tvConfigDescription.text = description
 
-            binding.tvConfigDownloads.text = "${getString(R.string.display_downloads)} : $downloads"
+            binding.tvConfigDownloads.text = "$downloads"
             binding.tvConfigGood.text = "$good"
             binding.tvConfigTime.text = CommonUtil.longToTimeFormatss(updateTime)
             binding.tvConfigWriter.text = writer
@@ -120,7 +119,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
             Glide.with(baseContext).load(R.drawable.ic_thumbs_up).into(binding.imageViewGood)
         }
 
-        binding.imageViewGood.setOnClickListener(this)
+        binding.layoutGood.setOnClickListener(this)
         binding.btnAddComment.setOnClickListener(this)
     }
 
@@ -192,6 +191,14 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                 }
             }
         }
+
+        if(commentList.size < 1)
+        {
+            binding.layoutEmptyComment.visibility = View.VISIBLE
+        }else{
+            binding.layoutEmptyComment.visibility = View.GONE
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -228,7 +235,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                     val isSuccess = fileUtil.extractBook(dir)
 
                     withContext(Main){
-                        binding.tvConfigDownloads.text = "${getString(R.string.display_downloads)} : $downloads"
+                        binding.tvConfigDownloads.text = "$downloads"
                         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
 
                         Toast.makeText(this@DisplayBookActivity,
@@ -244,7 +251,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
     override fun onClick(view: View?) {
         when(view?.id) {
-            R.id.imageViewGood -> clickBookIsGood()
+            R.id.layoutGood -> clickBookIsGood()
             R.id.btnAddComment -> clickAddComment()
         }
     }

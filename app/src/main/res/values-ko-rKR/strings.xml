@@ -149,7 +149,7 @@
     <string name="toast_download_success">파일 다운로드 성공</string>
     <string name="toast_download_fail">파일 다운로드 실패</string>
 
-    <string name="display_downloads">다운로드 횟수</string>
+    <string name="display_downloads">다운로드 수 :&#160;</string>
     <string name="display_comment_add">댓글</string>
     <string name="display_comment_edit_title">댓글 수정</string>
 
@@ -158,4 +158,9 @@
 
     <string name="display_comment_update_success">댓글 업데이트 완료</string>
     <string name="display_comment_update_fail">댓글 업데이트 실패</string>
+
+    <string name="display_comment_order_oldest">댓글 오래된순</string>
+
+    <string name="display_comment_input_comment">댓글을 입력해주세요.</string>
+    <string name="display_good">좋아요 :&#160;</string>
 </resources>
