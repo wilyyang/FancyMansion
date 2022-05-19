@@ -84,6 +84,17 @@ class StoreFragment : Fragment() {
         return binding.root
     }
 
+    private fun updateEmptyBook(){
+        if(storeBookList.size < 1 && _binding != null)
+        {
+            binding.layoutEmptyBook.visibility = View.VISIBLE
+            binding.recyclerStoreBook.visibility = View.INVISIBLE
+        }else{
+            binding.layoutEmptyBook.visibility = View.INVISIBLE
+            binding.recyclerStoreBook.visibility = View.VISIBLE
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -114,6 +125,8 @@ class StoreFragment : Fragment() {
                 }
             }
         })
+
+        updateEmptyBook()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

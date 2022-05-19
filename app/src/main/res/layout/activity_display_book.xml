@@ -240,18 +240,20 @@
 
                                 <androidx.constraintlayout.widget.ConstraintLayout
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent">
+                                    android:layout_height="wrap_content">
 
                                     <androidx.constraintlayout.widget.ConstraintLayout
                                         android:id="@+id/layoutEmptyComment"
                                         android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
+                                        android:layout_height="150dp"
+                                        app:layout_constraintTop_toTopOf="parent"
+                                        app:layout_constraintBottom_toTopOf="@+id/recyclerComment"
                                         android:visibility="gone">
 
                                         <ImageView
                                             android:id="@+id/imageViewEmpty"
-                                            android:layout_width="150dp"
-                                            android:layout_height="150dp"
+                                            android:layout_width="60dp"
+                                            android:layout_height="60dp"
                                             android:src="@drawable/ic_book_open"
                                             app:layout_constraintStart_toStartOf="parent"
                                             app:layout_constraintEnd_toEndOf="parent"
@@ -261,7 +263,7 @@
                                         <TextView
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:text="댓글이 없습니다..."
+                                            android:text="@string/display_no_comment"
                                             android:textSize="@dimen/size_item"
                                             android:layout_margin="@dimen/margin_default"
                                             app:layout_constraintStart_toStartOf="parent"
@@ -277,10 +279,7 @@
                                         android:nestedScrollingEnabled="false"
                                         app:layout_constraintBottom_toBottomOf="parent"/>
                                 </androidx.constraintlayout.widget.ConstraintLayout>
-
                             </LinearLayout>
-
-
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </androidx.core.widget.NestedScrollView>

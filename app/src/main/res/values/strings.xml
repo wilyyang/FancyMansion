@@ -49,6 +49,10 @@
     <string name="frag_main_store">Book Store</string>
     <string name="frag_main_user">My Page</string>
 
+    <string name="frag_no_make_book">There is no book being created. Shall we give it a try?</string>
+    <string name="frag_no_my_book">Download the book from the bookstore</string>
+    <string name="frag_no_store_book">Could not find a book registered in the store…</string>
+
     <string name="fab_add">ADD</string>
 
     <string name="start_book">START</string>
@@ -165,4 +169,6 @@
 
     <string name="display_comment_input_comment">Input Comment.</string>
     <string name="display_good">Good :&#160;</string>
+
+    <string name="display_no_comment">No comments yet!</string>
 </resources>

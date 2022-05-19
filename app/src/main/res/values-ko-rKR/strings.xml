@@ -38,6 +38,10 @@
     <string name="frag_main_store">책방</string>
     <string name="frag_main_user">나의 정보</string>
 
+    <string name="frag_no_make_book">만들고 있는 책이 없습니다. 한번 해볼까요?</string>
+    <string name="frag_no_my_book">책방에서 책을 다운로드 받아보세요</string>
+    <string name="frag_no_store_book">스토어에 등록된 책을 찾지 못했어요…</string>
+
     <string name="fab_add">추가</string>
 
     <string name="toolbar_edit_slide">슬라이드 수정하기</string>
@@ -163,4 +167,6 @@
 
     <string name="display_comment_input_comment">댓글을 입력해주세요.</string>
     <string name="display_good">좋아요 :&#160;</string>
+
+    <string name="display_no_comment">아직 댓글이 없어요!</string>
 </resources>

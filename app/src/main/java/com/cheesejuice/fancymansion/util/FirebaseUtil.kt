@@ -56,6 +56,8 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
             }else{
                 failCallback()
             }
+        }.addOnFailureListener {
+            failCallback()
         }
     }
 

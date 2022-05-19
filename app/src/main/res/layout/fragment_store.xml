@@ -60,6 +60,34 @@
                         app:layout_constraintTop_toBottomOf="@+id/layoutHead"
                         app:layout_constraintBottom_toTopOf="@+id/layoutTail">
 
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/layoutEmptyBook"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:visibility="invisible">
+
+                            <ImageView
+                                android:id="@+id/imageViewEmpty"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
+                                android:src="@drawable/ic_book_open"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/frag_no_store_book"
+                                android:textSize="@dimen/size_item"
+                                android:layout_margin="@dimen/margin_default"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/imageViewEmpty"/>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/recyclerStoreBook"
                             android:layout_width="match_parent"

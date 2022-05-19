@@ -2,8 +2,8 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/margin_edit_item"
+    android:layout_height="40dp"
+    android:layout_margin="@dimen/margin_default"
     android:orientation="vertical">
 
     <ProgressBar
@@ -11,8 +11,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:indeterminate="true"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp" />
-
+        android:indeterminate="true" />
 </LinearLayout>

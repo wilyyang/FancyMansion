@@ -109,6 +109,17 @@ class EditListFragment : Fragment(), View.OnClickListener {
         return binding.root
     }
 
+    private fun updateEmptyBook(){
+        if(editList.size < 1 && _binding != null)
+        {
+            binding.layoutEmptyBook.visibility = View.VISIBLE
+            binding.recyclerEditBook.visibility = View.INVISIBLE
+        }else{
+            binding.layoutEmptyBook.visibility = View.INVISIBLE
+            binding.recyclerEditBook.visibility = View.VISIBLE
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -143,6 +154,7 @@ class EditListFragment : Fragment(), View.OnClickListener {
                 }
             }
         })
+        updateEmptyBook()
     }
 
     override fun onClick(view: View?) {

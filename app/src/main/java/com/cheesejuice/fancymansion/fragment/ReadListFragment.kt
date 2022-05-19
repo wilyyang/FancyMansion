@@ -105,6 +105,17 @@ class ReadListFragment : Fragment() {
         return binding.root
     }
 
+    private fun updateEmptyBook(){
+        if(readList.size < 1 && _binding != null)
+        {
+            binding.layoutEmptyBook.visibility = View.VISIBLE
+            binding.recyclerReadBook.visibility = View.INVISIBLE
+        }else{
+            binding.layoutEmptyBook.visibility = View.INVISIBLE
+            binding.recyclerReadBook.visibility = View.VISIBLE
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -140,6 +151,7 @@ class ReadListFragment : Fragment() {
                 }
             }
         })
+        updateEmptyBook()
     }
 
     private fun addMoreReadBook(){

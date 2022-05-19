@@ -85,6 +85,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                     makeBookDisplayScreen(config, downloads, good, isClickGood)
                     makeCommentList(commentList)
                     isListLoading = false
+                    updateEmptyComment()
                 }?:also {
                     util.getAlertDailog(this@DisplayBookActivity).show()
                 }
@@ -106,6 +107,8 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
             firebaseUtil.returnImageToCallback("/${Const.FB_STORAGE_BOOK}/$uid/$publishCode/$coverImage", { result ->
                 Glide.with(baseContext).load(result).into(binding.imageViewShowMain)
+            }, {
+                Glide.with(baseContext).load(R.drawable.add_image).into(binding.imageViewShowMain)
             })
 
             if(!firebaseUtil.checkAuth() || conf.uid != FirebaseUtil.auth.uid) {
@@ -151,6 +154,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                                             binding.layoutBody.fullScroll(View.FOCUS_DOWN)
                                             dialog.dismiss()
                                             isListLoading = false
+                                            updateEmptyComment()
                                         }
                                     }
                                 }
@@ -169,6 +173,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                                             binding.layoutBody.fullScroll(View.FOCUS_DOWN)
                                             dialog.dismiss()
                                             isListLoading = false
+                                            updateEmptyComment()
                                         }
                                     }
                                 }
@@ -192,13 +197,16 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
             }
         }
 
+
+    }
+
+    fun updateEmptyComment(){
         if(commentList.size < 1)
         {
             binding.layoutEmptyComment.visibility = View.VISIBLE
         }else{
             binding.layoutEmptyComment.visibility = View.GONE
         }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -298,6 +306,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                     }
                     binding.layoutBody.fullScroll(View.FOCUS_DOWN)
                     isListLoading = false
+                    updateEmptyComment()
                 }
             }
         }
@@ -323,6 +332,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                 commentAdapter.notifyItemRangeInserted(beforeSize, addList.size)
 
                 isListLoading = false
+                updateEmptyComment()
             }
         }
     }
