@@ -61,11 +61,7 @@ class StoreFragment : Fragment() {
 
     private val displayBookForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            when (result.resultCode) {
-                Const.RESULT_DELETE -> {
-                    bookClearLoad()
-                }
-            }
+            bookClearLoad()
         }
 
     override fun onCreateView(

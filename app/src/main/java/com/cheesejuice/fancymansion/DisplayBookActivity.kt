@@ -1,9 +1,7 @@
 package com.cheesejuice.fancymansion
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -11,7 +9,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.databinding.ActivityDisplayBookBinding
 import com.cheesejuice.fancymansion.databinding.LayoutEditCommentBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
@@ -21,12 +18,10 @@ import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FileUtil
 import com.cheesejuice.fancymansion.util.FirebaseUtil
 import com.cheesejuice.fancymansion.view.CommentAdapter
-import com.cheesejuice.fancymansion.view.StoreBookAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.tasks.await
 import java.io.File
 import javax.inject.Inject
 
@@ -65,13 +60,8 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
         isListLoading = true
         CoroutineScope(Dispatchers.IO).launch {
             var item : Config? = null
-            var downloads = 0
-            var good = 0
-
             if(publishCode != ""){
                 item = firebaseUtil.getBookConfig(publishCode)?.also {
-                    downloads = firebaseUtil.getDownloads(it.publishCode)
-                    good = firebaseUtil.getBookGoodCount(it.publishCode)
                     isClickGood = firebaseUtil.isBookGoodUser(it.publishCode)
                     val addList = firebaseUtil.getCommentList(publishCode = it.publishCode, limit = Const.COMMENT_COUNT)
                     commentList.addAll(addList)
@@ -82,7 +72,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                 item?.also {
                     showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
                     config = it
-                    makeBookDisplayScreen(config, downloads, good, isClickGood)
+                    makeBookDisplayScreen(config, isClickGood)
                     makeCommentList(commentList)
                     isListLoading = false
                     updateEmptyComment()
@@ -93,7 +83,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
         }
     }
 
-    private fun makeBookDisplayScreen(conf: Config, downloads:Int, good:Int, isGood:Boolean) {
+    private fun makeBookDisplayScreen(conf: Config, isGood:Boolean) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
         with(conf){
             binding.toolbar.title = title
@@ -238,8 +228,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                     val dir = File(fileUtil.readOnlyUserPath, Const.FILE_PREFIX_READ+config.bookId+"_${config.publishCode}")
                     firebaseUtil.downloadBook(config, dir)
 
-                    firebaseUtil.incrementBookDownloads(config.publishCode)
-                    val downloads: Int = firebaseUtil.getDownloads(config.publishCode)
+                    val downloads: Int = firebaseUtil.incrementBookDownloads(config.publishCode)
                     val isSuccess = fileUtil.extractBook(dir)
 
                     withContext(Main){
@@ -266,9 +255,8 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
     private fun clickBookIsGood(){
         CoroutineScope(Dispatchers.IO).launch {
-            firebaseUtil.setBookGoodUser(config.publishCode, !isClickGood)
+            val good:Int = firebaseUtil.setBookGoodUser(config.publishCode, !isClickGood)
             isClickGood = firebaseUtil.isBookGoodUser(config.publishCode)
-            val good:Int = firebaseUtil.getBookGoodCount(config.publishCode)
             withContext(Main){
                 if(isClickGood){
                     Glide.with(baseContext).load(R.drawable.ic_thumbs_up_check).into(binding.imageViewGood)

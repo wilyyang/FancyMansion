@@ -79,6 +79,10 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
     }
 
     suspend fun updateBookConfig(config: Config){
+        config.email = email!!
+        config.user = name!!
+        config.downloads = getDownloads(config.publishCode)
+        config.good = getBookGoodCount(config.publishCode)
         db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode).set(config).await()
     }
 
@@ -128,8 +132,12 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
             when(orderKey){
                 Const.ORDER_LATEST_IDX -> Pair(Const.FB_DB_KEY_TIME, false)
                 Const.ORDER_OLDEST_IDX -> Pair(Const.FB_DB_KEY_TIME, true)
-                Const.ORDER_TITLE_ASC_IDX -> Pair(Const.FB_DB_KEY_TITLE, false)
-                Const.ORDER_TITLE_DESC_IDX -> Pair(Const.FB_DB_KEY_TITLE, true)
+                Const.ORDER_TITLE_ASC_IDX -> Pair(Const.FB_DB_KEY_TITLE, true)
+                Const.ORDER_TITLE_DESC_IDX -> Pair(Const.FB_DB_KEY_TITLE, false)
+                Const.ORDER_DOWNLOADS_ASC_IDX -> Pair(Const.FB_DB_KEY_DOWNLOADS, true)
+                Const.ORDER_DOWNLOADS_DESC_IDX -> Pair(Const.FB_DB_KEY_DOWNLOADS, false)
+                Const.ORDER_GOOD_ASC_IDX -> Pair(Const.FB_DB_KEY_GOOD, true)
+                Const.ORDER_GOOD_DESC_IDX -> Pair(Const.FB_DB_KEY_GOOD, false)
                 else -> Pair(Const.FB_DB_KEY_TITLE, true)
             }
         }
@@ -149,7 +157,13 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
             .let {
                 if(startConfig != null){
                     it.startAfter(
-                        if (sortKeyword == Const.FB_DB_KEY_TITLE) { startConfig.title } else { startConfig.updateTime },
+                        when(sortKeyword){
+                            Const.FB_DB_KEY_TIME -> { startConfig.updateTime }
+                            Const.FB_DB_KEY_TITLE -> { startConfig.title }
+                            Const.FB_DB_KEY_DOWNLOADS -> { startConfig.downloads }
+                            Const.FB_DB_KEY_GOOD -> { startConfig.good }
+                            else -> { startConfig.title}
+                        },
                         startConfig.publishCode
                     )
                 }else{
@@ -172,7 +186,7 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
         return configList
     }
 
-    suspend fun getBookGoodCount(publishCode: String):Int{
+    private suspend fun getBookGoodCount(publishCode: String):Int{
         return db.collection(Const.FB_DB_KEY_BOOK).document(publishCode).collection(Const.FB_DB_KEY_GOOD).get().await().size()
     }
 
@@ -181,34 +195,45 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
             .whereEqualTo(Const.FB_DB_KEY_UID, auth.uid).get().await().size() > 0)
     }
 
-    suspend fun setBookGoodUser(publishCode: String, setGood:Boolean){
-        with(db.collection(Const.FB_DB_KEY_BOOK).document(publishCode).collection(Const.FB_DB_KEY_GOOD)){
-            whereEqualTo(Const.FB_DB_KEY_UID, auth.uid).get().await().let { result ->
+    suspend fun setBookGoodUser(publishCode: String, setGood:Boolean):Int{
+        with(db.collection(Const.FB_DB_KEY_BOOK).document(publishCode)){
+            collection(Const.FB_DB_KEY_GOOD).whereEqualTo(Const.FB_DB_KEY_UID, auth.uid).get().await().let { result ->
                 if (result.size() > 0) {
                     // isBookGood true  & setGood false -> delete
                     if(!setGood){
-                        document(result.documents[0].id).delete().await()
+                        collection(Const.FB_DB_KEY_GOOD).document(result.documents[0].id).delete().await()
+                        val good = getBookGoodCount(publishCode)
+                        update(Const.FB_DB_KEY_GOOD, good).await()
+                        return good
                     }
                 } else {
                     // isBookGood false & setGood true  -> add
                     if(setGood){
-                        add(hashMapOf(Const.FB_DB_KEY_UID to auth.uid)).await()
+                        collection(Const.FB_DB_KEY_GOOD).add(hashMapOf(Const.FB_DB_KEY_UID to auth.uid)).await()
+                        val good = getBookGoodCount(publishCode)
+                        update(Const.FB_DB_KEY_GOOD, good).await()
+                        return good
                     }
                 }
             }
         }
+        return 0
     }
 
-    suspend fun getDownloads(publishCode: String):Int{
+    private suspend fun getDownloads(publishCode: String):Int{
         return db.collection(Const.FB_DB_KEY_BOOK).document(publishCode).collection(Const.FB_DB_KEY_DOWNLOADS).get().await().size()
     }
 
-    suspend fun incrementBookDownloads(publishCode: String){
-        with(db.collection(Const.FB_DB_KEY_BOOK).document(publishCode).collection(Const.FB_DB_KEY_DOWNLOADS)){
-            if(whereEqualTo(Const.FB_DB_KEY_UID, auth.uid).get().await().size() <1){
-                add( hashMapOf(Const.FB_DB_KEY_UID to auth.uid) ).await()
+    suspend fun incrementBookDownloads(publishCode: String):Int{
+        with(db.collection(Const.FB_DB_KEY_BOOK).document(publishCode)){
+            if(collection(Const.FB_DB_KEY_DOWNLOADS).whereEqualTo(Const.FB_DB_KEY_UID, auth.uid).get().await().size() <1){
+                collection(Const.FB_DB_KEY_DOWNLOADS).add( hashMapOf(Const.FB_DB_KEY_UID to auth.uid) ).await()
+                val downloads = getDownloads(publishCode)
+                update(Const.FB_DB_KEY_DOWNLOADS, downloads).await()
+                return downloads
             }
         }
+        return 0
     }
 
     // Comment

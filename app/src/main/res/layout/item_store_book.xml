@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="120dp"
+    android:layout_height="180dp"
     android:background="@drawable/bg_round_base"
     android:layout_margin="@dimen/margin_edit_item"
     android:padding="@dimen/padding_item">
@@ -87,6 +87,52 @@
 
             <TextView
                 android:id="@+id/tvStoreBookIllustrator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_default"
+                android:textSize="@dimen/size_item"
+                android:ellipsize="end"
+                android:singleLine="true"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/size_item"
+                android:text="@string/display_downloads"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tvStoreBookDownloads"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_default"
+                android:textSize="@dimen/size_item"
+                android:ellipsize="end"
+                android:singleLine="true"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/size_item"
+                android:text="@string/display_good"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tvStoreBookGood"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_default"

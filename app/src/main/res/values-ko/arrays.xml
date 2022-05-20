@@ -15,6 +15,10 @@
         <item>오래된순</item>
         <item>제목 오름차</item>
         <item>제목 내림차</item>
+        <item>다운로드 오름차</item>
+        <item>다운로드 내림차</item>
+        <item>좋아요 오름차</item>
+        <item>좋아요 내림차</item>
     </string-array>
 
     <string-array name="cond_operator">

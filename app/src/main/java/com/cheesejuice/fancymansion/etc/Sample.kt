@@ -21,7 +21,9 @@ class Sample {
             "coverImage":"image_1.gif",
             "defaultEndId":100000000,
             "readMode":"edit",
-            "tagList":[]
+            "tagList":[], 
+            "downloads":0,
+            "good":0
         }
         """.trimIndent()
 

@@ -19,8 +19,8 @@ class Const {
         const val VIEW_HOLDER_LOADING = -5L
         const val VIEW_HOLDER_LOADING_COMMENT = ""
 
-        const val PAGE_COUNT = 10
-        const val PAGE_COUNT_LONG = 10L
+        const val PAGE_COUNT = 4
+        const val PAGE_COUNT_LONG = 4L
         const val COMMENT_COUNT = 10L
 
         const val SLIDE_TYPE_NORMAL = 1
@@ -31,6 +31,10 @@ class Const {
         const val ORDER_OLDEST_IDX = 1
         const val ORDER_TITLE_ASC_IDX = 2
         const val ORDER_TITLE_DESC_IDX = 3
+        const val ORDER_DOWNLOADS_ASC_IDX = 4
+        const val ORDER_DOWNLOADS_DESC_IDX = 5
+        const val ORDER_GOOD_ASC_IDX = 6
+        const val ORDER_GOOD_DESC_IDX = 7
 
         const val COUNT_SLIDE = 1_00_00_00_00L
         const val COUNT_CHOICE = 1_00_00_00L

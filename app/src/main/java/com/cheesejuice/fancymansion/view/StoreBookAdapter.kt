@@ -65,6 +65,10 @@ class StoreBookAdapter(val datas: MutableList<Config>, val context: Context, val
                 binding.tvStoreBookTitle.text = title
                 binding.tvStoreBookWriter.text = writer
                 binding.tvStoreBookIllustrator.text = illustrator
+
+                binding.tvStoreBookDownloads.text = "$downloads"
+                binding.tvStoreBookGood.text = "$good"
+
                 Glide.with(context).load(R.drawable.add_image).into(holder.binding.imageCover)
                 if(coverImage != ""){
                     firebaseUtil.returnImageToCallback("/book/$uid/$publishCode/$coverImage",

@@ -15,6 +15,10 @@
         <item>Oldest order</item>
         <item>Title ASC</item>
         <item>Title DESC</item>
+        <item>Downloads ASC</item>
+        <item>Downloads DESC</item>
+        <item>Good ASC</item>
+        <item>Good DESC</item>
     </string-array>
 
     <string-array name="cond_operator">
