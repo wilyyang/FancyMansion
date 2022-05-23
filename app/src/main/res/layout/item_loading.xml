@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/margin_edit_item"
-    android:background="@drawable/bg_round_base"
     android:orientation="vertical">
 
     <ProgressBar

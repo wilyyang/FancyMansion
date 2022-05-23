@@ -54,16 +54,17 @@ class ReadBookAdapter(val datas: MutableList<Config>, val fileUtil: FileUtil, va
         if (holder is ReadBookViewHolder){
             val binding=(holder).binding
             with(datas[position]){
-                binding.tvReadBookId.text = "#${bookId}"
+                binding.tvReadBookId.text = "#${bookId} ${publishCode}"
                 binding.tvReadBookUpdate.text = CommonUtil.longToTimeFormatss(updateTime)
 
                 binding.tvReadBookTitle.text = title
                 binding.tvReadBookWriter.text = writer
                 binding.tvReadBookIllustrator.text = illustrator
 
-
+                binding.imageCover.clipToOutline = true
                 fileUtil.getImageFile(bookId, coverImage, isCover = true, isReadOnly = true, publishCode = publishCode)?.also {
-                    Glide.with(context).load(it).into(binding.imageCover)
+                    Glide.with(context).load(it)
+                        .into(binding.imageCover)
                 }?:also {
                     Glide.with(context).load(R.drawable.add_image).into(binding.imageCover)
                 }

@@ -100,6 +100,8 @@
     <string name="book_config_writer">writer :&#160;</string>
     <string name="book_config_illustrator">illustrator :&#160;</string>
 
+    <string name="book_store_download">Downloads</string>
+
     <string name="book_slide_title">title :&#160;</string>
     <string name="book_slide_description">description :&#160;</string>
     <string name="book_slide_question">question :&#160;</string>

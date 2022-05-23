@@ -19,8 +19,8 @@ class Const {
         const val VIEW_HOLDER_LOADING = -5L
         const val VIEW_HOLDER_LOADING_COMMENT = ""
 
-        const val PAGE_COUNT = 4
-        const val PAGE_COUNT_LONG = 4L
+        const val PAGE_COUNT = 10
+        const val PAGE_COUNT_LONG = 10L
         const val COMMENT_COUNT = 10L
 
         const val SLIDE_TYPE_NORMAL = 1

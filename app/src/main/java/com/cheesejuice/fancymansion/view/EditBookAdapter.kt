@@ -55,13 +55,14 @@ class EditBookAdapter(val datas: MutableList<Config>, val fileUtil: FileUtil, va
         if (holder is EditBookViewHolder){
             val binding=holder.binding
             with(datas[position]){
-                binding.tvEditBookId.text = "#${bookId}"
+                binding.tvEditBookId.text = "#${bookId} ${publishCode}"
                 binding.tvEditBookUpdate.text = CommonUtil.longToTimeFormatss(updateTime)
 
                 binding.tvEditBookTitle.text = title
                 binding.tvEditBookWriter.text = writer
                 binding.tvEditBookIllustrator.text = illustrator
 
+                binding.imageCover.clipToOutline = true
                 fileUtil.getImageFile(bookId, coverImage, isCover = true)?.also {
                     Glide.with(context).load(it).into(binding.imageCover)
                 }?:also {

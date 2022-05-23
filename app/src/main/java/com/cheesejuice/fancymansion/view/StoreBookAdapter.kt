@@ -59,7 +59,7 @@ class StoreBookAdapter(val datas: MutableList<Config>, val context: Context, val
         if (holder is StoreBookViewHolder){
             val binding=(holder).binding
             with(datas[position]){
-                binding.tvStoreBookId.text = "#${bookId}"
+                binding.tvStoreBookId.text = "#${bookId} ${publishCode}"
                 binding.tvStoreBookUpdate.text = CommonUtil.longToTimeFormatss(updateTime)
 
                 binding.tvStoreBookTitle.text = title
@@ -69,6 +69,7 @@ class StoreBookAdapter(val datas: MutableList<Config>, val context: Context, val
                 binding.tvStoreBookDownloads.text = "$downloads"
                 binding.tvStoreBookGood.text = "$good"
 
+                binding.imageCover.clipToOutline = true
                 Glide.with(context).load(R.drawable.add_image).into(holder.binding.imageCover)
                 if(coverImage != ""){
                     firebaseUtil.returnImageToCallback("/book/$uid/$publishCode/$coverImage",

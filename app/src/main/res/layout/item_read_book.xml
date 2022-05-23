@@ -1,45 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="120dp"
-    android:background="@drawable/bg_round_base"
-    android:layout_margin="@dimen/margin_edit_item"
-    android:padding="@dimen/padding_item">
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/margin_default"
+    android:background="@drawable/divider_bottom"
+    android:paddingVertical="@dimen/padding_book">
 
     <ImageView
         android:id="@+id/imageCover"
+        android:src="@mipmap/ic_launcher"
+        android:background="@drawable/bg_round_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:padding="@dimen/padding_item" />
+        android:scaleType="centerCrop"/>
+
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tvReadBookId"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/size_small_brief_id"/>
-
-            <TextView
-                android:id="@+id/tvReadBookUpdate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_default"
-                android:textSize="@dimen/size_small_brief_id"
-                android:ellipsize="end"
-                android:singleLine="true"/>
-
-        </LinearLayout>
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="@dimen/margin_book_start">
 
         <TextView
             android:id="@+id/tvReadBookTitle"
@@ -47,6 +29,16 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/size_item"
             android:textStyle="bold"
+            android:text="타이틀"
+            android:ellipsize="end"
+            android:singleLine="true"/>
+
+        <TextView
+            android:id="@+id/tvReadBookUpdate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/size_book_item_date"
+            android:text="2021 10/10 15:16"
             android:ellipsize="end"
             android:singleLine="true"/>
 
@@ -58,7 +50,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/size_item"
+                android:textSize="@dimen/size_book_item_name"
                 android:text="@string/book_config_writer"
                 android:textStyle="bold"/>
 
@@ -67,7 +59,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_default"
-                android:textSize="@dimen/size_item"
+                android:textStyle="bold"
+                android:textSize="@dimen/size_book_item_name"
                 android:ellipsize="end"
                 android:singleLine="true"/>
 
@@ -81,7 +74,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/size_item"
+                android:textSize="@dimen/size_book_item_name"
                 android:text="@string/book_config_illustrator"
                 android:textStyle="bold"/>
 
@@ -90,11 +83,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_default"
-                android:textSize="@dimen/size_item"
+                android:textStyle="bold"
+                android:textSize="@dimen/size_book_item_name"
                 android:ellipsize="end"
                 android:singleLine="true"/>
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/tvReadBookId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="@dimen/margin_small"
+            android:text="2389g80349g43t"
+            android:textSize="@dimen/size_book_id"
+            android:textColor="@color/book_id"
+            android:ellipsize="end"
+            android:singleLine="true"/>
     </LinearLayout>
 </LinearLayout>

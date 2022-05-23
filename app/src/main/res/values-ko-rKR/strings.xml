@@ -104,6 +104,8 @@
     <string name="book_slide_choice">선택 수정 :&#160;</string>
     <string name="book_slide_enter">진입항목 수정 :&#160;</string>
 
+    <string name="book_store_download">다운로드</string>
+
     <string name="book_edit_choice">선택항목 추가</string>
     <string name="book_edit_enter">진입항목 추가</string>
 
