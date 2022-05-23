@@ -1,6 +1,5 @@
 package com.cheesejuice.fancymansion
 
-import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -39,8 +38,6 @@ class ReadSlideActivity : AppCompatActivity() {
         setContentView(binding.root)
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
 
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
         if(bookUtil.getEditPlay()) { mode = Const.EDIT_PLAY}
 
         // init config & slide object

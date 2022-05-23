@@ -39,12 +39,10 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(binding.root)
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
 
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
         if(bookUtil.getEditPlay()) { mode = Const.EDIT_PLAY}
 
         binding.btnStartBook.setOnClickListener(this)
+        binding.tvRemoveBook.setOnClickListener(this)
 
         val bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
         val publishCode = intent.getStringExtra(Const.INTENT_PUBLISH_CODE)?: ""
@@ -66,7 +64,6 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
     private fun makeViewReadyScreen(conf: Config) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
         with(conf){
-            binding.toolbar.title = title
             binding.tvConfigTitle.text = title
             binding.tvConfigDescription.text = description
 
@@ -91,23 +88,7 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btnStartBook -> {
                 startBookWithSetting(mode, config)
             }
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        if(mode != Const.EDIT_PLAY){
-            val inflater = menuInflater
-            inflater.inflate(R.menu.menu_read_config, menu)
-        }
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean
-    {
-        when(item.itemId) {
-            android.R.id.home -> finish()
-
-            R.id.menu_delete -> {
+            R.id.tvRemoveBook -> {
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
                 CoroutineScope(Dispatchers.IO).launch {
                     fileUtil.deleteBookFolder(config.bookId, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = config.publishCode)
@@ -117,7 +98,6 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
                 }
             }
         }
-        return super.onOptionsItemSelected(item)
     }
 
     private fun startBookWithSetting(mod: String, con: Config){

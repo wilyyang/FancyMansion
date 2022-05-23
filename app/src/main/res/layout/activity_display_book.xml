@@ -71,14 +71,14 @@
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:id="@+id/layoutShow"
                                 android:layout_width="match_parent"
-                                android:layout_height="250dp"
-                                android:layout_marginTop="@dimen/margin_default"
+                                android:layout_height="@dimen/size_image_height"
                                 app:layout_constraintTop_toTopOf="parent">
 
                                 <ImageView
                                     android:id="@+id/imageViewShowMain"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent" />
+                                    android:layout_height="match_parent"
+                                    android:scaleType="centerCrop"/>
 
                             </androidx.constraintlayout.widget.ConstraintLayout>
 

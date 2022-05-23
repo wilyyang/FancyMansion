@@ -98,6 +98,8 @@
     <string name="book_config_writer">작가 :&#160;</string>
     <string name="book_config_illustrator">일러스트 :&#160;</string>
 
+    <string name="book_remove_my_book"><u>내 책에서 제거</u></string>
+
     <string name="book_slide_title">제목 :&#160;</string>
     <string name="book_slide_description">내용 :&#160;</string>
     <string name="book_slide_question">질문 :&#160;</string>

@@ -3,8 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/bg_round_lilac"
-    android:layout_margin="@dimen/margin_item"
-    android:padding="@dimen/padding_item"
+    android:layout_margin="@dimen/margin_choice"
+    android:padding="@dimen/padding_choice"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 

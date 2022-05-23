@@ -22,17 +22,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar"
-                app:layout_constraintBottom_toBottomOf="parent">
+                android:layout_height="match_parent">
 
                 <include
                     android:id="@+id/layoutEmpty"
@@ -63,14 +55,14 @@
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/layoutShow"
                             android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintHeight_percent="0.4">
+                            android:layout_height="@dimen/size_image_height"
+                            app:layout_constraintTop_toTopOf="parent">
 
                             <ImageView
                                 android:id="@+id/imageViewShowMain"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"/>
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"/>
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -165,6 +157,16 @@
                                     android:ellipsize="end"/>
 
                             </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tvRemoveBook"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="end"
+                                android:text="@string/book_remove_my_book"
+                                android:textSize="@dimen/size_config"
+                                android:textColor="@color/purple_light1"
+                                android:textStyle="bold"/>
                         </LinearLayout>
                         <ScrollView
                             android:id="@+id/scrollSlideContent"
@@ -199,16 +201,16 @@
                         android:id="@+id/layoutTail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/divider_top"
+                        android:padding="@dimen/padding_tail"
                         app:layout_constraintBottom_toBottomOf="parent">
 
                         <Button
                             android:enabled="false"
                             android:id="@+id/btnStartBook"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/start_book"
-                            android:layout_margin="@dimen/margin_default"
-                            app:layout_constraintTop_toTopOf="parent"/>
+                            android:layout_height="match_parent"
+                            android:text="@string/start_book"/>
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -26,6 +26,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/divider_bottom"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -78,12 +79,13 @@
                                 <androidx.constraintlayout.widget.ConstraintLayout
                                     android:id="@+id/layoutShow"
                                     android:layout_width="match_parent"
-                                    android:layout_height="300dp">
+                                    android:layout_height="@dimen/size_image_height">
 
                                     <ImageView
                                         android:id="@+id/imageViewShowMain"
                                         android:layout_width="match_parent"
-                                        android:layout_height="match_parent"/>
+                                        android:layout_height="match_parent"
+                                        android:scaleType="centerCrop"/>
 
                                     <ImageView
                                         android:id="@+id/imageViewSlideCrop"
