@@ -59,7 +59,8 @@
     <dimen name="padding_book">18dp</dimen>
     <dimen name="margin_book_start">15dp</dimen>
 
-    <dimen name="padding_tail">8dp</dimen>
+    <dimen name="padding_tail_vertical">8dp</dimen>
+    <dimen name="padding_tail_horizontal">16dp</dimen>
 
     <dimen name="padding_bottom_sheet_vertical">15dp</dimen>
     <dimen name="padding_bottom_sheet_horizontal">10dp</dimen>

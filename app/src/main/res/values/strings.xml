@@ -104,6 +104,7 @@
 
     <string name="book_store_download">Downloads</string>
 
+    <string name="book_slide_id">id :&#160;</string>
     <string name="book_slide_title">title :&#160;</string>
     <string name="book_slide_description">description :&#160;</string>
     <string name="book_slide_question">question :&#160;</string>

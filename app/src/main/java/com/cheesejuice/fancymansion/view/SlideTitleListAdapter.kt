@@ -1,5 +1,6 @@
 package com.cheesejuice.fancymansion.view
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,7 @@ import com.cheesejuice.fancymansion.databinding.ItemSlideTitleBinding
 import com.cheesejuice.fancymansion.model.SlideLogic
 import java.util.*
 
-class SlideTitleListAdapter(var datas: MutableList<SlideLogic> = mutableListOf()):
+class SlideTitleListAdapter(var datas: MutableList<SlideLogic> = mutableListOf(), val context: Context):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), SlideTitleListDragCallback.OnItemMoveListener{
 
     var onceMove = false
@@ -40,9 +41,25 @@ class SlideTitleListAdapter(var datas: MutableList<SlideLogic> = mutableListOf()
         binding.tvItemText.text = datas[position].slideTitle
 
         when(datas[position].type){
-            Const.SLIDE_TYPE_NORMAL -> binding.imageViewSlideType.setImageResource(R.drawable.ic_sun)
-            Const.SLIDE_TYPE_START -> binding.imageViewSlideType.setImageResource(R.drawable.ic_sunrise)
-            Const.SLIDE_TYPE_END -> binding.imageViewSlideType.setImageResource(R.drawable.ic_sunset)
+            Const.SLIDE_TYPE_NORMAL -> {
+                binding.tvNavSlideType.apply {
+                    visibility = View.INVISIBLE
+                }
+            }
+            Const.SLIDE_TYPE_START -> {
+                binding.tvNavSlideType.apply {
+                    visibility = View.VISIBLE
+                    text = context.getString(R.string.slide_type_start)
+                    background = context.getDrawable(R.drawable.bg_type_start)
+                }
+            }
+            Const.SLIDE_TYPE_END -> {
+                binding.tvNavSlideType.apply {
+                    visibility = View.VISIBLE
+                    text = context.getString(R.string.slide_type_ending)
+                    background = context.getDrawable(R.drawable.bg_type_ending)
+                }
+            }
         }
         holder.apply {
             itemView.setOnClickListener {

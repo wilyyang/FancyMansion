@@ -203,7 +203,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/divider_top"
-                        android:padding="@dimen/padding_tail"
+                        android:paddingVertical="@dimen/padding_tail_vertical"
+                        android:paddingHorizontal="@dimen/padding_tail_horizontal"
                         app:layout_constraintBottom_toBottomOf="parent">
 
                         <Button

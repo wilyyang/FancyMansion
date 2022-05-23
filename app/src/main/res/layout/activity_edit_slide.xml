@@ -117,6 +117,25 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:text="@string/book_slide_id"
+                                        android:textSize="@dimen/size_config" />
+
+                                    <TextView
+                                        android:id="@+id/tvSlideId"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="@dimen/size_config"/>
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
                                         android:text="@string/book_slide_title"
                                         android:textSize="@dimen/size_book" />
 
@@ -145,6 +164,7 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:layout_gravity="center_vertical"
                                         android:text="@string/book_slide_type"
                                         android:textSize="@dimen/size_book" />
 
@@ -152,15 +172,13 @@
                                         android:id="@+id/tvSlideType"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:layout_gravity="center_vertical"
+                                        android:background="@drawable/bg_type_ending"
+                                        android:padding="5dp"
                                         android:text="@string/slide_type_normal"
-                                        android:textSize="@dimen/size_book" />
-
-                                    <ImageView
-                                        android:id="@+id/imageViewSlideType"
-                                        android:layout_width="30dp"
-                                        android:layout_height="30dp"
-                                        android:layout_marginStart="@dimen/margin_default"
-                                        android:src="@drawable/ic_sun"/>
+                                        android:textColor="@color/white"
+                                        android:textStyle="bold"
+                                        android:textSize="@dimen/size_small"/>
                                 </LinearLayout>
 
                                 <TextView

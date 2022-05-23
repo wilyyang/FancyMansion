@@ -63,6 +63,7 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun makeViewReadyScreen(conf: Config) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        binding.tvRemoveBook.visibility = if (mode == Const.EDIT_PLAY) { View.INVISIBLE } else { View.VISIBLE }
         with(conf){
             binding.tvConfigTitle.text = title
             binding.tvConfigDescription.text = description

@@ -168,7 +168,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun initNavigationView(){
-        slideTitleListAdapter = SlideTitleListAdapter()
+        slideTitleListAdapter = SlideTitleListAdapter(context = this@EditSlideActivity)
         slideTitleListAdapter.setItemClickListener(object: SlideTitleListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
                 selectSlideItem(position)
@@ -223,7 +223,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         slideTitleListAdapter.notifyDataSetChanged()
 
         with(slide){
-            binding.toolbar.subtitle = "# $slideId"
+            binding.tvSlideId.text = "$slideId"
             binding.etSlideTitle.setText(slideTitle)
             binding.etSlideDescription.setText(description)
             binding.etSlideQuestion.setText(question)
@@ -238,16 +238,22 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
 
         when(slideLogic.type){
             Const.SLIDE_TYPE_NORMAL -> {
-                binding.tvSlideType.text = getString(R.string.slide_type_normal)
-                Glide.with(applicationContext).load(R.drawable.ic_sun).into(binding.imageViewSlideType)
+                binding.tvSlideType.apply {
+                    text = getString(R.string.slide_type_normal)
+                    background = getDrawable(R.drawable.bg_type_normal)
+                }
             }
             Const.SLIDE_TYPE_START -> {
-                binding.tvSlideType.text = getString(R.string.slide_type_start)
-                Glide.with(applicationContext).load(R.drawable.ic_sunrise).into(binding.imageViewSlideType)
+                binding.tvSlideType.apply {
+                    text = getString(R.string.slide_type_start)
+                    background = getDrawable(R.drawable.bg_type_start)
+                }
             }
             Const.SLIDE_TYPE_END -> {
-                binding.tvSlideType.text = getString(R.string.slide_type_ending)
-                Glide.with(applicationContext).load(R.drawable.ic_sunset).into(binding.imageViewSlideType)
+                binding.tvSlideType.apply {
+                    text = getString(R.string.slide_type_ending)
+                    background = getDrawable(R.drawable.bg_type_ending)
+                }
             }
         }
 
@@ -256,8 +262,11 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                 Const.SLIDE_TYPE_NORMAL -> {
                     isEditElement = true
                     slideLogic.type = Const.SLIDE_TYPE_END
-                    binding.tvSlideType.text = getString(R.string.slide_type_ending)
-                    Glide.with(applicationContext).load(R.drawable.ic_sunset).into(binding.imageViewSlideType)
+
+                    binding.tvSlideType.apply {
+                        text = getString(R.string.slide_type_ending)
+                        background = getDrawable(R.drawable.bg_type_ending)
+                    }
 
                     logic.logics.indexOfFirst { it.slideId == slideLogic.slideId }.let {
                         if(it > -1) slideTitleListAdapter.notifyItemChanged(it)
@@ -266,8 +275,11 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                 Const.SLIDE_TYPE_END -> {
                     isEditElement = true
                     slideLogic.type = Const.SLIDE_TYPE_NORMAL
-                    binding.tvSlideType.text = getString(R.string.slide_type_normal)
-                    Glide.with(applicationContext).load(R.drawable.ic_sun).into(binding.imageViewSlideType)
+
+                    binding.tvSlideType.apply {
+                        text = getString(R.string.slide_type_normal)
+                        background = getDrawable(R.drawable.bg_type_normal)
+                    }
 
                     logic.logics.indexOfFirst { it.slideId == slideLogic.slideId }.let {
                         if(it > -1) slideTitleListAdapter.notifyItemChanged(it)

@@ -13,6 +13,10 @@
     <color name="black">#000000</color>
     <color name="navy">#323E4E</color>
 
+    <color name="white_C">#FCFCFC</color>
+    <color name="shadow_dark">#10323E4E</color>
+    <color name="shadow_pale">#05323E4E</color>
+
     <color name="book_id">#49323E4E</color>
 
     <color name="radio_select">#66BD90B0</color>
