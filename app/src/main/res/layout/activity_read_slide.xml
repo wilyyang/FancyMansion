@@ -55,7 +55,8 @@
                             android:id="@+id/layoutShow"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/size_image_height"
-                            app:layout_constraintTop_toTopOf="parent">
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:background="@drawable/divider_bottom_light">
 
                             <ImageView
                                 android:id="@+id/imageViewShowMain"
@@ -65,49 +66,48 @@
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
-                        <ImageView
-                            android:id="@+id/imageViewSlideType"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_marginStart="@dimen/margin_default_left"
-                            android:layout_marginTop="@dimen/margin_title"
-                            android:src="@drawable/ic_sunset"
-                            app:layout_constraintTop_toBottomOf="@+id/layoutShow"
-                            app:layout_constraintStart_toStartOf="parent"/>
-
-                        <TextView
-                            android:id="@+id/tvSlideTitle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/margin_default_left"
-                            android:layout_marginEnd="@dimen/margin_default_right"
-                            android:textSize="@dimen/size_title"
-                            android:textStyle="bold"
-                            app:layout_constraintTop_toBottomOf="@+id/imageViewSlideType"
-                            android:maxLength="@integer/count_slide_title"/>
-
                         <ScrollView
                             android:id="@+id/scrollSlideContent"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:layout_marginTop="@dimen/margin_detail"
-                            app:layout_constraintTop_toBottomOf="@id/tvSlideTitle"
+                            app:layout_constraintTop_toBottomOf="@id/layoutShow"
                             app:layout_constraintBottom_toBottomOf="parent">
 
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:id="@+id/layoutSlideContent"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/margin_default_left"
-                                android:layout_marginEnd="@dimen/margin_default_right"
-                                app:layout_constraintTop_toTopOf="parent">
+                                android:layout_marginHorizontal="@dimen/margin_wide">
+
+                                <TextView
+                                    android:id="@+id/tvEndingType"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/bg_type_ending"
+                                    android:padding="5dp"
+                                    android:text="@string/slide_type_ending"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/purple_bold2"
+                                    android:textSize="@dimen/size_small"
+                                    android:layout_marginTop="@dimen/margin_default"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"/>
+
+                                <TextView
+                                    android:id="@+id/tvSlideTitle"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="@dimen/size_title"
+                                    android:textStyle="bold"
+                                    app:layout_constraintTop_toBottomOf="@+id/tvEndingType"
+                                    android:maxLength="@integer/count_slide_title"/>
 
                                 <TextView
                                     android:id="@+id/tvSlideDescription"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:textSize="@dimen/size_detail"
-                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/tvSlideTitle"
                                     android:maxLength="@integer/count_slide_description"/>
 
                                 <TextView
@@ -124,16 +124,13 @@
                                     android:id="@+id/recyclerChoice"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="@dimen/margin_question"
+                                    android:layout_marginVertical="@dimen/margin_question"
                                     app:layout_constraintTop_toBottomOf="@id/tvSlideQuestion" />
 
                             </androidx.constraintlayout.widget.ConstraintLayout>
 
                         </ScrollView>
-
-
                     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/layoutTail"

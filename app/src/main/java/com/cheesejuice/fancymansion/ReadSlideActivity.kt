@@ -92,9 +92,9 @@ class ReadSlideActivity : AppCompatActivity() {
             val passChoiceItems: ArrayList<ChoiceItem> = arrayListOf()
             logic.logics.find { it.slideId == slideId }?.let {
                 if(it.type == Const.SLIDE_TYPE_END){
-                    binding.imageViewSlideType.visibility = View.VISIBLE
+                    binding.tvEndingType.visibility = View.VISIBLE
                 }else{
-                    binding.imageViewSlideType.visibility = View.INVISIBLE
+                    binding.tvEndingType.visibility = View.INVISIBLE
                 }
 
                 for(choiceItem in it.choiceItems){

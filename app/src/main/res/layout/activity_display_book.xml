@@ -72,7 +72,8 @@
                                 android:id="@+id/layoutShow"
                                 android:layout_width="match_parent"
                                 android:layout_height="@dimen/size_image_height"
-                                app:layout_constraintTop_toTopOf="parent">
+                                app:layout_constraintTop_toTopOf="parent"
+                                android:background="@drawable/divider_bottom_light">
 
                                 <ImageView
                                     android:id="@+id/imageViewShowMain"

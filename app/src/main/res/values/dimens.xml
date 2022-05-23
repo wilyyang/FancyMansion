@@ -51,7 +51,7 @@
 
     <dimen name="margin_title">20dp</dimen>
     <dimen name="margin_detail">15dp</dimen>
-    <dimen name="margin_question">25dp</dimen>
+    <dimen name="margin_question">18dp</dimen>
     <dimen name="margin_item">10dp</dimen>
     <dimen name="margin_edit_item">4dp</dimen>
     <dimen name="margin_comment_horizontal">5dp</dimen>
@@ -59,7 +59,7 @@
     <dimen name="padding_book">18dp</dimen>
     <dimen name="margin_book_start">15dp</dimen>
 
-    <dimen name="padding_tail">10dp</dimen>
+    <dimen name="padding_tail">8dp</dimen>
 
     <dimen name="padding_bottom_sheet_vertical">15dp</dimen>
     <dimen name="padding_bottom_sheet_horizontal">10dp</dimen>
