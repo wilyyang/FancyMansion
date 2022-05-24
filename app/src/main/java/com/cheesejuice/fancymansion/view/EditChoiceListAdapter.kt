@@ -1,15 +1,17 @@
 package com.cheesejuice.fancymansion.view
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.databinding.ItemEditChoiceBinding
 import com.cheesejuice.fancymansion.model.ChoiceItem
 import java.util.*
 
-class EditChoiceListAdapter(var datas: MutableList<ChoiceItem> = mutableListOf()):
+class EditChoiceListAdapter(var datas: MutableList<ChoiceItem> = mutableListOf(), val context: Context):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), EditChoiceListDragCallback.OnItemMoveListener{
 
     var onceMove = false
@@ -35,6 +37,7 @@ class EditChoiceListAdapter(var datas: MutableList<ChoiceItem> = mutableListOf()
         val binding=(holder as EditChoiceViewHolder).binding
         binding.tvChoiceId.text = "id : ${datas[position].id}"
         binding.tvChoiceText.text = "${datas[position].title}"
+        binding.tvChoiceEnterCount.text = "${context.getString(R.string.count_enter)}${datas[position].enterItems.size}"
         holder.apply {
             itemView.setOnClickListener {
                 itemClickListener.onClick(it, this.bindingAdapterPosition)

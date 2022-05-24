@@ -37,7 +37,7 @@ class SlideTitleListAdapter(var datas: MutableList<SlideLogic> = mutableListOf()
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val binding=(holder as SlideTitleViewHolder).binding
-        binding.tvItemId.text = datas[position].slideId.toString()
+        binding.tvItemId.text = "id : ${datas[position].slideId}"
         binding.tvItemText.text = datas[position].slideTitle
 
         when(datas[position].type){
@@ -51,6 +51,7 @@ class SlideTitleListAdapter(var datas: MutableList<SlideLogic> = mutableListOf()
                     visibility = View.VISIBLE
                     text = context.getString(R.string.slide_type_start)
                     background = context.getDrawable(R.drawable.bg_type_start)
+                    setTextColor(context.getColor(R.color.blue_light1))
                 }
             }
             Const.SLIDE_TYPE_END -> {
@@ -58,6 +59,7 @@ class SlideTitleListAdapter(var datas: MutableList<SlideLogic> = mutableListOf()
                     visibility = View.VISIBLE
                     text = context.getString(R.string.slide_type_ending)
                     background = context.getDrawable(R.drawable.bg_type_ending)
+                    setTextColor(context.getColor(R.color.purple_bold2))
                 }
             }
         }

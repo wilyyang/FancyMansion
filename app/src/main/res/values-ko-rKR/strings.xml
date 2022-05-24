@@ -103,7 +103,7 @@
     <string name="book_slide_title">제목 :&#160;</string>
     <string name="book_slide_description">내용 :&#160;</string>
     <string name="book_slide_question">질문 :&#160;</string>
-    <string name="book_slide_choice">선택 수정 :&#160;</string>
+    <string name="book_slide_choice">선택 항목 :&#160;</string>
     <string name="book_slide_enter">진입항목 수정 :&#160;</string>
 
     <string name="book_store_download">다운로드</string>
@@ -168,10 +168,13 @@
     <string name="display_comment_update_success">댓글 업데이트 완료</string>
     <string name="display_comment_update_fail">댓글 업데이트 실패</string>
 
-    <string name="display_comment_order_oldest">댓글 오래된순</string>
+    <string name="display_comment_order_oldest">댓글 등록순</string>
 
     <string name="display_comment_input_comment">댓글을 입력해주세요.</string>
     <string name="display_good">좋아요 :&#160;</string>
 
     <string name="display_no_comment">아직 댓글이 없어요!</string>
+
+    <string name="count_enter">진입루트 :&#160;</string>
+    <string name="count_condition">조건 :&#160;</string>
 </resources>

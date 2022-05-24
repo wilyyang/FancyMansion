@@ -12,9 +12,12 @@
     <dimen name="size_small_brief_id">10sp</dimen>
     <dimen name="size_condition_item">13sp</dimen>
 
+    <dimen name="size_tiny">8sp</dimen>
+
     <dimen name="size_book_id">8sp</dimen>
 
     <dimen name="size_config">13sp</dimen>
+    <dimen name="size_id">13sp</dimen>
 
     <dimen name="size_book">16sp</dimen>
 
@@ -39,6 +42,10 @@
     <dimen name="margin_default_left">20dp</dimen>
     <dimen name="margin_default_right">20dp</dimen>
     <dimen name="margin_wide">20dp</dimen>
+
+    <dimen name="padding_small">5dp</dimen>
+    <dimen name="padding_default">10dp</dimen>
+    <dimen name="padding_wide">20dp</dimen>
 
     <dimen name="margin_ssub">10dp</dimen>
     <dimen name="margin_smain">15dp</dimen>

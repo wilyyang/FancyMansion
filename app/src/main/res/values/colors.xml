@@ -5,6 +5,16 @@
     <color name="purple_light2">#8A64B1</color>
     <color name="purple_bold2">#7C4B9F</color>
 
+    <color name="purple_light1_alpha">#A19C63B2</color>
+    <color name="purple_bold1_alpha">#A18C479F</color>
+    <color name="purple_light2_alpha">#A18A64B1</color>
+    <color name="purple_bold2_alpha">#A17C4B9F</color>
+
+    <color name="purple_light1_alpha_press">#059C63B2</color>
+    <color name="purple_bold1_alpha_press">#058C479F</color>
+    <color name="purple_light2_alpha_press">#058A64B1</color>
+    <color name="purple_bold2_alpha_press">#057C4B9F</color>
+
     <color name="lilac_1">#BD90B0</color>
     <color name="blue_light1">#7388C6</color>
     <color name="blue_bold1">#2C7BDE</color>
@@ -13,11 +23,17 @@
     <color name="black">#000000</color>
     <color name="navy">#323E4E</color>
 
+    <color name="white_9">#F9F9F9</color>
+    <color name="add_btn_not_press">#30323E4E</color>
+    <color name="add_btn_press">#60323E4E</color>
+
     <color name="white_C">#FCFCFC</color>
     <color name="shadow_dark">#10323E4E</color>
     <color name="shadow_pale">#05323E4E</color>
 
     <color name="book_id">#49323E4E</color>
+
+    <color name="color_id">#49323E4E</color>
 
     <color name="radio_select">#66BD90B0</color>
     <color name="radio_not_select">#66D1D1D1</color>

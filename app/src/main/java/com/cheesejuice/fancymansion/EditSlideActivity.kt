@@ -186,7 +186,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun initEditChoiceListView(){
-        editChoiceListAdapter = EditChoiceListAdapter()
+        editChoiceListAdapter = EditChoiceListAdapter(context = this@EditSlideActivity)
         editChoiceListAdapter.setItemClickListener(object: EditChoiceListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
                 (application as MainApplication).logic = Json.decodeFromString<Logic>(Json.encodeToString(logic))
@@ -241,18 +241,21 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                 binding.tvSlideType.apply {
                     text = getString(R.string.slide_type_normal)
                     background = getDrawable(R.drawable.bg_type_normal)
+                    setTextColor(getColor(R.color.lilac_1))
                 }
             }
             Const.SLIDE_TYPE_START -> {
                 binding.tvSlideType.apply {
                     text = getString(R.string.slide_type_start)
                     background = getDrawable(R.drawable.bg_type_start)
+                    setTextColor(getColor(R.color.blue_light1))
                 }
             }
             Const.SLIDE_TYPE_END -> {
                 binding.tvSlideType.apply {
                     text = getString(R.string.slide_type_ending)
                     background = getDrawable(R.drawable.bg_type_ending)
+                    setTextColor(getColor(R.color.purple_bold2))
                 }
             }
         }
@@ -266,6 +269,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                     binding.tvSlideType.apply {
                         text = getString(R.string.slide_type_ending)
                         background = getDrawable(R.drawable.bg_type_ending)
+                        setTextColor(getColor(R.color.purple_bold2))
                     }
 
                     logic.logics.indexOfFirst { it.slideId == slideLogic.slideId }.let {
@@ -279,6 +283,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                     binding.tvSlideType.apply {
                         text = getString(R.string.slide_type_normal)
                         background = getDrawable(R.drawable.bg_type_normal)
+                        setTextColor(getColor(R.color.lilac_1))
                     }
 
                     logic.logics.indexOfFirst { it.slideId == slideLogic.slideId }.let {
