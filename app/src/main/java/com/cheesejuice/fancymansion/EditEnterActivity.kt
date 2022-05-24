@@ -132,7 +132,7 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
     }
 
     private fun initEditConditionListView(){
-        editEnterConditionListAdapter = EditConditionListAdapter(bookUtil)
+        editEnterConditionListAdapter = EditConditionListAdapter(bookUtil, context = this@EditEnterActivity)
         editEnterConditionListAdapter.setItemClickListener(object: EditConditionListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
                 enterItem.enterSlideId = logic.logics[binding.spinnerSelectSlide.selectedItemPosition].slideId

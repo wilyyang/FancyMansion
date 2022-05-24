@@ -144,6 +144,7 @@
     <string name="cond_choice">choice :&#160;</string>
 
     <string name="cond_text_entries">entries</string>
+    <string name="cond_text_entries_to">entries</string>
     <string name="cond_text_count">count</string>
 
     <string name="cond_option_count">Count</string>
@@ -179,4 +180,7 @@
 
     <string name="count_enter">Enter count :&#160;</string>
     <string name="count_condition">Condition count :&#160;</string>
+
+    <string name="item_enter_slide_id">Slide id to be entered :&#160;</string>
+    <string name="item_enter_to_enter">&#160;enter</string>
 </resources>

@@ -171,7 +171,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun initEditShowConditionListView(){
-        editShowConditionListAdapter = EditConditionListAdapter(bookUtil)
+        editShowConditionListAdapter = EditConditionListAdapter(bookUtil, context = this@EditChoiceActivity)
         editShowConditionListAdapter.setItemClickListener(object: EditConditionListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
                 choice.title = binding.etChoiceTitle.text.toString()

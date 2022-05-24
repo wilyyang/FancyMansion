@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@drawable/bg_round_lilac"
+    android:background="@drawable/bg_btn_edit_condition_item"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -14,11 +14,21 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/tvConditionId"
+            android:id="@+id/tvCondition1Id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="condition id : #600104426"
+            android:text="#56441286"
+            android:textColor="@color/purple_light1"
+            android:textStyle="bold"
+            android:textSize="@dimen/size_condition_item"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cond_text_entries"
+            android:layout_marginStart="@dimen/margin_small"
             android:textSize="@dimen/size_small_brief_id"/>
+
     </LinearLayout>
 
     <LinearLayout
@@ -27,19 +37,20 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/tvCondition1Id"
+            android:id="@+id/tvCondition2Id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="#56441286"
-            android:textColor="@color/main_color_1"
+            android:text="#63002953"
+            android:textColor="@color/purple_light1"
             android:textStyle="bold"
             android:textSize="@dimen/size_condition_item"/>
 
         <TextView
+            android:id="@+id/tvCondition2label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/cond_text_entries"
-            android:layout_marginLeft="@dimen/margin_small"
+            android:layout_marginStart="@dimen/margin_small"
             android:textSize="@dimen/size_small_brief_id"/>
 
         <TextView
@@ -48,36 +59,41 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/size_condition_item"
             android:textStyle="bold"
-            android:layout_marginLeft="@dimen/margin_default"
-            android:layout_marginRight="@dimen/margin_default"
-            android:textColor="@color/operator_color"
+            android:layout_marginHorizontal="@dimen/margin_small"
+            android:textColor="@color/purple_light1"
             android:text="over"/>
 
         <TextView
-            android:id="@+id/tvCondition2Id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="@dimen/size_small"
             android:textStyle="bold"
-            android:text="#6300293"
-            android:textColor="@color/main_color_1"
-            android:textSize="@dimen/size_condition_item"/>
-
-        <TextView
-            android:id="@+id/tvCondition2label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/cond_text_entries"
-            android:layout_marginLeft="@dimen/margin_small"
-            android:textSize="@dimen/size_small_brief_id"/>
+            android:text=" 조건 충족"/>
 
         <TextView
             android:id="@+id/tvNext"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="@dimen/size_condition_item"
+            android:gravity="end"
             android:textStyle="bold"
-            android:layout_marginStart="@dimen/margin_default"
+            android:textColor="@color/purple_light1_alpha"
+            android:layout_marginEnd="@dimen/margin_small"
             android:text="or"/>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvConditionId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_id"
+            android:text="id : 54364747"
+            android:textSize="@dimen/size_small"/>
     </LinearLayout>
 </LinearLayout>

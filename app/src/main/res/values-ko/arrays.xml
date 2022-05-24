@@ -25,8 +25,7 @@
         <item>초과</item>
         <item>미만</item>
         <item>같음</item>
-        <item>아님</item>
-        <item>전체</item>
+        <item>다름</item>
     </string-array>
 
     <string-array name="cond_next">

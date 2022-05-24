@@ -11,8 +11,8 @@
         android:id="@+id/tvItemId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/book_id"
-        android:textSize="@dimen/size_book_id"/>
+        android:textColor="@color/color_id"
+        android:textSize="@dimen/size_nav_slide_id"/>
 
     <LinearLayout
         android:orientation="horizontal"

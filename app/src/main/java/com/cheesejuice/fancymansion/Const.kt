@@ -115,11 +115,10 @@ enum class CondOp(
     OVER("over", { n1, n2 -> n1 > n2 }),
     BELOW("under", { n1, n2 -> n1 < n2 }),
     EQUAL("equal", { n1, n2 -> n1 == n2 }),
-    NOT("not", { n1, n2 -> n1 != n2 }),
-    ALL("all", { _, _ -> true });
+    NOT("not", { n1, n2 -> n1 != n2 });
 
     companion object {
-        fun from(type: String?): CondOp = values().find { it.opName == type } ?: ALL
+        fun from(type: String?): CondOp = values().find { it.opName == type } ?: EQUAL
     }
 }
 

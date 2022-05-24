@@ -10,10 +10,10 @@
     <color name="purple_light2_alpha">#A18A64B1</color>
     <color name="purple_bold2_alpha">#A17C4B9F</color>
 
-    <color name="purple_light1_alpha_press">#059C63B2</color>
-    <color name="purple_bold1_alpha_press">#058C479F</color>
-    <color name="purple_light2_alpha_press">#058A64B1</color>
-    <color name="purple_bold2_alpha_press">#057C4B9F</color>
+    <color name="purple_light1_alpha_press">#109C63B2</color>
+    <color name="purple_bold1_alpha_press">#108C479F</color>
+    <color name="purple_light2_alpha_press">#108A64B1</color>
+    <color name="purple_bold2_alpha_press">#107C4B9F</color>
 
     <color name="lilac_1">#BD90B0</color>
     <color name="blue_light1">#7388C6</color>
@@ -33,7 +33,7 @@
 
     <color name="book_id">#49323E4E</color>
 
-    <color name="color_id">#49323E4E</color>
+    <color name="color_id">#69323E4E</color>
 
     <color name="radio_select">#66BD90B0</color>
     <color name="radio_not_select">#66D1D1D1</color>

@@ -1,18 +1,22 @@
 package com.cheesejuice.fancymansion.view
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.cheesejuice.fancymansion.CondNext
+import com.cheesejuice.fancymansion.CondOp
 import com.cheesejuice.fancymansion.Const
+import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.databinding.ItemEditConditionBinding
 import com.cheesejuice.fancymansion.model.Condition
 import com.cheesejuice.fancymansion.model.Logic
 import com.cheesejuice.fancymansion.util.BookUtil
 import java.util.*
 
-class EditConditionListAdapter(val bookUtil: BookUtil, var datas: MutableList<Condition> = mutableListOf()):
+class EditConditionListAdapter(val bookUtil: BookUtil, var datas: MutableList<Condition> = mutableListOf(), val context: Context):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), EditConditionListDragCallback.OnItemMoveListener{
 
     var onceMove = false
@@ -38,19 +42,19 @@ class EditConditionListAdapter(val bookUtil: BookUtil, var datas: MutableList<Co
         val binding=(holder as EditConditionViewHolder).binding
 
         with(binding){
-            tvConditionId.text  = "condition id : ${datas[position].id}"
-            tvCondition1Id.text = "#${datas[position].conditionId1}"
+            tvConditionId.text  = "id : ${datas[position].id}"
 
-            tvOperator.text = bookUtil.translateOp(datas[position].conditionOp)
+            tvCondition1Id.text = "#${datas[position].conditionId1}"
+            tvOperator.text = context.resources.getStringArray(R.array.cond_operator)[CondOp.values().indexOfFirst { it.opName == datas[position].conditionOp }]
 
             if(datas[position].conditionId2 != Const.ID_NOT_FOUND){
                 tvCondition2Id.text = "#${datas[position].conditionId2}"
-                tvCondition2label.text = bookUtil.translateText("entries")
+                tvCondition2label.text = context.getString(R.string.cond_text_entries_to)
             }else{
                 tvCondition2Id.text = "${datas[position].conditionCount}"
-                tvCondition2label.text = bookUtil.translateText("count")
+                tvCondition2label.text = context.getString(R.string.cond_text_count)
             }
-            tvNext.text = bookUtil.translateNext(datas[position].conditionNext)
+            tvNext.text = context.resources.getStringArray(R.array.cond_next)[CondNext.values().indexOfFirst { it.relName == datas[position].conditionNext }]
         }
 
         holder.apply {

@@ -32,7 +32,7 @@ data class EnterItem(val id: Long, var enterSlideId: Long = Const.ID_NOT_FOUND, 
 
 // (2.2.3.3) / (2.2.3.4.3)
 @Serializable
-data class Condition(val id: Long, var conditionId1: Long = Const.ID_NOT_FOUND, var conditionId2: Long = Const.ID_NOT_FOUND, var conditionCount: Int = 0, var conditionOp: String = CondOp.ALL.opName, var conditionNext: String = CondNext.OR.relName)
+data class Condition(val id: Long, var conditionId1: Long = Const.ID_NOT_FOUND, var conditionId2: Long = Const.ID_NOT_FOUND, var conditionCount: Int = 0, var conditionOp: String = CondOp.EQUAL.opName, var conditionNext: String = CondNext.OR.relName)
 
 // (3)
 @Serializable

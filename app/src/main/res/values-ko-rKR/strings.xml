@@ -136,7 +136,8 @@
     <string name="cond_slide">슬라이드 :&#160;</string>
     <string name="cond_choice">선택항목 :&#160;</string>
 
-    <string name="cond_text_entries">진입</string>
+    <string name="cond_text_entries">진입 횟수가</string>
+    <string name="cond_text_entries_to">진입 횟수</string>
     <string name="cond_text_count">회</string>
 
     <string name="cond_option_count">횟수</string>
@@ -177,4 +178,7 @@
 
     <string name="count_enter">진입루트 :&#160;</string>
     <string name="count_condition">조건 :&#160;</string>
+
+    <string name="item_enter_slide_id">진입할 Slide id :&#160;</string>
+    <string name="item_enter_to_enter">&#160;로 진입</string>
 </resources>

@@ -26,7 +26,6 @@
         <item>under</item>
         <item>equal</item>
         <item>not</item>
-        <item>all</item>
     </string-array>
 
     <string-array name="cond_next">

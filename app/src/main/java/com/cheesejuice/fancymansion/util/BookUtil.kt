@@ -103,23 +103,6 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
         setIdCount(bookId, uid, publishCode, id, count, mode)
     }
 
-    // Operator language
-    fun translateOp(op: String):String {
-        val opString = context.resources.getStringArray(R.array.cond_operator)
-        return opString.getOrNull(CondOp.from(op).ordinal).toString()
-    }
-
-    fun translateNext(next: String):String {
-        val nextString = context.resources.getStringArray(R.array.cond_next)
-        return nextString.getOrNull(CondNext.from(next).ordinal).toString()
-    }
-
-    fun translateText(text: String):String = when(text){
-        "entries" -> context.getString(R.string.cond_text_entries)
-        "count" -> context.getString(R.string.cond_text_count)
-        else -> "Unknown"
-    }
-
     // 00 / 00 / 00 / 00 / 00 = slide / choice / showCondition / enterId / enterCondition
     fun nextSlideId(logics: List<SlideLogic>): Long{
         var idMap = Array(100){ i -> false }

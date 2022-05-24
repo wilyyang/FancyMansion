@@ -16,6 +16,8 @@
 
     <dimen name="size_book_id">8sp</dimen>
 
+    <dimen name="size_nav_slide_id">10sp</dimen>
+
     <dimen name="size_config">13sp</dimen>
     <dimen name="size_id">13sp</dimen>
 
