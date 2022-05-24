@@ -34,8 +34,8 @@ class EditEnterListAdapter(var datas: MutableList<EnterItem> = mutableListOf(), 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val binding=(holder as EditEnterViewHolder).binding
-        binding.tvEnterItemId.text = "id : ${datas[position].id}"
-        binding.tvEnterSlideId.text = "${datas[position].enterSlideId}"
+        binding.tvEnterId.text = "id : ${datas[position].id}"
+        binding.tvEnterSlideId.text = "${datas[position].enterSlideId} 로 진입"
 
         binding.tvEnterSlideTitle.text = logic?.logics?.first { it.slideId == datas[position].enterSlideId }?.slideTitle
         holder.apply {

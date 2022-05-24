@@ -196,7 +196,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
     private fun makeEditChoiceScreen(choice: ChoiceItem) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
         with(choice){
-            binding.toolbar.subtitle = "id : ${choice.id}"
+            binding.tvChoiceId.text = "${choice.id}"
             binding.etChoiceTitle.setText(title)
         }
 
