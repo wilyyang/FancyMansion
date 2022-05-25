@@ -164,7 +164,7 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
 
     private fun makeEditEnterScreen(logic:Logic, enterItem: EnterItem) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
-        binding.toolbar.subtitle = "id : ${enterItem.id}"
+        binding.tvEnterId.text = "${enterItem.id}"
 
         editEnterConditionListAdapter.datas = enterItem.enterConditions
         editEnterConditionListAdapter.notifyDataSetChanged()

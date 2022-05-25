@@ -181,7 +181,7 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
     private fun makeEditConditionScreen(logic:Logic, condition: Condition) {
         with(binding){
             showLoadingScreen(false, layoutLoading.root, layoutActive)
-            toolbar.subtitle = "id : ${condition.id}"
+            binding.tvCondId.text = "${condition.id}"
 
             // init condition 1 spinner
             selectId1SlideAdapter.run {

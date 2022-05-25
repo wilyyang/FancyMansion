@@ -26,6 +26,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/divider_bottom"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -61,22 +62,41 @@
 
                         <androidx.core.widget.NestedScrollView
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_marginTop="@dimen/margin_detail">
+                            android:layout_height="match_parent">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/margin_default_left"
-                                android:layout_marginEnd="@dimen/margin_default_right"
+                                android:layout_margin="@dimen/margin_wide"
                                 app:layout_constraintTop_toTopOf="parent"
                                 android:orientation="vertical">
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:layout_marginBottom="@dimen/margin_default">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/intro_id"
+                                        android:textSize="@dimen/size_id" />
+
+                                    <TextView
+                                        android:id="@+id/tvCondId"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="@dimen/size_id"/>
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
                                     android:orientation="vertical"
-                                    android:layout_marginVertical="@dimen/margin_default">
+                                    android:paddingBottom="@dimen/padding_wide"
+                                    android:background="@drawable/divider_bottom">
 
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -91,7 +111,7 @@
                                         android:layout_height="wrap_content"
                                         android:orientation="vertical"
                                         android:layout_marginStart="@dimen/margin_default"
-                                        android:layout_marginBottom="@dimen/margin_default">
+                                        android:layout_marginVertical="@dimen/margin_default">
 
                                         <TextView
                                             android:layout_width="wrap_content"
@@ -132,17 +152,12 @@
 
                                 </LinearLayout>
 
-                                <View
-                                    android:layout_width="match_parent"
-                                    android:layout_height="1dp"
-                                    android:background="@android:color/darker_gray"
-                                    android:layout_marginVertical="@dimen/margin_default"/>
-
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
-                                    android:layout_marginVertical="@dimen/margin_default">
+                                    android:paddingVertical="@dimen/padding_wide"
+                                    android:background="@drawable/divider_bottom">
 
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -160,18 +175,13 @@
 
                                 </LinearLayout>
 
-                                <View
-                                    android:layout_width="match_parent"
-                                    android:layout_height="1dp"
-                                    android:background="@android:color/darker_gray"
-                                    android:layout_marginVertical="@dimen/margin_default"/>
-
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="0dp"
                                     android:layout_weight="1"
                                     android:orientation="horizontal"
-                                    android:layout_marginVertical="20dp"
+                                    android:layout_marginTop="@dimen/margin_wide"
+                                    android:layout_marginBottom="@dimen/margin_default"
                                     android:weightSum="2">
 
                                     <RadioGroup
@@ -179,7 +189,7 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:orientation="horizontal"
-                                        android:layout_marginHorizontal="50dp"
+                                        android:layout_marginHorizontal="80dp"
                                         android:weightSum="2">
 
                                         <RadioButton
@@ -187,10 +197,12 @@
                                             android:layout_width="0dp"
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
-                                            android:layout_marginEnd="@dimen/margin_small"
+                                            android:layout_marginEnd="4dp"
                                             android:background="@drawable/bg_btn_selector"
                                             android:button="@android:color/transparent"
                                             android:text="@string/cond_option_count"
+                                            android:textColor="@color/radio_text"
+                                            android:textStyle="bold"
                                             android:textSize="@dimen/size_radio_button"
                                             android:gravity="center"/>
 
@@ -199,10 +211,12 @@
                                             android:layout_width="0dp"
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
-                                            android:layout_marginStart="@dimen/margin_small"
+                                            android:layout_marginStart="4dp"
                                             android:background="@drawable/bg_btn_selector"
                                             android:button="@android:color/transparent"
                                             android:text="@string/cond_option_id"
+                                            android:textColor="@color/radio_text"
+                                            android:textStyle="bold"
                                             android:textSize="@dimen/size_radio_button"
                                             android:gravity="center"/>
                                     </RadioGroup>
@@ -212,6 +226,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="vertical"
+                                    android:layout_marginBottom="@dimen/padding_wide"
                                     android:background="@drawable/bg_round_base">
 
                                     <LinearLayout
@@ -234,7 +249,7 @@
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:orientation="vertical"
-                                            android:layout_marginStart="@dimen/margin_default"
+                                            android:layout_marginHorizontal="@dimen/margin_default"
                                             android:layout_marginBottom="@dimen/margin_default">
 
                                             <TextView
@@ -256,7 +271,7 @@
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:orientation="vertical"
-                                            android:layout_marginStart="@dimen/margin_default"
+                                            android:layout_marginHorizontal="@dimen/margin_default"
                                             android:layout_marginBottom="@dimen/margin_default">
 
                                             <TextView
@@ -304,17 +319,13 @@
 
                                 </FrameLayout>
 
-
-                                <View
-                                    android:layout_width="match_parent"
-                                    android:layout_height="1dp"
-                                    android:background="@android:color/darker_gray"
-                                    android:layout_marginVertical="@dimen/margin_default" />
-
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
+                                    android:layout_marginTop="@dimen/margin_default"
+                                    android:paddingTop="@dimen/padding_wide"
+                                    android:background="@drawable/divider_top"
                                     android:layout_marginVertical="@dimen/margin_default">
 
                                     <TextView
@@ -342,6 +353,9 @@
                         android:id="@+id/layoutTail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/divider_top"
+                        android:paddingVertical="@dimen/padding_tail_vertical"
+                        android:paddingHorizontal="@dimen/padding_tail_horizontal"
                         app:layout_constraintBottom_toBottomOf="parent">
 
                         <Button
@@ -349,7 +363,7 @@
                             android:text="@android:string/cancel"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/margin_default"
+                            android:layout_marginEnd="@dimen/margin_small"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toStartOf="@+id/btnSaveCondition"
                             app:layout_constraintTop_toTopOf="parent"/>
@@ -359,7 +373,7 @@
                             android:text="@string/update_common"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/margin_default"
+                            android:layout_marginStart="@dimen/margin_small"
                             app:layout_constraintStart_toEndOf="@+id/btnCancelCondition"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"/>

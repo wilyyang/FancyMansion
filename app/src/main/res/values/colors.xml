@@ -35,8 +35,9 @@
 
     <color name="color_id">#69323E4E</color>
 
-    <color name="radio_select">#66BD90B0</color>
-    <color name="radio_not_select">#66D1D1D1</color>
+    <color name="radio_text">#FCFCFC</color>
+    <color name="radio_select">#A19C63B2</color>
+    <color name="radio_not_select">#91323E4E</color>
 
     <color name="divide_dark">#10323E4E</color>
     <color name="divide_pale">#05323E4E</color>
@@ -60,8 +61,6 @@
 
     <color name="color_stroke_base">#D1D1D1</color>
 
-
     <color name="operator_color">#7C4B9F</color>
-
     <color name="color_stroke_selector">#D1D1D1</color>
 </resources>

@@ -108,7 +108,7 @@
 
     <string name="book_store_download">다운로드</string>
 
-    <string name="book_slide_id">id :&#160;</string>
+    <string name="intro_id">id :&#160;</string>
     <string name="book_edit_choice">선택항목 추가</string>
     <string name="book_edit_enter">진입루트 추가</string>
 

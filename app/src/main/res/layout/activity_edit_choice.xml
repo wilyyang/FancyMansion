@@ -82,7 +82,7 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="@string/book_slide_id"
+                                        android:text="@string/intro_id"
                                         android:textSize="@dimen/size_id" />
 
                                     <TextView
@@ -174,6 +174,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="vertical"
+                                    android:background="@drawable/divider_bottom"
                                     android:paddingVertical="@dimen/padding_wide">
 
                                     <LinearLayout
