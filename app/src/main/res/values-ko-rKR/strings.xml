@@ -42,6 +42,10 @@
     <string name="frag_no_my_book">책방에서 책을 다운로드 받아보세요</string>
     <string name="frag_no_store_book">스토어에 등록된 책을 찾지 못했어요…</string>
 
+    <string name="no_have_choice">선택 항목이 없습니다.</string>
+    <string name="no_have_enter">진입 항목이 없습니다.</string>
+    <string name="no_have_condition">조건 항목이 없습니다.</string>
+
     <string name="fab_add">추가</string>
 
     <string name="toolbar_edit_slide">슬라이드 수정</string>

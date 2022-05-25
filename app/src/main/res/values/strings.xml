@@ -53,6 +53,10 @@
     <string name="frag_no_my_book">Download the book from the bookstore</string>
     <string name="frag_no_store_book">Could not find a book registered in the store…</string>
 
+    <string name="no_have_choice">There are no choice items.</string>
+    <string name="no_have_enter">There are no enter items.</string>
+    <string name="no_have_condition">There are no conditions.</string>
+
     <string name="fab_add">ADD</string>
 
     <string name="start_book">START</string>

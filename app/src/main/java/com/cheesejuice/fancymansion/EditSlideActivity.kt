@@ -101,6 +101,8 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
 
                 editChoiceListAdapter.datas = slideLogic.choiceItems
                 editChoiceListAdapter.notifyDataSetChanged()
+
+                updateEmptyChoice()
             }
         }
 
@@ -296,6 +298,8 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         editChoiceListAdapter.datas = slideLogic.choiceItems
         editChoiceListAdapter.notifyDataSetChanged()
 
+        updateEmptyChoice()
+
         isMenuItemEnabled = true
     }
 
@@ -307,6 +311,15 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         binding.toolbar.subtitle = ""
 
         isMenuItemEnabled = false
+    }
+
+    private fun updateEmptyChoice(){
+        if(slideLogic.choiceItems.size < 1)
+        {
+            binding.layoutEmptyChoice.visibility = View.VISIBLE
+        }else{
+            binding.layoutEmptyChoice.visibility = View.GONE
+        }
     }
 
     private fun saveSlideFile(logic: Logic, slide: Slide){

@@ -247,6 +247,7 @@
                                         android:id="@+id/layoutEmptyComment"
                                         android:layout_width="match_parent"
                                         android:layout_height="150dp"
+                                        android:layout_marginBottom="@dimen/margin_wide"
                                         app:layout_constraintTop_toTopOf="parent"
                                         app:layout_constraintBottom_toTopOf="@+id/recyclerComment"
                                         android:visibility="gone">

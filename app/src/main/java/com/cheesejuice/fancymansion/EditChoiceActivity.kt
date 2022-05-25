@@ -207,6 +207,8 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
         editShowConditionListAdapter.datas = choice.showConditions
         editShowConditionListAdapter.notifyDataSetChanged()
 
+        updateEmptyEnterAndCondition()
+
         isMenuItemEnabled = true
     }
 
@@ -216,6 +218,22 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
         binding.layoutContain.visibility = View.GONE
 
         isMenuItemEnabled = false
+    }
+
+    private fun updateEmptyEnterAndCondition(){
+        if(choice.enterItems.size < 1)
+        {
+            binding.layoutEmptyEnter.visibility = View.VISIBLE
+        }else{
+            binding.layoutEmptyEnter.visibility = View.GONE
+        }
+
+        if(choice.showConditions.size < 1)
+        {
+            binding.layoutEmptyCondition.visibility = View.VISIBLE
+        }else{
+            binding.layoutEmptyCondition.visibility = View.GONE
+        }
     }
 
     override fun onClick(view: View?) {

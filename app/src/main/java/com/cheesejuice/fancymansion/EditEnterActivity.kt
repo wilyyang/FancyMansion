@@ -179,6 +179,7 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
         val slideIdx = logic.logics.indexOfFirst { it.slideId == enterItem.enterSlideId }
         binding.spinnerSelectSlide.setSelection(slideIdx)
 
+        updateEmptyCondition()
         isMenuItemEnabled = true
     }
 
@@ -188,6 +189,15 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
         binding.layoutContain.visibility = View.GONE
 
         isMenuItemEnabled = false
+    }
+
+    private fun updateEmptyCondition(){
+        if(enterItem.enterConditions.size < 1)
+        {
+            binding.layoutEmptyCondition.visibility = View.VISIBLE
+        }else{
+            binding.layoutEmptyCondition.visibility = View.GONE
+        }
     }
 
     override fun onClick(view: View?) {

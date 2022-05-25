@@ -153,6 +153,38 @@
                                             android:textSize="@dimen/size_small"/>
 
                                     </LinearLayout>
+
+                                    <androidx.constraintlayout.widget.ConstraintLayout
+                                        android:id="@+id/layoutEmptyCondition"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="150dp"
+                                        android:layout_marginBottom="@dimen/margin_wide"
+                                        app:layout_constraintTop_toTopOf="parent"
+                                        app:layout_constraintBottom_toTopOf="@+id/recyclerEditEnterCondition"
+                                        android:visibility="gone">
+
+                                        <ImageView
+                                            android:id="@+id/imageViewConditionEmpty"
+                                            android:layout_width="60dp"
+                                            android:layout_height="60dp"
+                                            android:src="@drawable/ic_book_open"
+                                            app:layout_constraintStart_toStartOf="parent"
+                                            app:layout_constraintEnd_toEndOf="parent"
+                                            app:layout_constraintTop_toTopOf="parent"
+                                            app:layout_constraintBottom_toBottomOf="parent"/>
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="@string/no_have_condition"
+                                            android:textSize="@dimen/size_item"
+                                            android:layout_margin="@dimen/margin_default"
+                                            app:layout_constraintStart_toStartOf="parent"
+                                            app:layout_constraintEnd_toEndOf="parent"
+                                            app:layout_constraintTop_toBottomOf="@id/imageViewConditionEmpty"/>
+
+                                    </androidx.constraintlayout.widget.ConstraintLayout>
+
                                     <androidx.recyclerview.widget.RecyclerView
                                         android:id="@+id/recyclerEditEnterCondition"
                                         android:layout_width="match_parent"
