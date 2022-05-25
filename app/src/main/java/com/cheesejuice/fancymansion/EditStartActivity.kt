@@ -143,7 +143,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
         fileUtil.getImageFile(conf.bookId, conf.coverImage, isCover = true)?.also {
             Glide.with(applicationContext).load(it).into(binding.imageViewShowMain)
         }?:also {
-            Glide.with(applicationContext).load(R.drawable.add_image).into(binding.imageViewShowMain)
+            Glide.with(applicationContext).load(R.drawable.default_image).into(binding.imageViewShowMain)
         }
 
         binding.btnEditBook.isEnabled = true

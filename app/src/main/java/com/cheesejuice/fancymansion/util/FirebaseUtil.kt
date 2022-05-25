@@ -251,11 +251,12 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
             .document(comment.id).delete().await()
     }
 
-    suspend fun getCommentList(publishCode:String, limit:Long = FB_ALL_COMMENT, startComment: Comment? = null):MutableList<Comment>{
+    suspend fun getCommentList(publishCode:String, limit:Long = FB_ALL_COMMENT, startComment: Comment? = null, isOrderRecent:Boolean):MutableList<Comment>{
         val commentList = mutableListOf<Comment>()
 
         val documents = db.collection(Const.FB_DB_KEY_BOOK).document(publishCode).collection(Const.FB_DB_KEY_COMMENT)
-            .orderBy(Const.FB_DB_KEY_COMMENT_TIME).orderBy(Const.FB_DB_KEY_COMMENT_ID)
+            .orderBy(Const.FB_DB_KEY_COMMENT_TIME, if(!isOrderRecent){ Query.Direction.ASCENDING } else { Query.Direction.DESCENDING })
+            .orderBy(Const.FB_DB_KEY_COMMENT_ID)
             .let {
                 if(startComment != null){
                     it.startAfter(startComment.updateTime, startComment.id)

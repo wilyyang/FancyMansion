@@ -80,7 +80,7 @@ class ReadSlideActivity : AppCompatActivity() {
                 ?.also {
                     Glide.with(applicationContext).load(it).into(binding.imageViewShowMain)
                 } ?: also {
-                Glide.with(applicationContext).load(R.drawable.add_image)
+                Glide.with(applicationContext).load(R.drawable.default_image)
                     .into(binding.imageViewShowMain)
             }
 

@@ -174,11 +174,14 @@
     <string name="display_comment_update_fail">댓글 업데이트 실패</string>
 
     <string name="display_comment_order_oldest">댓글 등록순</string>
+    <string name="display_comment_order_recent">최신순</string>
 
     <string name="display_comment_input_comment">댓글을 입력해주세요.</string>
     <string name="display_good">좋아요 :&#160;</string>
 
     <string name="display_no_comment">아직 댓글이 없어요!</string>
+
+    <string name="display_comment_is_edit">(수정됨)</string>
 
     <string name="count_enter">진입루트 :&#160;</string>
     <string name="count_condition">조건 :&#160;</string>

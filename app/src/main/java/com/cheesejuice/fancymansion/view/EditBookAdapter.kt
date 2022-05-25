@@ -66,7 +66,7 @@ class EditBookAdapter(val datas: MutableList<Config>, val fileUtil: FileUtil, va
                 fileUtil.getImageFile(bookId, coverImage, isCover = true)?.also {
                     Glide.with(context).load(it).into(binding.imageCover)
                 }?:also {
-                    Glide.with(context).load(R.drawable.add_image).into(binding.imageCover)
+                    Glide.with(context).load(R.drawable.default_image).into(binding.imageCover)
                 }
             }
 

@@ -36,6 +36,8 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
     private var isListLoading = false
 
+    private var isCommentOrderRecent = false
+
     @Inject
     lateinit var util: CommonUtil
     @Inject
@@ -63,7 +65,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
             if(publishCode != ""){
                 item = firebaseUtil.getBookConfig(publishCode)?.also {
                     isClickGood = firebaseUtil.isBookGoodUser(it.publishCode)
-                    val addList = firebaseUtil.getCommentList(publishCode = it.publishCode, limit = Const.COMMENT_COUNT)
+                    val addList = firebaseUtil.getCommentList(publishCode = it.publishCode, limit = Const.COMMENT_COUNT, isOrderRecent = isCommentOrderRecent)
                     commentList.addAll(addList)
                 }
             }
@@ -98,7 +100,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
             firebaseUtil.returnImageToCallback("/${Const.FB_STORAGE_BOOK}/$uid/$publishCode/$coverImage", { result ->
                 Glide.with(baseContext).load(result).into(binding.imageViewShowMain)
             }, {
-                Glide.with(baseContext).load(R.drawable.add_image).into(binding.imageViewShowMain)
+                Glide.with(baseContext).load(R.drawable.default_image).into(binding.imageViewShowMain)
             })
 
             if(!firebaseUtil.checkAuth() || conf.uid != FirebaseUtil.auth.uid) {
@@ -114,6 +116,8 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
         binding.layoutGood.setOnClickListener(this)
         binding.btnAddComment.setOnClickListener(this)
+        binding.tvOrderRegistration.setOnClickListener(this)
+        binding.tvOrderRecent.setOnClickListener(this)
     }
 
     private fun makeCommentList(_commentList : MutableList<Comment>) {
@@ -132,10 +136,15 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                                     isListLoading = true
                                     progressbarComment.visibility = View.VISIBLE
                                     layoutCommentUpdate.visibility = View.GONE
-                                    comment.comment = etAddComment.text.toString()
+                                    comment.apply {
+                                        this.comment = etAddComment.text.toString()
+                                        editTime = System.currentTimeMillis()
+                                        editCount += 1
+                                    }
+
                                     CoroutineScope(Dispatchers.IO).launch {
                                         firebaseUtil.editComment(comment)
-                                        val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = commentList.size.toLong())
+                                        val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = commentList.size.toLong(), isOrderRecent = isCommentOrderRecent)
                                         commentList.clear()
                                         commentList.addAll(addList)
 
@@ -154,7 +163,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                                     layoutCommentUpdate.visibility = View.GONE
                                     CoroutineScope(Dispatchers.IO).launch {
                                         firebaseUtil.deleteComment(comment)
-                                        val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = commentList.size.toLong())
+                                        val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = commentList.size.toLong(), isOrderRecent = isCommentOrderRecent)
                                         commentList.clear()
                                         commentList.addAll(addList)
 
@@ -250,6 +259,51 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
         when(view?.id) {
             R.id.layoutGood -> clickBookIsGood()
             R.id.btnAddComment -> clickAddComment()
+
+            R.id.tvOrderRegistration -> {
+                if(isCommentOrderRecent){
+                    CoroutineScope(Dispatchers.IO).launch {
+                        isListLoading = true
+                        isCommentOrderRecent = false
+                        val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = Const.COMMENT_COUNT, isOrderRecent = isCommentOrderRecent)
+                        commentList.clear()
+                        commentList.addAll(addList)
+
+                        withContext(Main){
+                            Glide.with(baseContext).load(R.drawable.ic_dot_gray).into(binding.dotOrderRecent)
+                            binding.tvOrderRecent.setTextColor(getColor(R.color.black_4))
+                            Glide.with(baseContext).load(R.drawable.ic_dot).into(binding.dotOrderRegistration)
+                            binding.tvOrderRegistration.setTextColor(getColor(R.color.black_8))
+
+                            commentAdapter.notifyDataSetChanged()
+                            isListLoading = false
+                            updateEmptyComment()
+                        }
+                    }
+                }
+            }
+            R.id.tvOrderRecent -> {
+                if(!isCommentOrderRecent){
+                    CoroutineScope(Dispatchers.IO).launch {
+                        isListLoading = true
+                        isCommentOrderRecent = true
+                        val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = Const.COMMENT_COUNT, isOrderRecent = isCommentOrderRecent)
+                        commentList.clear()
+                        commentList.addAll(addList)
+
+                        withContext(Main){
+                            Glide.with(baseContext).load(R.drawable.ic_dot).into(binding.dotOrderRecent)
+                            binding.tvOrderRecent.setTextColor(getColor(R.color.black_8))
+                            Glide.with(baseContext).load(R.drawable.ic_dot_gray).into(binding.dotOrderRegistration)
+                            binding.tvOrderRegistration.setTextColor(getColor(R.color.black_4))
+
+                            commentAdapter.notifyDataSetChanged()
+                            isListLoading = false
+                            updateEmptyComment()
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -280,7 +334,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                 firebaseUtil.editComment(comment)
 
                 commentList.clear()
-                val addList = firebaseUtil.getCommentList(publishCode = config.publishCode)
+                val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, isOrderRecent = isCommentOrderRecent)
                 commentList.addAll(addList)
 
                 withContext(Main) {
@@ -310,7 +364,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
         CoroutineScope(Dispatchers.Default).launch {
             delay(500L)
-            val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = Const.COMMENT_COUNT, startComment = lastComment)
+            val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = Const.COMMENT_COUNT, startComment = lastComment, isOrderRecent = isCommentOrderRecent)
 
             withContext(Main) {
                 val beforeSize = commentList.size

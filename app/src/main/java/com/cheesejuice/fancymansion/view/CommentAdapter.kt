@@ -66,10 +66,15 @@ class CommentAdapter(val datas: MutableList<Comment>, val context: Context, val 
             with(datas[position]){
 
                 binding.tvCommentUserName.text = userName
-                binding.tvCommentDate.text = CommonUtil.longToTimeFormatss(updateTime)
+                if(editCount == 0){
+                    binding.tvCommentDate.text = CommonUtil.longToTimeFormatss(updateTime)
+                }else{
+                    binding.tvCommentDate.text = CommonUtil.longToTimeFormatss(editTime)+" "+context.getString(R.string.display_comment_is_edit)
+                }
+
                 binding.tvComment.text = comment
 
-                Glide.with(context).load(R.drawable.add_image).circleCrop().into(holder.binding.imageProfilePhoto)
+                Glide.with(context).load(R.drawable.default_image).circleCrop().into(holder.binding.imageProfilePhoto)
                 if(photoUrl != ""){
                     val uri = Uri.parse(photoUrl)
                     Glide.with(context).load(uri).circleCrop().into(holder.binding.imageProfilePhoto)

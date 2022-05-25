@@ -176,11 +176,14 @@
     <string name="display_comment_update_fail">Comment update fail</string>
 
     <string name="display_comment_order_oldest">order of registration</string>
+    <string name="display_comment_order_recent">order of recent</string>
 
     <string name="display_comment_input_comment">Input Comment.</string>
     <string name="display_good">Good :&#160;</string>
 
     <string name="display_no_comment">No comments yet!</string>
+
+    <string name="display_comment_is_edit">(edit)</string>
 
     <string name="count_enter">Enter count :&#160;</string>
     <string name="count_condition">Condition count :&#160;</string>

@@ -234,7 +234,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             fileUtil.getImageFile(logic.bookId, slide.slideImage)?.apply{
                 this
             }?:let {
-                R.drawable.add_image
+                R.drawable.default_image
             }
         ).into(binding.imageViewShowMain)
 
