@@ -195,8 +195,6 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                 }
             }
         }
-
-
     }
 
     fun updateEmptyComment(){
@@ -206,6 +204,41 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
         }else{
             binding.layoutEmptyComment.visibility = View.GONE
         }
+    }
+
+    private fun updateCommentOrderText(isRecent:Boolean){
+        Glide.with(baseContext).load(
+            if (isRecent) {
+                R.drawable.ic_dot
+            } else {
+                R.drawable.ic_dot_gray
+            }
+        ).into(binding.dotOrderRecent)
+        binding.tvOrderRecent.setTextColor(
+            getColor(
+                if (isRecent) {
+                    R.color.black_8
+                } else {
+                    R.color.black_4
+                }
+            )
+        )
+        Glide.with(baseContext).load(
+            if (!isRecent) {
+                R.drawable.ic_dot
+            } else {
+                R.drawable.ic_dot_gray
+            }
+        ).into(binding.dotOrderRegistration)
+        binding.tvOrderRegistration.setTextColor(
+            getColor(
+                if (!isRecent) {
+                    R.color.black_8
+                } else {
+                    R.color.black_4
+                }
+            )
+        )
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -270,10 +303,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                         commentList.addAll(addList)
 
                         withContext(Main){
-                            Glide.with(baseContext).load(R.drawable.ic_dot_gray).into(binding.dotOrderRecent)
-                            binding.tvOrderRecent.setTextColor(getColor(R.color.black_4))
-                            Glide.with(baseContext).load(R.drawable.ic_dot).into(binding.dotOrderRegistration)
-                            binding.tvOrderRegistration.setTextColor(getColor(R.color.black_8))
+                            updateCommentOrderText(isCommentOrderRecent)
 
                             commentAdapter.notifyDataSetChanged()
                             isListLoading = false
@@ -292,10 +322,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                         commentList.addAll(addList)
 
                         withContext(Main){
-                            Glide.with(baseContext).load(R.drawable.ic_dot).into(binding.dotOrderRecent)
-                            binding.tvOrderRecent.setTextColor(getColor(R.color.black_8))
-                            Glide.with(baseContext).load(R.drawable.ic_dot_gray).into(binding.dotOrderRegistration)
-                            binding.tvOrderRegistration.setTextColor(getColor(R.color.black_4))
+                            updateCommentOrderText(isCommentOrderRecent)
 
                             commentAdapter.notifyDataSetChanged()
                             isListLoading = false

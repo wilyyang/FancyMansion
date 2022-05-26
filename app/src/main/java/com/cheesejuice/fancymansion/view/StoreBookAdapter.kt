@@ -70,11 +70,14 @@ class StoreBookAdapter(val datas: MutableList<Config>, val context: Context, val
                 binding.tvStoreBookGood.text = "$good"
 
                 binding.imageCover.clipToOutline = true
-                Glide.with(context).load(R.drawable.default_image).into(holder.binding.imageCover)
+
                 if(coverImage != ""){
                     firebaseUtil.returnImageToCallback("/book/$uid/$publishCode/$coverImage",
-                        { result -> Glide.with(context).load(result).into(holder.binding.imageCover)}
+                        { result -> Glide.with(context).load(result).into(holder.binding.imageCover)},
+                        { Glide.with(context).load(R.drawable.default_image).into(holder.binding.imageCover) }
                     )
+                }else{
+                    Glide.with(context).load(R.drawable.default_image).into(holder.binding.imageCover)
                 }
             }
 

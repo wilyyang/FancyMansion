@@ -103,7 +103,6 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/cond_condition_1"
                                         android:textSize="@dimen/size_book"
-                                        android:textStyle="bold"
                                         android:layout_marginBottom="@dimen/margin_default"/>
 
                                     <LinearLayout
@@ -117,7 +116,7 @@
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:text="@string/cond_slide"
-                                            android:textSize="@dimen/size_book"
+                                            android:textSize="@dimen/size_sub"
                                             android:layout_marginBottom="@dimen/margin_default"/>
 
                                         <Spinner
@@ -139,7 +138,7 @@
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:text="@string/cond_choice"
-                                            android:textSize="@dimen/size_book"
+                                            android:textSize="@dimen/size_sub"
                                             android:layout_marginBottom="@dimen/margin_default"/>
 
                                         <Spinner
@@ -164,7 +163,6 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/cond_operator"
                                         android:textSize="@dimen/size_book"
-                                        android:textStyle="bold"
                                         android:layout_marginBottom="@dimen/margin_default"/>
 
                                     <Spinner
@@ -242,7 +240,6 @@
                                             android:layout_height="wrap_content"
                                             android:text="@string/cond_condition_2"
                                             android:textSize="@dimen/size_book"
-                                            android:textStyle="bold"
                                             android:layout_marginBottom="@dimen/margin_default"/>
 
                                         <LinearLayout
@@ -256,7 +253,7 @@
                                                 android:layout_width="wrap_content"
                                                 android:layout_height="wrap_content"
                                                 android:text="@string/cond_slide"
-                                                android:textSize="@dimen/size_book"
+                                                android:textSize="@dimen/size_sub"
                                                 android:layout_marginBottom="@dimen/margin_default"/>
 
                                             <Spinner
@@ -278,7 +275,7 @@
                                                 android:layout_width="wrap_content"
                                                 android:layout_height="wrap_content"
                                                 android:text="@string/cond_choice"
-                                                android:textSize="@dimen/size_book"
+                                                android:textSize="@dimen/size_sub"
                                                 android:layout_marginBottom="@dimen/margin_default"/>
 
                                             <Spinner
@@ -304,7 +301,6 @@
                                             android:layout_height="wrap_content"
                                             android:text="@string/cond_count"
                                             android:textSize="@dimen/size_book"
-                                            android:textStyle="bold"
                                             android:layout_marginBottom="@dimen/margin_default"/>
 
                                         <NumberPicker
@@ -333,7 +329,6 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/cond_next"
                                         android:textSize="@dimen/size_book"
-                                        android:textStyle="bold"
                                         android:layout_marginBottom="@dimen/margin_default"/>
 
                                     <Spinner

@@ -137,15 +137,15 @@
     <string name="select_slide">select slide :&#160;</string>
     <string name="select_choice">select choice :&#160;</string>
 
-    <string name="cond_condition_1">select necessary condition</string>
+    <string name="cond_condition_1">select base entry</string>
     <string name="cond_operator">operator :&#160;</string>
-    <string name="cond_condition_2">select comparison condition</string>
+    <string name="cond_condition_2">select comparison entry</string>
     <string name="cond_next">next relation :&#160;</string>
 
     <string name="cond_count">count</string>
 
-    <string name="cond_slide">slide :&#160;</string>
-    <string name="cond_choice">choice :&#160;</string>
+    <string name="cond_slide">· slide :&#160;</string>
+    <string name="cond_choice">· choice :&#160;</string>
 
     <string name="cond_text_entries">entries</string>
     <string name="cond_text_entries_to">entries</string>
