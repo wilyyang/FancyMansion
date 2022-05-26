@@ -8,6 +8,7 @@ import android.provider.OpenableColumns
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -70,7 +71,7 @@ fun Activity.registerGallaryResultName(imageView: ImageView? = null, afterResult
 
 
 // UI
-fun Activity.showLoadingScreen(isLoading: Boolean, loading: View, main: View){
+fun Activity.showLoadingScreen(isLoading: Boolean, loading: View, main: View, loadingText:String){
     if(isLoading){
         val view = this.currentFocus
         if (view != null) {
@@ -78,6 +79,7 @@ fun Activity.showLoadingScreen(isLoading: Boolean, loading: View, main: View){
             val imm = getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
+        loading.findViewById<TextView>(R.id.tvLoading).text = loadingText
         loading.visibility = View.VISIBLE
         main.visibility = View.GONE
 
@@ -88,7 +90,8 @@ fun Activity.showLoadingScreen(isLoading: Boolean, loading: View, main: View){
     }
 }
 
-fun Activity.showDialogAndStart(isShow: Boolean, loading: View? = null, main: View? = null, title:String, message:String, onlyOkBackground:()->Unit = {}, onlyOk:()->Unit = {}, onlyNo:()->Unit = {}, noShow:() ->Unit = {}, always:() ->Unit = {}){
+fun Activity.showDialogAndStart(isShow: Boolean, loading: View? = null, main: View? = null, title:String, message:String, onlyOkBackground:()->Unit = {}, onlyOk:()->Unit = {}, onlyNo:()->Unit = {}, noShow:() ->Unit = {}, always:() ->Unit = {}
+                                , loadingText:String){
     if(isShow){
         this.currentFocus?.let { it.clearFocus() }
 
@@ -96,12 +99,12 @@ fun Activity.showDialogAndStart(isShow: Boolean, loading: View? = null, main: Vi
             builder.setTitle(title)
             builder.setMessage(message)
             builder.setPositiveButton(this.getString(R.string.dialog_ok)) { _, _ ->
-                if (loading != null && main != null) showLoadingScreen(true, loading, main)
+                if (loading != null && main != null) showLoadingScreen(true, loading, main, loadingText)
                 CoroutineScope(Dispatchers.IO).launch {
                     onlyOkBackground()
                     withContext(Dispatchers.Main) {
                         onlyOk()
-                        if (loading != null && main != null) showLoadingScreen(false, loading, main)
+                        if (loading != null && main != null) showLoadingScreen(false, loading, main, loadingText)
                         always()
                     }
                 }

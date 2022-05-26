@@ -37,7 +37,7 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         binding = ActivityReadStartBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_get_read_book))
 
         if(bookUtil.getEditPlay()) { mode = Const.EDIT_PLAY}
 
@@ -62,7 +62,7 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun makeViewReadyScreen(conf: Config) {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
         binding.tvRemoveBook.visibility = if (mode == Const.EDIT_PLAY) { View.INVISIBLE } else { View.VISIBLE }
         with(conf){
             binding.tvConfigTitle.text = title
@@ -90,7 +90,7 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
                 startBookWithSetting(mode, config)
             }
             R.id.tvRemoveBook -> {
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_delete_read_book))
                 CoroutineScope(Dispatchers.IO).launch {
                     fileUtil.deleteBookFolder(config.bookId, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = config.publishCode)
                     withContext(Main) {
@@ -113,7 +113,8 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
                     bookUtil.deleteBookPref(con.bookId, FirebaseUtil.auth.uid!!, config.publishCode, Const.EDIT_PLAY)
                 }
                 startReadSlideActivity(con.bookId, config.publishCode, FIRST_SLIDE)
-            }
+            },
+            loadingText = getString(R.string.loading_text_get_read_slide)
         )
     }
 }

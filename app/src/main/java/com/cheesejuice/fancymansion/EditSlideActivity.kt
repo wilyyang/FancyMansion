@@ -62,7 +62,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
 
     private val readSlideForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_get_info_slide))
             CoroutineScope(Default).launch {
                 val init = loadData(logic.bookId, slide.slideId)
                 withContext(Main) {
@@ -110,7 +110,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         super.onCreate(savedInstanceState)
         binding = ActivityEditSlideBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_get_info_slide))
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -217,7 +217,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun makeEditSlideScreen(logic:Logic, slide: Slide, slideLogic: SlideLogic) {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
         binding.layoutEmpty.root.visibility = View.GONE
         binding.layoutContain.visibility = View.VISIBLE
 
@@ -304,7 +304,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun makeNotHaveSlide() {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
         binding.layoutEmpty.root.visibility = View.VISIBLE
         binding.layoutContain.visibility = View.GONE
 
@@ -395,13 +395,13 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                 }
             }
             R.id.menu_save -> {
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_save_slide))
                 CoroutineScope(IO).launch {
                     saveSlideFile(logic, slide)
                     setSaveFlag(false)
                     withContext(Main) {
                         slideTitleListAdapter.notifyUpdateSlideTitle(slide.slideId)
-                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
                     }
                 }
             }
@@ -445,7 +445,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             return
         }
 
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_new_slide))
         CoroutineScope(IO).launch {
             // Update Logic (save or not save)
             logic = fileUtil.getLogicFromFile(logic.bookId)!!
@@ -472,7 +472,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun deleteSelectedSlide(){
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_delete_slide))
         CoroutineScope(IO).launch {
             // Update Logic (save or not save)
             logic = fileUtil.getLogicFromFile(logic.bookId)!!
@@ -511,7 +511,8 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             onlyOkBackground = { saveSlideFile(logic, slide) },
             onlyOk = { setSaveFlag(false); slideTitleListAdapter.notifyUpdateSlideTitle(slide.slideId) },
             onlyNo = { setSaveFlag(false) },
-            always = always
+            always = always,
+            loadingText = getString(R.string.loading_text_save_slide)
         )
     }
 }

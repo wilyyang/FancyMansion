@@ -52,7 +52,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
         super.onCreate(savedInstanceState)
         binding = ActivityDisplayBookBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_load_store_book))
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -72,7 +72,6 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
             withContext(Main) {
                 item?.also {
-                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
                     config = it
                     makeBookDisplayScreen(config, isClickGood)
                     makeCommentList(commentList)
@@ -86,7 +85,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
     }
 
     private fun makeBookDisplayScreen(conf: Config, isGood:Boolean) {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
         with(conf){
             binding.toolbar.title = title
             binding.tvConfigDescription.text = description
@@ -121,7 +120,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
     }
 
     private fun makeCommentList(_commentList : MutableList<Comment>) {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
 
         commentAdapter = CommentAdapter(_commentList, baseContext, config.uid)
         commentAdapter.setItemClickListener(object: CommentAdapter.OnItemClickListener{
@@ -207,13 +206,11 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
     }
 
     private fun updateCommentOrderText(isRecent:Boolean){
-        Glide.with(baseContext).load(
-            if (isRecent) {
-                R.drawable.ic_dot
-            } else {
-                R.drawable.ic_dot_gray
-            }
-        ).into(binding.dotOrderRecent)
+        binding.dotOrderRecent.setImageResource(if (isRecent) {
+            R.drawable.ic_dot
+        } else {
+            R.drawable.ic_dot_gray
+        })
         binding.tvOrderRecent.setTextColor(
             getColor(
                 if (isRecent) {
@@ -223,13 +220,11 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                 }
             )
         )
-        Glide.with(baseContext).load(
-            if (!isRecent) {
-                R.drawable.ic_dot
-            } else {
-                R.drawable.ic_dot_gray
-            }
-        ).into(binding.dotOrderRegistration)
+        binding.dotOrderRegistration.setImageResource(if (!isRecent) {
+            R.drawable.ic_dot
+        } else {
+            R.drawable.ic_dot_gray
+        })
         binding.tvOrderRegistration.setTextColor(
             getColor(
                 if (!isRecent) {
@@ -251,7 +246,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
     {
         when(item.itemId) {
             R.id.menu_remove_store -> {
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_remove_store_book))
                 CoroutineScope(Dispatchers.IO).launch {
                     if(firebaseUtil.checkAuth() && config.uid == FirebaseUtil.auth.uid) {
                         firebaseUtil.deleteBook(config)
@@ -265,7 +260,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
             }
 
             R.id.menu_download -> {
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_download_store_book))
                 CoroutineScope(Dispatchers.IO).launch {
                     val dir = File(fileUtil.readOnlyUserPath, Const.FILE_PREFIX_READ+config.bookId+"_${config.publishCode}")
                     firebaseUtil.downloadBook(config, dir)
@@ -275,7 +270,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
                     withContext(Main){
                         binding.tvConfigDownloads.text = "$downloads"
-                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
 
                         Toast.makeText(this@DisplayBookActivity,
                             if (isSuccess) { getString(R.string.toast_download_success) }

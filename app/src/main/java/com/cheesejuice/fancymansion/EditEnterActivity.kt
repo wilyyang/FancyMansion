@@ -84,7 +84,7 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
         super.onCreate(savedInstanceState)
         binding = ActivityEditEnterBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_get_info_enter))
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -163,7 +163,7 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
     }
 
     private fun makeEditEnterScreen(logic:Logic, enterItem: EnterItem) {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
         binding.tvEnterId.text = "${enterItem.id}"
 
         editEnterConditionListAdapter.datas = enterItem.enterConditions
@@ -184,7 +184,7 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
     }
 
     private fun makeNotHaveEnterItem() {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
         binding.layoutEmpty.root.visibility = View.VISIBLE
         binding.layoutContain.visibility = View.GONE
 

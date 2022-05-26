@@ -17,7 +17,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cheesejuice.fancymansion.*
-import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.databinding.FragmentStoreBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.Config
@@ -97,7 +96,7 @@ class StoreFragment : Fragment() {
     }
 
     private fun makeStoreList(_storeList : MutableList<Config>) {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
 
         storeBookAdapter = StoreBookAdapter(_storeList, requireActivity(), firebaseUtil)
         storeBookAdapter.setItemClickListener(object: StoreBookAdapter.OnItemClickListener{
@@ -179,7 +178,7 @@ class StoreFragment : Fragment() {
     private fun bookClearLoad(){
         if(!isListLoading){
             isListLoading = true
-            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_frag_store_book))
             CoroutineScope(Dispatchers.Default).launch {
                 storeBookList.clear()
                 val addList = firebaseUtil.getBookList(limit = Const.PAGE_COUNT_LONG, orderKey = orderKey, searchKeyword = searchKeyword)

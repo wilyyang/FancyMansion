@@ -53,7 +53,7 @@ class EditListFragment : Fragment(), View.OnClickListener {
 
     private val editStartForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_frag_make_book))
 
             isListLoading = true
             CoroutineScope(Dispatchers.Default).launch {
@@ -81,7 +81,7 @@ class EditListFragment : Fragment(), View.OnClickListener {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentEditListBinding.inflate(inflater, container, false)
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_frag_make_book))
 
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -126,7 +126,7 @@ class EditListFragment : Fragment(), View.OnClickListener {
     }
 
     private fun makeEditList(_editList : MutableList<Config>) {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
 
         editBookAdapter = EditBookAdapter(_editList, fileUtil, requireActivity())
         editBookAdapter.setItemClickListener(object: EditBookAdapter.OnItemClickListener{

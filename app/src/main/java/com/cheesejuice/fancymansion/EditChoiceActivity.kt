@@ -101,7 +101,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         binding = ActivityEditChoiceBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_get_info_choice))
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -194,7 +194,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun makeEditChoiceScreen(choice: ChoiceItem) {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
         with(choice){
             binding.tvChoiceId.text = "${choice.id}"
             binding.etChoiceTitle.setText(title)
@@ -213,7 +213,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun makeNotHaveChoice() {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
         binding.layoutEmpty.root.visibility = View.VISIBLE
         binding.layoutContain.visibility = View.GONE
 

@@ -58,7 +58,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
     private val readStartForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_get_make_book))
 
             CoroutineScope(Default).launch {
                 val conf = fileUtil.getConfigFromFile(config.bookId)
@@ -77,7 +77,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         binding = ActivityEditStartBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_get_make_book))
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -124,7 +124,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun makeEditReadyScreen(conf: Config) {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
 
         if(isBookUpload){
             val menuItem = binding.toolbar.menu.findItem(R.id.menu_upload)
@@ -184,11 +184,11 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                 gallaryForResult.launch(intent)
             }
             R.id.btnEditBook -> {
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_save_make_book))
                 CoroutineScope(IO).launch {
                     saveConfigFile(config)
                     withContext(Main) {
-                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
                         startEditSlideActivity(config.bookId)
                     }
                 }
@@ -212,7 +212,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.menu_upload -> {
                 this@EditStartActivity.currentFocus?.clearFocus()
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_upload_make_book))
                 CoroutineScope(IO).launch {
                     Log.d(TAG, "Start fire store update")
                     val dbSuccess = uploadBook()
@@ -221,7 +221,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
                     isBookUpload = firebaseUtil.isBookUpload(config.publishCode)
                     withContext(Main) {
-                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
 
                         if(!dbSuccess){
                             Toast.makeText(this@EditStartActivity, getString(R.string.toast_db_fail), Toast.LENGTH_SHORT).show()
@@ -250,11 +250,11 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.menu_save -> {
                 this@EditStartActivity.currentFocus?.clearFocus()
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_save_make_book))
                 CoroutineScope(IO).launch {
                     saveConfigFile(config)
                     withContext(Main) {
-                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
                         finish()
                     }
                 }
@@ -262,7 +262,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.menu_delete -> {
                 this@EditStartActivity.currentFocus?.clearFocus()
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_delete_make_book))
                 CoroutineScope(IO).launch {
                     fileUtil.deleteBookFolder(config.bookId)
                     withContext(Main) {
@@ -278,7 +278,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.menu_copy -> {
                 this@EditStartActivity.currentFocus?.clearFocus()
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_copy_make_book))
                 CoroutineScope(IO).launch {
                     val copyBookId = fileUtil.getNewEditBookId()
                     if (copyBookId != -1L) {
@@ -295,7 +295,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                         saveConfigFile(copyConfig, isCopy = true)
                     }
                     withContext(Main) {
-                        showLoadingScreen(false,binding.layoutLoading.root,binding.layoutActive)
+                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
                     }
                 }
             }
@@ -314,7 +314,8 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             onlyOkBackground = { saveConfigFile(config) },
             onlyOk = { setSaveFlag(false) },
             onlyNo = { setSaveFlag(false) },
-            always = always
+            always = always,
+            loadingText = getString(R.string.loading_text_save_make_book)
         )
     }
 

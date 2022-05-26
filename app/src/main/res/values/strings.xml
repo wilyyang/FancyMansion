@@ -190,4 +190,32 @@
 
     <string name="item_enter_slide_id">Slide id to be entered :&#160;</string>
     <string name="item_enter_to_enter">&#160;enter</string>
+
+    <string name="loading_text_login">Login …</string>
+    <string name="loading_text_load_store_book">Loading book information from the store</string>
+    <string name="loading_text_remove_store_book">Removing book from store</string>
+    <string name="loading_text_download_store_book">The book is being downloaded from the store</string>
+    <string name="loading_text_get_info_choice">Getting choice information</string>
+    <string name="loading_text_get_info_condition">Getting condition information</string>
+    <string name="loading_text_get_info_enter">Getting entry route information</string>
+    <string name="loading_text_get_info_slide">Getting slide information</string>
+
+    <string name="loading_text_save_slide">Slide is being saved</string>
+    <string name="loading_text_new_slide">New slide being created</string>
+    <string name="loading_text_delete_slide">Deleting slide</string>
+
+    <string name="loading_text_frag_store_book">Loading book list from bookstore</string>
+    <string name="loading_text_frag_my_book">Loading my book list from library</string>
+    <string name="loading_text_frag_make_book">Loading list of books being written</string>
+
+    <string name="loading_text_get_read_book">Getting information about the book want to read</string>
+    <string name="loading_text_get_read_slide">Loading next book page</string>
+    <string name="loading_text_get_make_book">Getting information about the book written</string>
+    <string name="loading_text_delete_read_book">Discarding the book from the library</string>
+    <string name="loading_text_delete_make_book">Discarding the book you are writing</string>
+
+    <string name="loading_text_save_make_book">Saving book information being written</string>
+    <string name="loading_text_upload_make_book">Book is being uploaded to the store</string>
+
+    <string name="loading_text_copy_make_book">The book is being copied.</string>
 </resources>

@@ -188,4 +188,32 @@
 
     <string name="item_enter_slide_id">진입할 Slide id :&#160;</string>
     <string name="item_enter_to_enter">&#160;로 진입</string>
+
+    <string name="loading_text_login">로그인…</string>
+    <string name="loading_text_load_store_book">스토어에서 책 정보를 가져오는 중입니다.</string>
+    <string name="loading_text_remove_store_book">스토어에서 책을 제거하는 중입니다.</string>
+    <string name="loading_text_download_store_book">스토어에서 책을 다운로드하는 중입니다.</string>
+    <string name="loading_text_get_info_choice">선택항목 정보를 가져오는 중입니다.</string>
+    <string name="loading_text_get_info_condition">조건 정보를 가져오는 중입니다.</string>
+    <string name="loading_text_get_info_enter">진입루트 정보를 가져오는 중입니다.</string>
+    <string name="loading_text_get_info_slide">슬라이드 정보를 가져오는 중입니다.</string>
+
+    <string name="loading_text_save_slide">슬라이드를 저장하는 중입니다.</string>
+    <string name="loading_text_new_slide">새로운 슬라이드를 만드는 중입니다.</string>
+    <string name="loading_text_delete_slide">슬라이드를 삭제하는 중입니다.</string>
+
+    <string name="loading_text_frag_store_book">서점에서 책 목록을 가져오는 중입니다.</string>
+    <string name="loading_text_frag_my_book">서재에서 나의 책 목록을 가져오는 중입니다.</string>
+    <string name="loading_text_frag_make_book">작성중인 책 목록을 가져오는 중입니다.</string>
+
+    <string name="loading_text_get_read_book">읽으려는 책 정보를 가져오는 중입니다.</string>
+    <string name="loading_text_get_read_slide">다음 책 페이지를 불러오는 중입니다.</string>
+    <string name="loading_text_get_make_book">작성중인 책 정보를 가져오는 중입니다.</string>
+    <string name="loading_text_delete_read_book">서재에서 책을 버리는 중입니다.</string>
+    <string name="loading_text_delete_make_book">작성중인 책을 버리는 중입니다.</string>
+
+    <string name="loading_text_save_make_book">작성중인 책 정보를 저장하는 중입니다.</string>
+    <string name="loading_text_upload_make_book">책을 스토어에 업로드하는 중입니다.</string>
+
+    <string name="loading_text_copy_make_book">책을 복사하는 중입니다.</string>
 </resources>

@@ -51,7 +51,7 @@ class ReadListFragment : Fragment() {
 
     private val readStartForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_frag_my_book))
 
             isListLoading = true
             CoroutineScope(Dispatchers.Default).launch {
@@ -79,7 +79,7 @@ class ReadListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentReadListBinding.inflate(inflater, container, false)
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_frag_my_book))
 
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -122,7 +122,7 @@ class ReadListFragment : Fragment() {
     }
 
     private fun makeReadList(_readList : MutableList<Config>) {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
 
         readBookAdapter = ReadBookAdapter(_readList, fileUtil, requireActivity())
         readBookAdapter.setItemClickListener(object: ReadBookAdapter.OnItemClickListener{

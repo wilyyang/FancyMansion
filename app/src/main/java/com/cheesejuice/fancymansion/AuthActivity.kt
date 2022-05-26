@@ -25,7 +25,7 @@ class AuthActivity : AppCompatActivity() {
 
     private val googleLoginForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutBody)
+            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutBody, getString(R.string.loading_text_login))
             val task = GoogleSignIn.getSignedInAccountFromIntent(result?.data)
             try {
                 val account = task.getResult(ApiException::class.java)!!
@@ -36,7 +36,7 @@ class AuthActivity : AppCompatActivity() {
                             val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
                         } else {
-                            showLoadingScreen(false, binding.layoutLoading.root, binding.layoutBody)
+                            showLoadingScreen(false, binding.layoutLoading.root, binding.layoutBody, "")
                             Toast.makeText(this, "Failed login", Toast.LENGTH_SHORT).show()
                         }
                     }

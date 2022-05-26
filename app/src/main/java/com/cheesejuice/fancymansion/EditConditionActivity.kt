@@ -62,7 +62,7 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         binding = ActivityEditConditionBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_get_info_condition))
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -180,7 +180,7 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun makeEditConditionScreen(logic:Logic, condition: Condition) {
         with(binding){
-            showLoadingScreen(false, layoutLoading.root, layoutActive)
+            showLoadingScreen(false, layoutLoading.root, layoutActive, "")
             binding.tvCondId.text = "${condition.id}"
 
             // init condition 1 spinner
@@ -303,7 +303,7 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun makeNotHaveCondition() {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive)
+        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
         binding.layoutEmpty.root.visibility = View.VISIBLE
         binding.layoutContain.visibility = View.GONE
 
