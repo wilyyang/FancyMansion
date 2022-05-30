@@ -267,28 +267,25 @@
                                     <androidx.constraintlayout.widget.ConstraintLayout
                                         android:id="@+id/layoutEmptyComment"
                                         android:layout_width="match_parent"
-                                        android:layout_height="150dp"
-                                        android:layout_marginBottom="@dimen/margin_wide"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginVertical="@dimen/margin_wide"
                                         app:layout_constraintTop_toTopOf="parent"
                                         app:layout_constraintBottom_toTopOf="@+id/recyclerComment"
                                         android:visibility="gone">
 
                                         <ImageView
                                             android:id="@+id/imageViewEmpty"
-                                            android:layout_width="60dp"
-                                            android:layout_height="60dp"
-                                            android:src="@drawable/ic_book_open"
-                                            app:layout_constraintStart_toStartOf="parent"
-                                            app:layout_constraintEnd_toEndOf="parent"
-                                            app:layout_constraintTop_toTopOf="parent"
-                                            app:layout_constraintBottom_toBottomOf="parent"/>
+                                            android:layout_width="match_parent"
+                                            android:layout_height="150dp"
+                                            android:src="@drawable/image_no_comment"
+                                            app:layout_constraintTop_toTopOf="parent"/>
 
                                         <TextView
+                                            android:id="@+id/tvCommentEmpty"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:text="@string/display_no_comment"
-                                            android:textSize="@dimen/size_item"
-                                            android:layout_margin="@dimen/margin_default"
+                                            android:textSize="@dimen/size_detail"
                                             app:layout_constraintStart_toStartOf="parent"
                                             app:layout_constraintEnd_toEndOf="parent"
                                             app:layout_constraintTop_toBottomOf="@id/imageViewEmpty"/>

@@ -90,6 +90,8 @@ class CommentAdapter(val datas: MutableList<Comment>, val context: Context, val 
             if(holder.itemViewType == TYPE_ME){
                 binding.imageViewCommentEdit.visibility = View.VISIBLE
                 binding.imageViewCommentDelete.visibility = View.VISIBLE
+            }else{
+                binding.tvCommentReport.visibility = View.VISIBLE
             }
         }
     }

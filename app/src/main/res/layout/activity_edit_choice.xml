@@ -167,28 +167,29 @@
                                     <androidx.constraintlayout.widget.ConstraintLayout
                                         android:id="@+id/layoutEmptyEnter"
                                         android:layout_width="match_parent"
-                                        android:layout_height="150dp"
-                                        android:layout_marginBottom="@dimen/margin_wide"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginVertical="@dimen/margin_wide"
                                         app:layout_constraintTop_toTopOf="parent"
                                         app:layout_constraintBottom_toTopOf="@+id/recyclerEditEnter"
                                         android:visibility="gone">
 
                                         <ImageView
                                             android:id="@+id/imageViewEnterEmpty"
-                                            android:layout_width="60dp"
-                                            android:layout_height="60dp"
-                                            android:src="@drawable/ic_book_open"
+                                            android:layout_width="200dp"
+                                            android:layout_height="200dp"
+                                            android:src="@drawable/image_no_items"
                                             app:layout_constraintStart_toStartOf="parent"
                                             app:layout_constraintEnd_toEndOf="parent"
                                             app:layout_constraintTop_toTopOf="parent"
-                                            app:layout_constraintBottom_toBottomOf="parent"/>
+                                            app:layout_constraintBottom_toTopOf="@+id/tvEnterEmpty"/>
 
                                         <TextView
+                                            android:id="@+id/tvEnterEmpty"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:text="@string/no_have_enter"
-                                            android:textSize="@dimen/size_item"
-                                            android:layout_margin="@dimen/margin_default"
+                                            android:textSize="@dimen/size_detail"
+                                            android:textAlignment="center"
                                             app:layout_constraintStart_toStartOf="parent"
                                             app:layout_constraintEnd_toEndOf="parent"
                                             app:layout_constraintTop_toBottomOf="@id/imageViewEnterEmpty"/>
@@ -246,28 +247,29 @@
                                     <androidx.constraintlayout.widget.ConstraintLayout
                                         android:id="@+id/layoutEmptyCondition"
                                         android:layout_width="match_parent"
-                                        android:layout_height="150dp"
-                                        android:layout_marginBottom="@dimen/margin_wide"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginVertical="@dimen/margin_wide"
                                         app:layout_constraintTop_toTopOf="parent"
                                         app:layout_constraintBottom_toTopOf="@+id/recyclerEditShowCondition"
                                         android:visibility="gone">
 
                                         <ImageView
                                             android:id="@+id/imageViewConditionEmpty"
-                                            android:layout_width="60dp"
-                                            android:layout_height="60dp"
-                                            android:src="@drawable/ic_book_open"
+                                            android:layout_width="200dp"
+                                            android:layout_height="200dp"
+                                            android:src="@drawable/image_no_items"
                                             app:layout_constraintStart_toStartOf="parent"
                                             app:layout_constraintEnd_toEndOf="parent"
                                             app:layout_constraintTop_toTopOf="parent"
-                                            app:layout_constraintBottom_toBottomOf="parent"/>
+                                            app:layout_constraintBottom_toTopOf="@+id/tvConditionEmpty"/>
 
                                         <TextView
+                                            android:id="@+id/tvConditionEmpty"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:text="@string/no_have_condition"
-                                            android:textSize="@dimen/size_item"
-                                            android:layout_margin="@dimen/margin_default"
+                                            android:textSize="@dimen/size_detail"
+                                            android:textAlignment="center"
                                             app:layout_constraintStart_toStartOf="parent"
                                             app:layout_constraintEnd_toEndOf="parent"
                                             app:layout_constraintTop_toBottomOf="@id/imageViewConditionEmpty"/>

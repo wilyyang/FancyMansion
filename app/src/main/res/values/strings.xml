@@ -49,9 +49,9 @@
     <string name="frag_main_store">Book Store</string>
     <string name="frag_main_user">My Page</string>
 
-    <string name="frag_no_make_book">There is no book being created. Shall we give it a try?</string>
-    <string name="frag_no_my_book">Download the book from the bookstore</string>
-    <string name="frag_no_store_book">Could not find a book registered in the store…</string>
+    <string name="frag_no_make_book">There is no book being created. \nShall we give it a try?</string>
+    <string name="frag_no_my_book">Download the book from the bookstore!</string>
+    <string name="frag_no_store_book">Could not find a book registered in the store!</string>
 
     <string name="no_have_choice">There are no choice items.</string>
     <string name="no_have_enter">There are no enter items.</string>
@@ -158,12 +158,12 @@
 
     <string name="title_endwith_copy">(copy)</string>
 
-    <string name="toast_query_success">Data update success</string>
-    <string name="toast_db_fail">Data update failed</string>
-    <string name="toast_storage_fail">File update failed</string>
+    <string name="toast_query_success">Book update success</string>
+    <string name="toast_db_fail">Book update failed</string>
+    <string name="toast_storage_fail">Book update failed</string>
 
-    <string name="toast_download_success">File download success</string>
-    <string name="toast_download_fail">File download failed</string>
+    <string name="toast_download_success">Book download success</string>
+    <string name="toast_download_fail">Book download failed</string>
 
     <string name="display_downloads">Downloads :&#160;</string>
     <string name="display_comment_add">add</string>
@@ -177,6 +177,8 @@
 
     <string name="display_comment_order_oldest">order of registration</string>
     <string name="display_comment_order_recent">order of recent</string>
+
+    <string name="display_comment_report">Report</string>
 
     <string name="display_comment_input_comment">Input Comment.</string>
     <string name="display_good">Good :&#160;</string>

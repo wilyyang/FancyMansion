@@ -38,13 +38,13 @@
     <string name="frag_main_store">책방</string>
     <string name="frag_main_user">나의 정보</string>
 
-    <string name="frag_no_make_book">만들고 있는 책이 없습니다. 한번 해볼까요?</string>
-    <string name="frag_no_my_book">책방에서 책을 다운로드 받아보세요</string>
-    <string name="frag_no_store_book">스토어에 등록된 책을 찾지 못했어요…</string>
+    <string name="frag_no_make_book">만들고 있는 책이 없습니다. \n한번 만들어볼까요?</string>
+    <string name="frag_no_my_book">책방에서 책을 다운로드 받아보세요!</string>
+    <string name="frag_no_store_book">스토어에서 책을 찾지 못했어요!</string>
 
-    <string name="no_have_choice">선택 항목이 없습니다.</string>
-    <string name="no_have_enter">진입 항목이 없습니다.</string>
-    <string name="no_have_condition">조건 항목이 없습니다.</string>
+    <string name="no_have_choice">선택 항목이 없습니다.\n 한번 만들어보세요!</string>
+    <string name="no_have_enter">진입 항목이 없습니다.\n 한번 만들어보세요!</string>
+    <string name="no_have_condition">조건 항목이 없습니다.\n 한번 만들어보세요!</string>
 
     <string name="fab_add">추가</string>
 
@@ -156,12 +156,12 @@
 
     <string name="title_endwith_copy">(복사)</string>
 
-    <string name="toast_query_success">데이터 업데이트 성공</string>
-    <string name="toast_db_fail">데이터 업데이트 실패</string>
-    <string name="toast_storage_fail">파일 업데이트 실패</string>
+    <string name="toast_query_success">책 업데이트 성공</string>
+    <string name="toast_db_fail">책 업데이트 실패</string>
+    <string name="toast_storage_fail">책 업데이트 실패</string>
 
-    <string name="toast_download_success">파일 다운로드 성공</string>
-    <string name="toast_download_fail">파일 다운로드 실패</string>
+    <string name="toast_download_success">책 다운로드 성공</string>
+    <string name="toast_download_fail">책 다운로드 실패</string>
 
     <string name="display_downloads">다운로드 수 :&#160;</string>
     <string name="display_comment_add">댓글</string>
@@ -175,6 +175,8 @@
 
     <string name="display_comment_order_oldest">댓글 등록순</string>
     <string name="display_comment_order_recent">최신순</string>
+
+    <string name="display_comment_report">신고</string>
 
     <string name="display_comment_input_comment">댓글을 입력해주세요.</string>
     <string name="display_good">좋아요 :&#160;</string>

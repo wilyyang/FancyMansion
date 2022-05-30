@@ -131,59 +131,57 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
         commentAdapter.setItemClickListener(object: CommentAdapter.OnItemClickListener{
             override fun onClick(v: View, comment: Comment) {
                 binding.etAddComment.clearFocus()
-                if(firebaseUtil.checkAuth()){
-                    if(comment.uid == FirebaseUtil.auth.uid){
-                        BottomSheetDialog(this@DisplayBookActivity).also {  dialog ->
-                            val dialogView = LayoutEditCommentBinding.inflate(layoutInflater).apply {
-                                etAddComment.setText(comment.comment)
-                                tvCommentEdit.setOnClickListener {
-                                    isListLoading = true
-                                    progressbarComment.visibility = View.VISIBLE
-                                    layoutCommentUpdate.visibility = View.GONE
-                                    comment.apply {
-                                        this.comment = etAddComment.text.toString()
-                                        editTime = System.currentTimeMillis()
-                                        editCount += 1
-                                    }
-
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        firebaseUtil.editComment(comment)
-                                        val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = commentList.size.toLong(), isOrderRecent = isCommentOrderRecent)
-                                        commentList.clear()
-                                        commentList.addAll(addList)
-
-                                        withContext(Main){
-                                            commentAdapter.notifyDataSetChanged()
-                                            binding.layoutBody.fullScroll(View.FOCUS_DOWN)
-                                            dialog.dismiss()
-                                            isListLoading = false
-                                            updateEmptyComment()
-                                        }
-                                    }
+                if(firebaseUtil.checkAuth() && comment.uid == FirebaseUtil.auth.uid){
+                    BottomSheetDialog(this@DisplayBookActivity).also {  dialog ->
+                        val dialogView = LayoutEditCommentBinding.inflate(layoutInflater).apply {
+                            etAddComment.setText(comment.comment)
+                            tvCommentEdit.setOnClickListener {
+                                isListLoading = true
+                                progressbarComment.visibility = View.VISIBLE
+                                layoutCommentUpdate.visibility = View.GONE
+                                comment.apply {
+                                    this.comment = etAddComment.text.toString()
+                                    editTime = System.currentTimeMillis()
+                                    editCount += 1
                                 }
-                                tvCommentDelete.setOnClickListener {
-                                    isListLoading = true
-                                    progressbarComment.visibility = View.VISIBLE
-                                    layoutCommentUpdate.visibility = View.GONE
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        firebaseUtil.deleteComment(comment)
-                                        val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = commentList.size.toLong(), isOrderRecent = isCommentOrderRecent)
-                                        commentList.clear()
-                                        commentList.addAll(addList)
 
-                                        withContext(Main){
-                                            commentAdapter.notifyDataSetChanged()
-                                            binding.layoutBody.fullScroll(View.FOCUS_DOWN)
-                                            dialog.dismiss()
-                                            isListLoading = false
-                                            updateEmptyComment()
-                                        }
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    firebaseUtil.editComment(comment)
+                                    val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = commentList.size.toLong(), isOrderRecent = isCommentOrderRecent)
+                                    commentList.clear()
+                                    commentList.addAll(addList)
+
+                                    withContext(Main){
+                                        commentAdapter.notifyDataSetChanged()
+                                        binding.layoutBody.fullScroll(View.FOCUS_DOWN)
+                                        dialog.dismiss()
+                                        isListLoading = false
+                                        updateEmptyComment()
                                     }
                                 }
                             }
-                            dialog.setContentView(dialogView.root)
-                        }.show()
-                    }
+                            tvCommentDelete.setOnClickListener {
+                                isListLoading = true
+                                progressbarComment.visibility = View.VISIBLE
+                                layoutCommentUpdate.visibility = View.GONE
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    firebaseUtil.deleteComment(comment)
+                                    val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = commentList.size.toLong(), isOrderRecent = isCommentOrderRecent)
+                                    commentList.clear()
+                                    commentList.addAll(addList)
+
+                                    withContext(Main){
+                                        commentAdapter.notifyDataSetChanged()
+                                        binding.layoutBody.fullScroll(View.FOCUS_DOWN)
+                                        dialog.dismiss()
+                                        isListLoading = false
+                                        updateEmptyComment()
+                                    }
+                                }
+                            }
+                        }
+                        dialog.setContentView(dialogView.root)
+                    }.show()
                 }
             }
         })

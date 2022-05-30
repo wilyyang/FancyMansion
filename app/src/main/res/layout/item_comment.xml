@@ -61,6 +61,15 @@
                     android:layout_height="20dp"
                     android:visibility="gone"
                     android:src="@drawable/ic_trash"/>
+
+                <TextView
+                    android:id="@+id/tvCommentReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/display_comment_report"
+                    android:textSize="@dimen/size_comment_user"
+                    android:textColor="@color/black_4"
+                    android:visibility="gone"/>
             </LinearLayout>
         </LinearLayout>
 
