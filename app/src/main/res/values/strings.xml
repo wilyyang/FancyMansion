@@ -218,4 +218,9 @@
     <string name="loading_text_upload_make_book">Book is being uploaded to the store</string>
 
     <string name="loading_text_copy_make_book">The book is being copied.</string>
+
+    <string name="loading_text_download_estimate_file_size">Estimating file size to download</string>
+
+    <string name="loading_text_download_file_percent">Downloading file :&#160;</string>
+    <string name="loading_text_upload_file_percent">Uploading file :&#160;</string>
 </resources>

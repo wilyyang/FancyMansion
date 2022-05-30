@@ -8,6 +8,7 @@ import android.provider.OpenableColumns
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
@@ -68,9 +69,20 @@ fun Activity.registerGallaryResultName(imageView: ImageView? = null, afterResult
         }
     }
 
-
-
 // UI
+fun Activity.showLoadingPercent(loading: View, loadingText:String, progress:Int){
+    loading.findViewById<TextView>(R.id.tvLoading).text = loadingText
+    loading.findViewById<ProgressBar>(R.id.progressbarLoading)?.apply {
+        if(isIndeterminate){
+            loading.findViewById<TextView>(R.id.tvLoadingPercent).visibility = View.VISIBLE
+            isIndeterminate = false
+            max = 100
+        }
+        this.progress = progress+1
+    }
+    loading.findViewById<TextView>(R.id.tvLoadingPercent).text = "$progress %"
+}
+
 fun Activity.showLoadingScreen(isLoading: Boolean, loading: View, main: View, loadingText:String){
     if(isLoading){
         val view = this.currentFocus
@@ -80,13 +92,20 @@ fun Activity.showLoadingScreen(isLoading: Boolean, loading: View, main: View, lo
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
         loading.findViewById<TextView>(R.id.tvLoading).text = loadingText
+        loading.findViewById<ProgressBar>(R.id.progressbarLoading)?.apply {
+            if(!isIndeterminate){
+                loading.findViewById<TextView>(R.id.tvLoadingPercent).visibility = View.INVISIBLE
+                isIndeterminate = true
+                max = 0
+            }
+        }
+
         loading.visibility = View.VISIBLE
         main.visibility = View.GONE
 
     }else{
         loading.visibility = View.GONE
         main.visibility = View.VISIBLE
-
     }
 }
 

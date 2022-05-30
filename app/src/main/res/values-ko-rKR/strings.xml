@@ -216,4 +216,8 @@
     <string name="loading_text_upload_make_book">책을 스토어에 업로드하는 중입니다.</string>
 
     <string name="loading_text_copy_make_book">책을 복사하는 중입니다.</string>
+
+    <string name="loading_text_download_estimate_file_size">다운로드 파일 크기 산정중</string>
+    <string name="loading_text_download_file_percent">파일 다운로드 중 :&#160;</string>
+    <string name="loading_text_upload_file_percent">파일 업로드 중 :&#160;</string>
 </resources>

@@ -214,9 +214,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                 this@EditStartActivity.currentFocus?.clearFocus()
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_upload_make_book))
                 CoroutineScope(IO).launch {
-                    Log.d(TAG, "Start fire store update")
                     val dbSuccess = uploadBook()
-                    Log.d(TAG, "Start fire storage upload")
                     val fileSuccess = uploadBookFile()
 
                     isBookUpload = firebaseUtil.isBookUpload(config.publishCode)
@@ -351,11 +349,18 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
         var result = false
         val localBookFile = fileUtil.compressBook(bookId = config.bookId)
 
+        val total = localBookFile?.listFiles()?.sumOf { it.length() }?:0L
+        var current = 0L
         localBookFile?.listFiles()?.let { fileList ->
             for(subFile in fileList){
                 result = firebaseUtil.uploadBookFile("/${Const.FB_STORAGE_BOOK}/${config.uid}/${config.publishCode}/${subFile.name}", subFile)
                 if(!result){
                     break
+                }
+                current += subFile.length()
+
+                withContext(Main){
+                    showLoadingPercent(binding.layoutLoading.root, getString(R.string.loading_text_upload_file_percent)+subFile.name, ((current.toFloat() / total)*100).toInt())
                 }
             }
         }

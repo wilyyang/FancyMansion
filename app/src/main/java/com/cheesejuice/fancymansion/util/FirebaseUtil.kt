@@ -8,6 +8,7 @@ import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.Const.Companion.FB_ALL_BOOK
 import com.cheesejuice.fancymansion.Const.Companion.FB_ALL_COMMENT
 import com.cheesejuice.fancymansion.Const.Companion.TAG
+import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.model.Comment
 import com.cheesejuice.fancymansion.model.Config
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -21,6 +22,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.qualifiers.ActivityContext
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.tasks.await
 import java.io.File
 import javax.inject.Inject
@@ -96,7 +98,7 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
         return result
     }
 
-    suspend fun downloadBook(config: Config, dir:File){
+    suspend fun downloadBook(config: Config, dir:File, channel: Channel<Pair<String, Int>>){
         val bookRef = storage.reference.child("/${Const.FB_STORAGE_BOOK}/${config.uid}/${config.publishCode}")
         val list = bookRef.listAll().await()
 
@@ -104,11 +106,20 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
             dir.mkdir()
         }
 
+        val total = list.items.sumOf { item -> item.metadata.await().sizeBytes }
+        var current = 0L
+
         for(file in list.items){
             val subRef = bookRef.child(file.name)
             val subFile = File(dir, file.name)
             subRef.getFile(subFile).await()
+
+            current += subFile.length()
+            val data = Pair(context.getString(R.string.loading_text_download_file_percent)+subFile.name, ((current.toFloat() / total)*100).toInt())
+            channel.send(data)
         }
+
+        channel.close()
     }
 
     suspend fun deleteBook(config: Config){

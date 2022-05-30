@@ -2,6 +2,7 @@ package com.cheesejuice.fancymansion
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -9,8 +10,10 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.databinding.ActivityDisplayBookBinding
 import com.cheesejuice.fancymansion.databinding.LayoutEditCommentBinding
+import com.cheesejuice.fancymansion.extension.showLoadingPercent
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.Comment
 import com.cheesejuice.fancymansion.model.Config
@@ -22,6 +25,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.consumeEach
 import java.io.File
 import javax.inject.Inject
 
@@ -263,7 +268,17 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_download_store_book))
                 CoroutineScope(Dispatchers.IO).launch {
                     val dir = File(fileUtil.readOnlyUserPath, Const.FILE_PREFIX_READ+config.bookId+"_${config.publishCode}")
-                    firebaseUtil.downloadBook(config, dir)
+
+                    val channel : Channel<Pair<String, Int>> = Channel()
+                    launch {
+                        firebaseUtil.downloadBook(config, dir, channel)
+                    }
+
+                    for(data in channel ){
+                        withContext(Main){
+                            showLoadingPercent(binding.layoutLoading.root, data.first, data.second)
+                        }
+                    }
 
                     val downloads: Int = firebaseUtil.incrementBookDownloads(config.publishCode)
                     val isSuccess = fileUtil.extractBook(dir)
