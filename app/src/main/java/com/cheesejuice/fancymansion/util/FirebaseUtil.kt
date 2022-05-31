@@ -11,6 +11,7 @@ import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.model.Comment
 import com.cheesejuice.fancymansion.model.Config
+import com.cheesejuice.fancymansion.model.UserInfo
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -32,6 +33,7 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
         val auth: FirebaseAuth by lazy { Firebase.auth }
         private val db: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
         private val storage: FirebaseStorage by lazy { Firebase.storage }
+        var userInfo: UserInfo? = null
     }
 
     val email: String?
@@ -51,6 +53,59 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
         ).signOut()
     }
 
+    // User
+    suspend fun getUserInfo(uid: String): UserInfo?{
+        val documents = db.collection(Const.FB_DB_KEY_USER).whereEqualTo(Const.FB_DB_KEY_UID, uid).get().await().documents
+        return if(documents.size > 0) {
+            documents[0].toObject(UserInfo::class.java)
+        }else{ null }
+    }
+
+    suspend fun addUserInfo(userInfo: UserInfo): UserInfo? {
+        userInfo.id = db.collection(Const.FB_DB_KEY_USER).add(userInfo).await().id
+        db.collection(Const.FB_DB_KEY_USER).document(userInfo.id).set(userInfo).await()
+
+        val documents = db.collection(Const.FB_DB_KEY_USER).whereEqualTo(Const.FB_DB_KEY_UID, userInfo.uid).get().await().documents
+        return if(documents.size > 0) {
+            documents[0].toObject(UserInfo::class.java)
+        }else{ null }
+    }
+
+    private suspend fun registerBookInUserInfo(publishCode: String): Boolean {
+        var result = false
+        userInfo!!.apply {
+            uploadBookTime = System.currentTimeMillis()
+            uploadBookIds.add(publishCode)
+            db.collection(Const.FB_DB_KEY_USER).document(id).set(this).addOnSuccessListener {
+                result = true
+            }.await()
+        }
+        return result
+    }
+
+    private suspend fun unregisterBookInUserInfo(publishCode: String): Boolean {
+        var result = false
+        userInfo!!.apply {
+            uploadBookIds.remove(publishCode)
+            db.collection(Const.FB_DB_KEY_USER).document(id).set(this).addOnSuccessListener {
+                result = true
+            }.await()
+        }
+        return result
+    }
+
+    suspend fun updateCommentInUserInfo(): Boolean {
+        var result = false
+        userInfo!!.apply {
+            addCommentTime = System.currentTimeMillis()
+            db.collection(Const.FB_DB_KEY_USER).document(id).set(this).addOnSuccessListener {
+                result = true
+            }.await()
+        }
+        return result
+    }
+
+    // Book
     fun returnImageToCallback(filePath:String, successCallback:(Uri?)->Unit, failCallback:()->Unit = {}){
         storage.reference.child(filePath).downloadUrl.addOnCompleteListener {
             if (it.isSuccessful) {
@@ -77,7 +132,9 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
     }
 
     suspend fun uploadBookConfig(config: Config):String{
-        return db.collection(Const.FB_DB_KEY_BOOK).add(config).await().id
+        val publishCode = db.collection(Const.FB_DB_KEY_BOOK).add(config).await().id
+        registerBookInUserInfo(publishCode)
+        return publishCode
     }
 
     suspend fun updateBookConfig(config: Config){
@@ -134,6 +191,7 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
         }catch (e:Exception){
             e.printStackTrace()
         }
+        unregisterBookInUserInfo(config.publishCode)
     }
 
     suspend fun getBookList(limit:Long = FB_ALL_BOOK, startConfig:Config? = null, orderKey:Int, searchKeyword:String?):MutableList<Config>{

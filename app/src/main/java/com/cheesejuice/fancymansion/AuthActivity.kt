@@ -8,12 +8,18 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import com.cheesejuice.fancymansion.databinding.ActivityAuthBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
+import com.cheesejuice.fancymansion.model.UserInfo
 import com.cheesejuice.fancymansion.util.FirebaseUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -33,8 +39,23 @@ class AuthActivity : AppCompatActivity() {
                 FirebaseUtil.auth.signInWithCredential(credential)
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
-                            val intent = Intent(this, MainActivity::class.java)
-                            startActivity(intent)
+                            CoroutineScope(Dispatchers.Default).launch {
+                                FirebaseUtil.userInfo =
+                                    firebaseUtil.getUserInfo(uid = FirebaseUtil.auth.uid!!) ?: let {
+                                        firebaseUtil.addUserInfo(
+                                            UserInfo(
+                                                uid = FirebaseUtil.auth.uid!!,
+                                                email = firebaseUtil.email!!,
+                                                userName = firebaseUtil.name!!,
+                                                photoUrl = firebaseUtil.photoUrl.toString()
+                                            )
+                                        )
+                                    }
+                                withContext(Main){
+                                    val intent = Intent(this@AuthActivity, MainActivity::class.java)
+                                    startActivity(intent)
+                                }
+                            }
                         } else {
                             showLoadingScreen(false, binding.layoutLoading.root, binding.layoutBody, "")
                             Toast.makeText(this, "Failed login", Toast.LENGTH_SHORT).show()
@@ -54,10 +75,25 @@ class AuthActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         if(firebaseUtil.checkAuth()){
-            val intent = Intent(this, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            CoroutineScope(Dispatchers.Default).launch {
+                FirebaseUtil.userInfo =
+                    firebaseUtil.getUserInfo(uid = FirebaseUtil.auth.uid!!) ?: let {
+                        firebaseUtil.addUserInfo(
+                            UserInfo(
+                                uid = FirebaseUtil.auth.uid!!,
+                                email = firebaseUtil.email!!,
+                                userName = firebaseUtil.name!!,
+                                photoUrl = firebaseUtil.photoUrl.toString()
+                            )
+                        )
+                    }
+                withContext(Main){
+                    val intent = Intent(this@AuthActivity, MainActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    }
+                    startActivity(intent)
+                }
             }
-            startActivity(intent)
         }
 
         binding.googleLoginBtn.setOnClickListener {

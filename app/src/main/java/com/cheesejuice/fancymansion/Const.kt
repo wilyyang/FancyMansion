@@ -42,6 +42,9 @@ class Const {
         const val COUNT_ENTER_ID = 1_00L
         const val COUNT_ENTER_COND = 1L
 
+        const val CONST_TIME_LIMIT_COMMENT = 10000 // 10 second
+        const val CONST_TIME_LIMIT_BOOK = 600000 // 10 minute
+
         // Intent
         const val INTENT_BOOK_CREATE = "INTENT_BOOK_CREATE"
         const val INTENT_BOOK_ID = "INTENT_BOOK_ID"
@@ -90,6 +93,8 @@ class Const {
         const val FILE_PREFIX_READ = "read_"
 
         // Firebase
+        const val FB_DB_KEY_USER = "user"
+
         const val FB_DB_KEY_BOOK = "book"
         const val FB_STORAGE_BOOK = "book"
         const val FB_DB_KEY_TITLE = "title"

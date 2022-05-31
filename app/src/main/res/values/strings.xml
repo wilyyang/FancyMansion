@@ -225,4 +225,8 @@
 
     <string name="loading_text_download_file_percent">Downloading file :&#160;</string>
     <string name="loading_text_upload_file_percent">Uploading file :&#160;</string>
+
+    <string name="dialog_time_limit_title">Time Limit</string>
+    <string name="dialog_time_limit_book">You can upload a new book after 10 minutes of uploading a book. \n%d minutes left!</string>
+    <string name="dialog_time_limit_comment">You can add a comment 10 seconds after you post it. \n%d seconds left!</string>
 </resources>

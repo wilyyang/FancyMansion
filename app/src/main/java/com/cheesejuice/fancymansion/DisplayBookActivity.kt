@@ -1,5 +1,6 @@
 package com.cheesejuice.fancymansion
 
+import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -358,6 +359,19 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
     }
 
     private fun clickAddComment(){
+        val current = System.currentTimeMillis()
+        if(FirebaseUtil.userInfo!!.addCommentTime+Const.CONST_TIME_LIMIT_COMMENT > current){
+
+            val leftTime = (FirebaseUtil.userInfo!!.addCommentTime+Const.CONST_TIME_LIMIT_COMMENT - current) / 1000
+            util.getAlertDailog(
+                context = this@DisplayBookActivity,
+                title = getString(R.string.dialog_time_limit_title),
+                message = String.format(getString(R.string.dialog_time_limit_comment), leftTime),
+                click = { _, _ -> }
+            ).show()
+            return
+        }
+
         CoroutineScope(Dispatchers.IO).launch {
             if(firebaseUtil.checkAuth()){
                 isListLoading = true
@@ -367,6 +381,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
                 comment.id = firebaseUtil.addComment(comment)
                 firebaseUtil.editComment(comment)
+                firebaseUtil.updateCommentInUserInfo()
 
                 commentList.clear()
                 val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, isOrderRecent = isCommentOrderRecent)

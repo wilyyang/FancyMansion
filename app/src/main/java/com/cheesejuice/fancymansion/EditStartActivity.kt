@@ -212,6 +212,20 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.menu_upload -> {
                 this@EditStartActivity.currentFocus?.clearFocus()
+
+                val current = System.currentTimeMillis()
+                if(!isBookUpload && FirebaseUtil.userInfo!!.uploadBookTime+Const.CONST_TIME_LIMIT_BOOK > current){
+
+                    val leftTime = (FirebaseUtil.userInfo!!.uploadBookTime+Const.CONST_TIME_LIMIT_BOOK - current) / 60000
+                    util.getAlertDailog(
+                        context = this@EditStartActivity,
+                        title = getString(R.string.dialog_time_limit_title),
+                        message = String.format(getString(R.string.dialog_time_limit_book), leftTime),
+                        click = { _, _ -> }
+                    ).show()
+                    return true
+                }
+
                 showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_upload_make_book))
                 CoroutineScope(IO).launch {
                     val dbSuccess = uploadBook()

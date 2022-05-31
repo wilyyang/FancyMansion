@@ -222,4 +222,8 @@
     <string name="loading_text_download_estimate_file_size">다운로드 파일 크기 산정중</string>
     <string name="loading_text_download_file_percent">파일 다운로드 중 :&#160;</string>
     <string name="loading_text_upload_file_percent">파일 업로드 중 :&#160;</string>
+
+    <string name="dialog_time_limit_title">시간 제한</string>
+    <string name="dialog_time_limit_book">책 업로드 10분 후에 새로운 책 업로드가 가능합니다.\n%d 분 남았습니다!</string>
+    <string name="dialog_time_limit_comment">댓글을 올리고 10초 후에 댓글을 추가할 수 있습니다.\n%d 초 남았습니다!</string>
 </resources>
