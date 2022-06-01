@@ -1,6 +1,7 @@
 package com.cheesejuice.fancymansion
 
 import android.content.DialogInterface
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -10,10 +11,13 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.databinding.ActivityDisplayBookBinding
 import com.cheesejuice.fancymansion.databinding.LayoutEditCommentBinding
+import com.cheesejuice.fancymansion.databinding.LayoutReportBinding
+import com.cheesejuice.fancymansion.extension.showDialogAndStart
 import com.cheesejuice.fancymansion.extension.showLoadingPercent
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.Comment
@@ -22,6 +26,8 @@ import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FileUtil
 import com.cheesejuice.fancymansion.util.FirebaseUtil
 import com.cheesejuice.fancymansion.view.CommentAdapter
+import com.cheesejuice.fancymansion.view.ReportItemAdapter
+import com.cheesejuice.fancymansion.view.StoreBookAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -138,6 +144,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                             etAddComment.setText(comment.comment)
                             tvCommentEdit.setOnClickListener {
                                 isListLoading = true
+                                dialog.setCancelable(false)
                                 progressbarComment.visibility = View.VISIBLE
                                 layoutCommentUpdate.visibility = View.GONE
                                 comment.apply {
@@ -163,6 +170,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                             }
                             tvCommentDelete.setOnClickListener {
                                 isListLoading = true
+                                dialog.setCancelable(false)
                                 progressbarComment.visibility = View.VISIBLE
                                 layoutCommentUpdate.visibility = View.GONE
                                 CoroutineScope(Dispatchers.IO).launch {
@@ -180,6 +188,47 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                                     }
                                 }
                             }
+                        }
+                        dialog.setContentView(dialogView.root)
+                    }.show()
+                }else{
+                    BottomSheetDialog(this@DisplayBookActivity).also {  dialog ->
+                       val dialogView:LayoutReportBinding = LayoutReportBinding.inflate(layoutInflater).apply {
+                           val adapter  = ReportItemAdapter(resources.getStringArray(R.array.report_comment).toList(), object: ReportItemAdapter.OnItemClickListener{
+                               override fun onClick(position: Int) {
+                                   dialog.setCancelable(false)
+                                   util.getAlertDailog(
+                                       context = this@DisplayBookActivity,
+                                       title = getString(R.string.report_title),
+                                       message = getString(R.string.report_question),
+                                       click = { _, _ ->
+                                           isListLoading = true
+                                           progressbarReport.visibility = View.VISIBLE
+                                           layoutReport.visibility = View.INVISIBLE
+
+                                           CoroutineScope(Dispatchers.IO).launch {
+                                               firebaseUtil.incrementCommentReport(comment, position)
+
+                                               val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = commentList.size.toLong(), isOrderRecent = isCommentOrderRecent)
+                                               commentList.clear()
+                                               commentList.addAll(addList)
+
+                                               withContext(Main){
+                                                   commentAdapter.notifyDataSetChanged()
+                                                   binding.layoutBody.fullScroll(View.FOCUS_DOWN)
+                                                   dialog.dismiss()
+                                                   isListLoading = false
+                                                   updateEmptyComment()
+                                               }
+                                           }
+                                       }
+                                   ).setNegativeButton(getString(R.string.dialog_no)) { _, _ ->
+                                       dialog.dismiss()
+                                   }.setOnCancelListener { dialog.dismiss() }.show()
+                               }
+                           })
+                           recyclerReport.layoutManager = LinearLayoutManager(this@DisplayBookActivity)
+                           recyclerReport.adapter = adapter
                         }
                         dialog.setContentView(dialogView.root)
                     }.show()

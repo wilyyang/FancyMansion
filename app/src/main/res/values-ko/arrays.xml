@@ -32,4 +32,24 @@
         <item>그리고</item>
         <item>또는</item>
     </string-array>
+
+    <string-array name="report_comment">
+        <item>댓글에 광고가 담겨있어요</item>
+        <item>댓글에 욕설이 있어요</item>
+        <item>댓글이 선정적이에요</item>
+        <item>댓글이 폭력적이에요</item>
+        <item>댓글을 도배하고 있어요</item>
+        <item>댓글에 정치적 내용이 담겨있어요</item>
+    </string-array>
+
+    <string-array name="report_book">
+        <item>책에 광고 / 홍보하는 내용이 담겨있어요</item>
+        <item>책에 지나친 욕설이 있어요</item>
+        <item>책 내용이 지나치게 선정적이에요</item>
+        <item>책 내용이 지나치게 폭력적이에요</item>
+        <item>중복된 책을 올렸어요</item>
+        <item>다른 책을 도용했습니다</item>
+        <item>일러스트를 도용했습니다</item>
+        <item>책에 정치적 내용이 담겨있어요</item>
+    </string-array>
 </resources>

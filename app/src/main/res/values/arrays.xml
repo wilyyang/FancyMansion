@@ -32,4 +32,24 @@
         <item>and</item>
         <item>or</item>
     </string-array>
+
+    <string-array name="report_comment">
+        <item>Comments contain advertisements</item>
+        <item>There is profanity in the comments</item>
+        <item>There is something obscene in the comments</item>
+        <item>Comment is violent</item>
+        <item>This is a duplicate comment</item>
+        <item>Comments contain political content</item>
+    </string-array>
+
+    <string-array name="report_book">
+        <item>The book contains advertisements/promotions</item>
+        <item>The book contains excessive profanity</item>
+        <item>The content of the book is overly suggestive</item>
+        <item>The book is overly violent</item>
+        <item>The book has been previously uploaded.</item>
+        <item>The book stole its contents from another book.</item>
+        <item>The picture is used without copyright.</item>
+        <item>The book contains political content.</item>
+    </string-array>
 </resources>

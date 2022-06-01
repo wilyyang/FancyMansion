@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/padding_comment_dialog"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ProgressBar
+        android:id="@+id/progressbarReport"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:indeterminate="true"
+        android:layout_marginBottom="@dimen/margin_small"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutReport"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:id="@+id/tvReportTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/report_title"
+            android:textStyle="bold"
+            android:textSize="@dimen/size_item"
+            android:background="@drawable/divider_bottom"
+            app:layout_constraintTop_toTopOf="parent"
+            android:paddingVertical="@dimen/margin_default"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerReport"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/tvReportTitle"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

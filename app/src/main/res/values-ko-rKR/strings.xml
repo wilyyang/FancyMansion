@@ -226,4 +226,7 @@
     <string name="dialog_time_limit_title">시간 제한</string>
     <string name="dialog_time_limit_book">책 업로드 10분 후에 새로운 책 업로드가 가능합니다.\n%d 분 남았습니다!</string>
     <string name="dialog_time_limit_comment">댓글을 올리고 10초 후에 댓글을 추가할 수 있습니다.\n%d 초 남았습니다!</string>
+
+    <string name="report_question">신고하시겠습니까?</string>
+    <string name="report_title">신고하기</string>
 </resources>

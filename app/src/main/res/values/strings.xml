@@ -229,4 +229,7 @@
     <string name="dialog_time_limit_title">Time Limit</string>
     <string name="dialog_time_limit_book">You can upload a new book after 10 minutes of uploading a book. \n%d minutes left!</string>
     <string name="dialog_time_limit_comment">You can add a comment 10 seconds after you post it. \n%d seconds left!</string>
+
+    <string name="report_question">Are you sure you want to report?</string>
+    <string name="report_title">Report</string>
 </resources>

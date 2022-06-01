@@ -255,6 +255,7 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
         return configList
     }
 
+    // Good
     private suspend fun getBookGoodCount(publishCode: String):Int{
         return db.collection(Const.FB_DB_KEY_BOOK).document(publishCode).collection(Const.FB_DB_KEY_GOOD).get().await().size()
     }
@@ -318,6 +319,24 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
     suspend fun deleteComment(comment:Comment){
         db.collection(Const.FB_DB_KEY_BOOK).document(comment.bookPublishCode).collection(Const.FB_DB_KEY_COMMENT)
             .document(comment.id).delete().await()
+    }
+
+    suspend fun incrementCommentReport(comment:Comment, type:Int):Int{
+        with(db.collection(Const.FB_DB_KEY_BOOK).document(comment.bookPublishCode).collection(Const.FB_DB_KEY_COMMENT).document(comment.id)){
+            if(collection(Const.FB_DB_KEY_REPORT).whereEqualTo(Const.FB_DB_KEY_UID, auth.uid).get().await().size() <1){
+                collection(Const.FB_DB_KEY_REPORT).add( hashMapOf(Const.FB_DB_KEY_UID to auth.uid,
+                    Const.FB_DB_KEY_REPORT_TYPE to type)).await()
+                val reports = getCommentReports(comment)
+                update(Const.FB_DB_KEY_REPORT, reports).await()
+                return reports
+            }
+        }
+        return 0
+    }
+
+    private suspend fun getCommentReports(comment: Comment):Int{
+        return db.collection(Const.FB_DB_KEY_BOOK).document(comment.bookPublishCode).collection(Const.FB_DB_KEY_COMMENT).document(comment.id)
+            .collection(Const.FB_DB_KEY_REPORT).get().await().size()
     }
 
     suspend fun getCommentList(publishCode:String, limit:Long = FB_ALL_COMMENT, startComment: Comment? = null, isOrderRecent:Boolean):MutableList<Comment>{

@@ -108,6 +108,9 @@ class Const {
         const val FB_DB_KEY_COMMENT_ID = "id"
         const val FB_DB_KEY_COMMENT_TIME = "updateTime"
 
+        const val FB_DB_KEY_REPORT = "report"
+        const val FB_DB_KEY_REPORT_TYPE = "type"
+
         const val FB_ALL_BOOK = -10L
         const val FB_ALL_COMMENT = -10L
     }
