@@ -232,6 +232,8 @@
     <string name="report_question">신고하시겠습니까?</string>
     <string name="report_title">신고하기</string>
 
+    <string name="reported_comment">신고된 댓글입니다.</string>
+
     <string name="hint_book_title">책 제목을 입력해주세요.</string>
     <string name="hint_book_writer">작가 이름을 입력해주세요.</string>
     <string name="hint_book_illustrator">작화가 이름을 입력해주세요.</string>

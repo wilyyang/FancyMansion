@@ -140,117 +140,102 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
     private fun makeCommentList(_commentList : MutableList<Comment>) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
 
-        commentAdapter = CommentAdapter(_commentList, baseContext, config.uid)
-        commentAdapter.setItemClickListener(object: CommentAdapter.OnItemClickListener{
-            override fun onClick(v: View, comment: Comment) {
-                binding.etAddComment.clearFocus()
-                if(firebaseUtil.checkAuth() && comment.uid == FirebaseUtil.auth.uid){
-                    BottomSheetDialog(this@DisplayBookActivity).also {  dialog ->
-                        val dialogView = LayoutEditCommentBinding.inflate(layoutInflater).apply {
+        commentAdapter = CommentAdapter(_commentList, baseContext, config.uid).apply {
+            setItemClickListener(commentListener)
+        }
+
+        binding.recyclerComment.layoutManager = LinearLayoutManager(baseContext)
+        binding.recyclerComment.adapter = commentAdapter
+
+        binding.layoutBody.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            if(!isListLoading){
+                if(!v.canScrollVertically(1)){
+                    addMoreComment()
+                }
+            }
+        }
+    }
+
+    private val commentListener = object : CommentAdapter.OnItemClickListener {
+        override fun onClick(v: View, comment: Comment, viewType: Int) {
+            if(viewType == CommentAdapter.TYPE_REPORT) return
+            binding.etAddComment.clearFocus()
+            BottomSheetDialog(this@DisplayBookActivity).also { dialog ->
+                val dialogView =
+                    if (firebaseUtil.checkAuth() && comment.uid == FirebaseUtil.auth.uid) {
+                        LayoutEditCommentBinding.inflate(layoutInflater).apply {
                             etAddComment.setText(comment.comment)
                             tvCommentEdit.setOnClickListener {
-                                isListLoading = true
-                                dialog.setCancelable(false)
-                                progressbarComment.visibility = View.VISIBLE
-                                layoutCommentUpdate.visibility = View.GONE
                                 comment.apply {
                                     this.comment = etAddComment.text.toString()
                                     editTime = System.currentTimeMillis()
                                     editCount += 1
                                 }
 
-                                CoroutineScope(Dispatchers.IO).launch {
+                                bottomSheetCommonProcess(dialog, progressbarComment, layoutCommentUpdate) {
                                     firebaseUtil.editComment(comment)
-                                    val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = commentList.size.toLong(), isOrderRecent = isCommentOrderRecent)
-                                    commentList.clear()
-                                    commentList.addAll(addList)
-
-                                    withContext(Main){
-                                        commentAdapter.notifyDataSetChanged()
-                                        binding.layoutBody.fullScroll(View.FOCUS_DOWN)
-                                        dialog.dismiss()
-                                        isListLoading = false
-                                        updateEmptyComment()
-                                    }
                                 }
                             }
                             tvCommentDelete.setOnClickListener {
-                                isListLoading = true
-                                dialog.setCancelable(false)
-                                progressbarComment.visibility = View.VISIBLE
-                                layoutCommentUpdate.visibility = View.GONE
-                                CoroutineScope(Dispatchers.IO).launch {
+                                bottomSheetCommonProcess(dialog, progressbarComment, layoutCommentUpdate) {
                                     firebaseUtil.deleteComment(comment)
-                                    val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = commentList.size.toLong(), isOrderRecent = isCommentOrderRecent)
-                                    commentList.clear()
-                                    commentList.addAll(addList)
-
-                                    withContext(Main){
-                                        commentAdapter.notifyDataSetChanged()
-                                        binding.layoutBody.fullScroll(View.FOCUS_DOWN)
-                                        dialog.dismiss()
-                                        isListLoading = false
-                                        updateEmptyComment()
-                                    }
                                 }
                             }
                         }
-                        dialog.setContentView(dialogView.root)
-                    }.show()
-                }else{
-                    BottomSheetDialog(this@DisplayBookActivity).also {  dialog ->
-                       val dialogView:LayoutReportBinding = LayoutReportBinding.inflate(layoutInflater).apply {
-                           val adapter  = ReportItemAdapter(resources.getStringArray(R.array.report_comment).toList(), object: ReportItemAdapter.OnItemClickListener{
-                               override fun onClick(position: Int) {
-                                   dialog.setCancelable(false)
-                                   util.getAlertDailog(
-                                       context = this@DisplayBookActivity,
-                                       title = getString(R.string.report_title),
-                                       message = getString(R.string.report_question),
-                                       click = { _, _ ->
-                                           isListLoading = true
-                                           progressbarReport.visibility = View.VISIBLE
-                                           layoutReport.visibility = View.INVISIBLE
-
-                                           CoroutineScope(Dispatchers.IO).launch {
-                                               firebaseUtil.incrementCommentReport(comment, position)
-
-                                               val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = commentList.size.toLong(), isOrderRecent = isCommentOrderRecent)
-                                               commentList.clear()
-                                               commentList.addAll(addList)
-
-                                               withContext(Main){
-                                                   commentAdapter.notifyDataSetChanged()
-                                                   binding.layoutBody.fullScroll(View.FOCUS_DOWN)
-                                                   dialog.dismiss()
-                                                   isListLoading = false
-                                                   updateEmptyComment()
-                                               }
-                                           }
-                                       }
-                                   ).setNegativeButton(getString(R.string.dialog_no)) { _, _ ->
-                                       dialog.dismiss()
-                                   }.setOnCancelListener { dialog.dismiss() }.show()
-                               }
-                           })
-                           recyclerReport.layoutManager = LinearLayoutManager(this@DisplayBookActivity)
-                           recyclerReport.adapter = adapter
+                    } else {
+                        LayoutReportBinding.inflate(layoutInflater).apply {
+                            val adapter = ReportItemAdapter(
+                                resources.getStringArray(R.array.report_comment).toList(),
+                                object : ReportItemAdapter.OnItemClickListener {
+                                    override fun onClick(position: Int) {
+                                        util.getAlertDailog(
+                                            context = this@DisplayBookActivity,
+                                            title = getString(R.string.report_title), message = getString(R.string.report_question),
+                                            click = { _, _ ->
+                                                bottomSheetCommonProcess(dialog, progressbarReport, layoutReport) {
+                                                    firebaseUtil.incrementCommentReport(comment, position)
+                                                }
+                                            }
+                                        ).setNegativeButton(getString(R.string.dialog_no)) { _, _ -> dialog.dismiss()}
+                                            .setOnCancelListener { dialog.dismiss() }
+                                            .show()
+                                    }
+                                }
+                            )
+                            recyclerReport.layoutManager = LinearLayoutManager(this@DisplayBookActivity)
+                            recyclerReport.adapter = adapter
                         }
-                        dialog.setContentView(dialogView.root)
-                    }.show()
-                }
-            }
-        })
+                    }
+                dialog.setContentView(dialogView.root)
+            }.show()
+        }
+    }
 
-        binding.recyclerComment.layoutManager = LinearLayoutManager(baseContext)
-        binding.recyclerComment.adapter = commentAdapter
+    fun bottomSheetCommonProcess(dialog:BottomSheetDialog, progressbar:View, content:View, logic:suspend()->Unit = {}){
+        isListLoading = true
+        dialog.setCancelable(false)
+        progressbar.visibility = View.VISIBLE
+        content.visibility = View.GONE
 
-        binding.layoutBody.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+        CoroutineScope(Dispatchers.IO).launch {
+            /**firebaseUtil.editComment(comment)*/
+            /**firebaseUtil.deleteComment(comment)*/
+            /**firebaseUtil.incrementCommentReport(comment,position)*/
+            logic()
+            val addList = firebaseUtil.getCommentList(
+                publishCode = config.publishCode,
+                limit = commentList.size.toLong(),
+                isOrderRecent = isCommentOrderRecent
+            )
+            commentList.clear()
+            commentList.addAll(addList)
 
-            if(!isListLoading){
-                if(!v.canScrollVertically(1)){
-                    addMoreComment()
-                }
+            withContext(Main) {
+                commentAdapter.notifyDataSetChanged()
+                binding.layoutBody.fullScroll(View.FOCUS_DOWN)
+                dialog.dismiss()
+                isListLoading = false
+                updateEmptyComment()
             }
         }
     }

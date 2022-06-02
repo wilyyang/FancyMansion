@@ -4,7 +4,8 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/divider_bottom"
+    android:background="@drawable/bg_bottom_selector"
+    android:paddingHorizontal="@dimen/padding_small"
     android:paddingVertical="@dimen/padding_comment_vertical">
 
     <TextView

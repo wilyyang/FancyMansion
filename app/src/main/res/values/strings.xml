@@ -235,6 +235,8 @@
     <string name="report_question">Are you sure you want to report?</string>
     <string name="report_title">Report</string>
 
+    <string name="reported_comment">This is a reported comment.</string>
+
     <string name="hint_book_title">Input book title.</string>
     <string name="hint_book_writer">Input writer.</string>
     <string name="hint_book_illustrator">Input illustrator.</string>

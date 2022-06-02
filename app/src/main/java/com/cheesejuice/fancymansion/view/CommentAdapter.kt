@@ -1,6 +1,7 @@
 package com.cheesejuice.fancymansion.view
 
 import android.content.Context
+import android.graphics.Typeface
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -19,16 +20,17 @@ class CommentAdapter(val datas: MutableList<Comment>, val context: Context, val 
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     companion object {
-        private const val TYPE_ITEM = 0
-        private const val TYPE_LOADING = 1
-        private const val TYPE_ME = 2
+        const val TYPE_ITEM = 0
+        const val TYPE_LOADING = 1
+        const val TYPE_ME = 2
+        const val TYPE_REPORT = 3
     }
 
     // OnItemClickListener
     private lateinit var itemClickListener : OnItemClickListener
 
     interface OnItemClickListener {
-        fun onClick(v: View, comment: Comment)
+        fun onClick(v: View, comment: Comment, viewType: Int)
     }
 
     fun setItemClickListener(onItemClickListener: OnItemClickListener) {
@@ -37,24 +39,23 @@ class CommentAdapter(val datas: MutableList<Comment>, val context: Context, val 
 
     // Override
     override fun getItemViewType(position: Int): Int {
-        return when (datas[position].id) {
-            Const.VIEW_HOLDER_LOADING_COMMENT -> TYPE_LOADING
-            else -> {
-                if(FirebaseUtil.auth.uid == datas[position].uid) {
-                    TYPE_ME
-                }else{
-                    TYPE_ITEM
-                }
-            }
+        return if(datas[position].id == Const.VIEW_HOLDER_LOADING_COMMENT){
+            TYPE_LOADING
+        }else if(datas[position].report > Const.REPORT_COMMENT){
+            TYPE_REPORT
+        }else if(FirebaseUtil.auth.uid == datas[position].uid){
+            TYPE_ME
+        }else{
+            TYPE_ITEM
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
     {
-        return if (viewType == TYPE_ITEM || viewType == TYPE_ME){
-            CommentViewHolder(ItemCommentBinding.inflate(LayoutInflater.from(parent.context), parent, false))
-        }else{
+        return if (viewType == TYPE_LOADING){
             LoadingViewHolder(ItemCommentLoadingBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        }else{
+            CommentViewHolder(ItemCommentBinding.inflate(LayoutInflater.from(parent.context), parent, false))
         }
     }
 
@@ -72,7 +73,12 @@ class CommentAdapter(val datas: MutableList<Comment>, val context: Context, val 
                     binding.tvCommentDate.text = CommonUtil.longToTimeFormatss(editTime)+" "+context.getString(R.string.display_comment_is_edit)
                 }
 
-                binding.tvComment.text = comment
+                binding.tvComment.text = if(holder.itemViewType == TYPE_REPORT){
+                    binding.tvComment.setTypeface(null, Typeface.ITALIC)
+                    context.getString(R.string.reported_comment)
+                } else{
+                    comment
+                }
 
                 Glide.with(context).load(R.drawable.default_image).circleCrop().into(holder.binding.imageProfilePhoto)
                 if(photoUrl != ""){
@@ -83,7 +89,7 @@ class CommentAdapter(val datas: MutableList<Comment>, val context: Context, val 
 
             holder.apply {
                 itemView.setOnClickListener {
-                    itemClickListener.onClick(it, datas[this.bindingAdapterPosition])
+                    itemClickListener.onClick(it, datas[this.bindingAdapterPosition], holder.itemViewType)
                 }
             }
 

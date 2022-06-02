@@ -23,6 +23,9 @@ class Const {
         const val PAGE_COUNT_LONG = 10L
         const val COMMENT_COUNT = 10L
 
+        const val REPORT_COMMENT = 10
+        const val REPORT_BOOK = 15
+
         const val SLIDE_TYPE_NORMAL = 1
         const val SLIDE_TYPE_START = 2
         const val SLIDE_TYPE_END = 3
