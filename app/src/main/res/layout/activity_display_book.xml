@@ -100,6 +100,42 @@
                                     android:weightSum="1">
 
                                     <TextView
+                                        android:id="@+id/tvConfigVersion"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="@dimen/size_id"
+                                        android:layout_marginEnd="@dimen/margin_default"
+                                        android:layout_weight="0.5"
+                                        android:ellipsize="end"
+                                        android:maxLines="1"/>
+
+                                    <TextView
+                                        android:id="@+id/tvConfigTime"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="@dimen/size_id"
+                                        android:layout_weight="0.5"
+                                        android:layout_marginStart="@dimen/margin_default"
+                                        android:gravity="end"/>
+
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/tvConfigPub"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="@dimen/size_small_brief_id"
+                                    android:textColor="@color/black_4"
+                                    android:layout_marginBottom="@dimen/margin_default"
+                                    android:ellipsize="end"
+                                    android:maxLines="1"/>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="@string/display_downloads"
@@ -114,14 +150,6 @@
                                         android:maxLines="1"
                                         android:textSize="@dimen/size_config" />
 
-                                    <TextView
-                                        android:id="@+id/tvConfigTime"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:gravity="end"
-                                        android:ellipsize="end"
-                                        android:maxLines="1"
-                                        android:textSize="@dimen/size_config" />
                                 </LinearLayout>
 
                                 <LinearLayout
@@ -202,8 +230,8 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:maxLength="@integer/count_config_description"
-                                    android:layout_marginTop="@dimen/margin_title"
-                                    android:textSize="@dimen/size_detail" />
+                                    android:layout_marginVertical="@dimen/margin_title"
+                                    android:textSize="@dimen/size_item" />
                             </LinearLayout>
 
 
@@ -319,6 +347,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="0.8"
                             android:layout_marginEnd="@dimen/margin_default"
+                            android:hint="@string/display_comment_input_comment"
                             android:textColorHint="@color/not_choice"
                             android:textSize="@dimen/size_item">
 
@@ -326,7 +355,6 @@
                                 android:id="@+id/etAddComment"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="@string/display_comment_input_comment"
                                 android:maxLength="@integer/count_slide_choice"
                                 android:padding="5dp" />
                         </com.google.android.material.textfield.TextInputLayout>

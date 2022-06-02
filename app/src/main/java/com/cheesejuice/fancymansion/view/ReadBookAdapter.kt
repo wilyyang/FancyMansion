@@ -58,7 +58,7 @@ class ReadBookAdapter(val datas: MutableList<Config>, val fileUtil: FileUtil, va
                 binding.tvReadBookUpdate.text = CommonUtil.longToTimeFormatss(updateTime)
 
                 binding.tvReadBookTitle.text = title
-                binding.tvReadBookWriter.text = writer
+                binding.tvReadBookWriter.text = if(writer == "") email else writer
                 binding.tvReadBookIllustrator.text = illustrator
 
                 binding.imageCover.clipToOutline = true

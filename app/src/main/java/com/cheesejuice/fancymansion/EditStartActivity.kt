@@ -132,13 +132,14 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         with(conf){
-            binding.tvConfigId.text = "#$bookId (v $version)"
+            binding.tvConfigVersion.text = "v ${CommonUtil.versionToString(version)}"
             binding.tvConfigTime.text = CommonUtil.longToTimeFormatss(updateTime)
 
             binding.etConfigTitle.setText(title)
             binding.etConfigWriter.setText(writer)
             binding.etConfigIllustrator.setText(illustrator)
             binding.etConfigDescription.setText(description)
+            binding.tvConfigPub.text = getString(R.string.book_config_pub)+publishCode
         }
         fileUtil.getImageFile(conf.bookId, conf.coverImage, isCover = true)?.also {
             Glide.with(applicationContext).load(it).into(binding.imageViewShowMain)

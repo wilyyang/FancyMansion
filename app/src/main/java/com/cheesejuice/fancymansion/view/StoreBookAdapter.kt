@@ -63,7 +63,7 @@ class StoreBookAdapter(val datas: MutableList<Config>, val context: Context, val
                 binding.tvStoreBookUpdate.text = CommonUtil.longToTimeFormatss(updateTime)
 
                 binding.tvStoreBookTitle.text = title
-                binding.tvStoreBookWriter.text = writer
+                binding.tvStoreBookWriter.text = if(writer == "") email else writer
                 binding.tvStoreBookIllustrator.text = illustrator
 
                 binding.tvStoreBookDownloads.text = "$downloads"

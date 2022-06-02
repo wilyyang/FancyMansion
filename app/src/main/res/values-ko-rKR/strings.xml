@@ -102,6 +102,8 @@
     <string name="book_config_writer">작가 :&#160;</string>
     <string name="book_config_illustrator">일러스트 :&#160;</string>
 
+    <string name="book_config_pub">Publish code :&#160;</string>
+
     <string name="book_remove_my_book"><u>내 책에서 제거</u></string>
 
     <string name="book_slide_title">제목 :&#160;</string>
@@ -229,4 +231,15 @@
 
     <string name="report_question">신고하시겠습니까?</string>
     <string name="report_title">신고하기</string>
+
+    <string name="hint_book_title">책 제목을 입력해주세요.</string>
+    <string name="hint_book_writer">작가 이름을 입력해주세요.</string>
+    <string name="hint_book_illustrator">작화가 이름을 입력해주세요.</string>
+    <string name="hint_book_description">책 설명글을 입력해주세요.</string>
+
+    <string name="hint_slide_title">슬라이드 제목을 입력해주세요.</string>
+    <string name="hint_slide_description">내용을 입력해주세요.</string>
+    <string name="hint_slide_question">질문을 입력해주세요.</string>
+
+    <string name="hint_choice_title">선택항목 글을 입력해주세요.</string>
 </resources>

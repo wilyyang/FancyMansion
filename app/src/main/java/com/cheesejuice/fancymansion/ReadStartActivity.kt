@@ -68,10 +68,11 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
             binding.tvConfigTitle.text = title
             binding.tvConfigDescription.text = description
 
-            binding.tvConfigId.text = "#$bookId"
+            binding.tvConfigVersion.text = "v ${CommonUtil.versionToString(version)}"
             binding.tvConfigTime.text = CommonUtil.longToTimeFormatss(updateTime)
-            binding.tvConfigWriter.text = writer
+            binding.tvConfigWriter.text = "$writer ($email)"
             binding.tvConfigIllustrator.text = illustrator
+            binding.tvConfigPub.text = getString(R.string.book_config_pub)+publishCode
 
         }
         fileUtil.getImageFile(conf.bookId, conf.coverImage, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = config.publishCode, isCover = true)

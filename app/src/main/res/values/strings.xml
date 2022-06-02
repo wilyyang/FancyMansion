@@ -104,6 +104,8 @@
     <string name="book_config_writer">writer :&#160;</string>
     <string name="book_config_illustrator">illustrator :&#160;</string>
 
+    <string name="book_config_pub">Publish code :&#160;</string>
+
     <string name="book_remove_my_book"><u>Remove from my book</u></string>
 
     <string name="book_store_download">Downloads</string>
@@ -232,4 +234,15 @@
 
     <string name="report_question">Are you sure you want to report?</string>
     <string name="report_title">Report</string>
+
+    <string name="hint_book_title">Input book title.</string>
+    <string name="hint_book_writer">Input writer.</string>
+    <string name="hint_book_illustrator">Input illustrator.</string>
+    <string name="hint_book_description">Input description.</string>
+
+    <string name="hint_slide_title">Input slide title.</string>
+    <string name="hint_slide_description">Input description.</string>
+    <string name="hint_slide_question">Input question.</string>
+
+    <string name="hint_choice_title">Input choice text.</string>
 </resources>

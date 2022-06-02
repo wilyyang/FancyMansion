@@ -214,7 +214,7 @@
                                             android:id="@+id/etSlideDescription"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            android:minLines="3"
+                                            android:minLines="2"
                                             android:maxLength="@integer/count_slide_description"/>
 
                                     </com.google.android.material.textfield.TextInputLayout>

@@ -48,6 +48,8 @@ class CommonUtil @Inject constructor(@ActivityContext private val context: Conte
         val formatdate = SimpleDateFormat("yyyy-MM-dd", Locale("ko", "KR"))
         fun longToTimeFormatss(time: Long) = formatss.format(Date(time))
         fun longToTimeFormatdate(time: Long) = formatdate.format(Date(time))
+
+        fun versionToString(version:Long) = "${(version / 1000)}.${ (version / 10) % 100 }.${(version % 10)}"
     }
 
     fun getAlertDailog(context: Context,

@@ -124,11 +124,14 @@
                                         android:weightSum="1">
 
                                         <TextView
-                                            android:id="@+id/tvConfigId"
+                                            android:id="@+id/tvConfigVersion"
                                             android:layout_width="0dp"
                                             android:layout_height="wrap_content"
                                             android:textSize="@dimen/size_id"
-                                            android:layout_weight="0.5"/>
+                                            android:layout_marginEnd="@dimen/margin_default"
+                                            android:layout_weight="0.5"
+                                            android:ellipsize="end"
+                                            android:maxLines="1"/>
 
                                         <TextView
                                             android:id="@+id/tvConfigTime"
@@ -136,9 +139,20 @@
                                             android:layout_height="wrap_content"
                                             android:textSize="@dimen/size_id"
                                             android:layout_weight="0.5"
+                                            android:layout_marginStart="@dimen/margin_default"
                                             android:gravity="end"/>
 
                                     </LinearLayout>
+
+                                    <TextView
+                                        android:id="@+id/tvConfigPub"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="@dimen/size_small_brief_id"
+                                        android:textColor="@color/black_4"
+                                        android:layout_marginBottom="@dimen/margin_default"
+                                        android:ellipsize="end"
+                                        android:maxLines="1"/>
 
                                     <LinearLayout
                                         android:layout_width="match_parent"
@@ -186,6 +200,8 @@
                                             style="@style/BookInputLayout"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
+                                            android:hint="@string/display_comment_input_comment"
+                                            android:textColorHint="@color/not_choice"
                                             app:counterMaxLength="@integer/count_config_writer">
 
                                             <com.cheesejuice.fancymansion.view.RoundEditText
@@ -242,7 +258,7 @@
                                             android:id="@+id/etConfigDescription"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            android:minLines="3"
+                                            android:minLines="2"
                                             android:maxLength="@integer/count_config_description"/>
 
                                     </com.google.android.material.textfield.TextInputLayout>

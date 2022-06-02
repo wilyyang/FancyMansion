@@ -100,13 +100,19 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
         with(conf){
             binding.toolbar.title = title
-            binding.tvConfigDescription.text = description
+            if (description != "") {
+                binding.tvConfigDescription.text = description
+            } else {
+                binding.tvConfigDescription.visibility = View.GONE
+            }
 
+            binding.tvConfigVersion.text = "v ${CommonUtil.versionToString(version)}"
+            binding.tvConfigTime.text = CommonUtil.longToTimeFormatss(updateTime)
             binding.tvConfigDownloads.text = "$downloads"
             binding.tvConfigGood.text = "$good"
-            binding.tvConfigTime.text = CommonUtil.longToTimeFormatss(updateTime)
-            binding.tvConfigWriter.text = writer
+            binding.tvConfigWriter.text = "$writer ($email)"
             binding.tvConfigIllustrator.text = illustrator
+            binding.tvConfigPub.text = getString(R.string.book_config_pub)+publishCode
 
             firebaseUtil.returnImageToCallback("/${Const.FB_STORAGE_BOOK}/$uid/$publishCode/$coverImage", { result ->
                 Glide.with(baseContext).load(result).into(binding.imageViewShowMain)

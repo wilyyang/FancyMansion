@@ -3,15 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_save"
-        android:icon="@drawable/ic_save"
-        android:title="@string/menu_book_save"
-        app:showAsAction="always"/>
-
-    <item
-        android:id="@+id/menu_delete"
-        android:icon="@drawable/ic_remove"
-        android:title="@string/menu_book_delete"
+        android:id="@+id/menu_play"
+        android:icon="@drawable/ic_play"
+        android:title="@string/menu_book_play"
         app:showAsAction="always"/>
 
     <item
@@ -22,9 +16,15 @@
 
         <menu>
             <item
-                android:id="@+id/menu_play"
-                android:icon="@drawable/ic_play"
-                android:title="@string/menu_book_play"
+                android:id="@+id/menu_save"
+                android:icon="@drawable/ic_save"
+                android:title="@string/menu_book_save"
+                android:orderInCategory="1"/>
+
+            <item
+                android:id="@+id/menu_delete"
+                android:icon="@drawable/ic_remove"
+                android:title="@string/menu_book_delete"
                 android:orderInCategory="1"/>
 
             <item
