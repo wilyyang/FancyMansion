@@ -347,14 +347,15 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="0.8"
                             android:layout_marginEnd="@dimen/margin_default"
-                            android:hint="@string/display_comment_input_comment"
-                            android:textColorHint="@color/not_choice"
+                            app:hintEnabled="false"
                             android:textSize="@dimen/size_item">
 
                             <com.cheesejuice.fancymansion.view.RoundEditText
                                 android:id="@+id/etAddComment"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:hint="@string/display_comment_input_comment"
+                                android:textColorHint="@color/not_choice"
                                 android:maxLength="@integer/count_slide_choice"
                                 android:padding="5dp" />
                         </com.google.android.material.textfield.TextInputLayout>

@@ -111,6 +111,7 @@
                                         style="@style/BookInputLayout"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
+                                        app:hintEnabled="false"
                                         app:counterMaxLength="@integer/count_slide_choice">
 
                                         <com.cheesejuice.fancymansion.view.RoundEditText
@@ -119,6 +120,8 @@
                                             android:layout_height="wrap_content"
                                             android:maxLength="@integer/count_slide_choice"
                                             android:padding="5dp"
+                                            android:hint="@string/hint_choice_title"
+                                            android:textColorHint="@color/not_choice"
                                             tools:ignore="SpeakableTextPresentCheck" />
 
                                     </com.google.android.material.textfield.TextInputLayout>

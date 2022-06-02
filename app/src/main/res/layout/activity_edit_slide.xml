@@ -184,12 +184,15 @@
                                             style="@style/BookInputLayout"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
+                                            app:hintEnabled="false"
                                             app:counterMaxLength="@integer/count_slide_title">
 
                                             <com.cheesejuice.fancymansion.view.RoundEditText
                                                 android:id="@+id/etSlideTitle"
                                                 android:layout_width="match_parent"
                                                 android:layout_height="wrap_content"
+                                                android:hint="@string/hint_slide_title"
+                                                android:textColorHint="@color/not_choice"
                                                 android:maxLength="@integer/count_slide_title"/>
 
                                         </com.google.android.material.textfield.TextInputLayout>
@@ -208,6 +211,7 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         app:counterMaxLength="@integer/count_slide_description"
+                                        app:hintEnabled="false"
                                         android:layout_marginBottom="@dimen/margin_default">
 
                                         <com.cheesejuice.fancymansion.view.RoundEditText
@@ -215,6 +219,8 @@
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:minLines="2"
+                                            android:hint="@string/hint_slide_description"
+                                            android:textColorHint="@color/not_choice"
                                             android:maxLength="@integer/count_slide_description"/>
 
                                     </com.google.android.material.textfield.TextInputLayout>
@@ -236,12 +242,15 @@
                                             style="@style/BookInputLayout"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
+                                            app:hintEnabled="false"
                                             app:counterMaxLength="@integer/count_slide_question">
 
                                             <com.cheesejuice.fancymansion.view.RoundEditText
                                                 android:id="@+id/etSlideQuestion"
                                                 android:layout_width="match_parent"
                                                 android:layout_height="wrap_content"
+                                                android:hint="@string/hint_slide_question"
+                                                android:textColorHint="@color/not_choice"
                                                 android:maxLength="@integer/count_slide_question"/>
 
                                         </com.google.android.material.textfield.TextInputLayout>
