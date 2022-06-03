@@ -6,6 +6,6 @@
         android:id="@+id/action_sort"
         android:title="@string/app_name"
         app:actionViewClass="androidx.appcompat.widget.AppCompatSpinner"
-        android:background="@color/navy"
+        android:background="@color/color_icon"
         app:showAsAction="always" />
 </menu>

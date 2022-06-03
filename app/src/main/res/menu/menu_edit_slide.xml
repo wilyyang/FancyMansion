@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_play"
-        android:icon="@drawable/ic_play"
-        android:title="@string/menu_slide_play"
-        app:showAsAction="always"/>
+        android:id="@+id/menu_guide"
+        android:icon="@drawable/ic_help_circle"
+        android:title="@string/menu_guide"
+        app:showAsAction="always" />
 
     <item
         app:showAsAction="always"
@@ -16,22 +16,24 @@
 
         <menu>
             <item
+                android:id="@+id/menu_play"
+                android:icon="@drawable/ic_play"
+                android:title="@string/menu_slide_play"/>
+
+            <item
                 android:id="@+id/menu_save"
                 android:icon="@drawable/ic_save"
-                android:title="@string/menu_slide_save"
-                app:showAsAction="always"/>
+                android:title="@string/menu_slide_save"/>
 
             <item
                 android:id="@+id/menu_add"
                 android:icon="@drawable/ic_file_plus"
-                android:title="@string/menu_slide_add"
-                app:showAsAction="always"/>
+                android:title="@string/menu_slide_add"/>
 
             <item
                 android:id="@+id/menu_delete"
                 android:icon="@drawable/ic_file_minus"
-                android:title="@string/menu_slide_delete"
-                app:showAsAction="always"/>
+                android:title="@string/menu_slide_delete"/>
         </menu>
 
     </item>

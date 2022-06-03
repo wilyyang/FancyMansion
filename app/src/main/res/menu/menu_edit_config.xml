@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_play"
-        android:icon="@drawable/ic_play"
-        android:title="@string/menu_book_play"
-        app:showAsAction="always"/>
+        android:id="@+id/menu_guide"
+        android:icon="@drawable/ic_help_circle"
+        android:title="@string/menu_guide"
+        app:showAsAction="always" />
 
     <item
         app:showAsAction="always"
@@ -16,28 +16,29 @@
 
         <menu>
             <item
+                android:id="@+id/menu_play"
+                android:icon="@drawable/ic_play"
+                android:title="@string/menu_book_play"/>
+
+            <item
                 android:id="@+id/menu_save"
                 android:icon="@drawable/ic_save"
-                android:title="@string/menu_book_save"
-                android:orderInCategory="1"/>
+                android:title="@string/menu_book_save"/>
 
             <item
                 android:id="@+id/menu_delete"
                 android:icon="@drawable/ic_remove"
-                android:title="@string/menu_book_delete"
-                android:orderInCategory="1"/>
+                android:title="@string/menu_book_delete"/>
 
             <item
                 android:id="@+id/menu_upload"
                 android:icon="@drawable/ic_upload"
-                android:title="@string/menu_book_upload"
-                android:orderInCategory="1"/>
+                android:title="@string/menu_book_upload"/>
 
             <item
                 android:id="@+id/menu_copy"
                 android:icon="@drawable/ic_copy"
-                android:title="@string/menu_book_copy"
-                android:orderInCategory="1"/>
+                android:title="@string/menu_book_copy"/>
         </menu>
 
     </item>

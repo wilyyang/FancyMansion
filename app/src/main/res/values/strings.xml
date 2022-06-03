@@ -38,6 +38,8 @@
     <string name="menu_download">Download</string>
     <string name="menu_report_book">Report</string>
 
+    <string name="menu_guide">Guide</string>
+
     <string name="menu_main_make">make book</string>
     <string name="menu_main_book">my book</string>
     <string name="menu_main_store">book store</string>

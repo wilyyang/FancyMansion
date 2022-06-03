@@ -27,6 +27,8 @@
     <string name="menu_download">다운로드</string>
     <string name="menu_report_book">신고</string>
 
+    <string name="menu_guide">가이드</string>
+
     <string name="menu_main_make">만들기</string>
     <string name="menu_main_book">나의 책</string>
     <string name="menu_main_store">책방</string>
