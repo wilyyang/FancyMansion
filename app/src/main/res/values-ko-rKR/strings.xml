@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">상상멘션</string>
+    <string name="app_name">상상맨션</string>
 
     <string name="google_login">구글 로그인</string>
     <string name="menu_user_logout">로그아웃</string>
@@ -25,6 +25,7 @@
 
     <string name="menu_remove_store">스토어에서 삭제</string>
     <string name="menu_download">다운로드</string>
+    <string name="menu_report_book">신고</string>
 
     <string name="menu_main_make">만들기</string>
     <string name="menu_main_book">나의 책</string>
@@ -101,6 +102,9 @@
     <string name="book_config_date">업데이트 :&#160;</string>
     <string name="book_config_writer">작가 :&#160;</string>
     <string name="book_config_illustrator">일러스트 :&#160;</string>
+
+    <string name="book_config_user">올린이 :&#160;</string>
+    <string name="book_config_email">Email :&#160;</string>
 
     <string name="book_config_pub">Publish code :&#160;</string>
 
@@ -233,15 +237,16 @@
     <string name="report_title">신고하기</string>
 
     <string name="reported_comment">신고된 댓글입니다.</string>
+    <string name="reported_book">(신고접수)</string>
 
     <string name="hint_book_title">책 제목을 입력해주세요.</string>
-    <string name="hint_book_writer">작가 이름을 입력해주세요.</string>
-    <string name="hint_book_illustrator">작화가 이름을 입력해주세요.</string>
-    <string name="hint_book_description">책 설명글을 입력해주세요.</string>
+    <string name="hint_book_writer">글쓴이를 입력해주세요.</string>
+    <string name="hint_book_illustrator">작화가를 입력해주세요.</string>
+    <string name="hint_book_description">책 설명을 입력해주세요.</string>
 
-    <string name="hint_slide_title">슬라이드 제목을 입력해주세요.</string>
+    <string name="hint_slide_title">제목을 입력해주세요.</string>
     <string name="hint_slide_description">내용을 입력해주세요.</string>
     <string name="hint_slide_question">질문을 입력해주세요.</string>
 
-    <string name="hint_choice_title">선택항목 글을 입력해주세요.</string>
+    <string name="hint_choice_title">선택지를 입력해주세요.</string>
 </resources>

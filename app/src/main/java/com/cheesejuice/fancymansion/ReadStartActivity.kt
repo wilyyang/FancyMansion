@@ -70,7 +70,8 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
 
             binding.tvConfigVersion.text = "v ${CommonUtil.versionToString(version)}"
             binding.tvConfigTime.text = CommonUtil.longToTimeFormatss(updateTime)
-            binding.tvConfigWriter.text = "$writer ($email)"
+            binding.tvConfigUser.text = "$user ($email)"
+            binding.tvConfigWriter.text = writer
             binding.tvConfigIllustrator.text = illustrator
             binding.tvConfigPub.text = getString(R.string.book_config_pub)+publishCode
 

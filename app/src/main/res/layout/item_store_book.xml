@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingHorizontal="@dimen/padding_default"
-    android:background="@drawable/bg_bottom_selector"
+    android:background="@drawable/divider_bottom"
+    android:foreground="@drawable/fg_bottom_selector"
     android:paddingVertical="@dimen/padding_book">
 
     <ImageView
@@ -107,11 +108,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/size_book_item_name"
-                android:text="@string/book_config_writer"
+                android:text="@string/book_config_user"
                 android:textStyle="bold"/>
 
             <TextView
-                android:id="@+id/tvStoreBookWriter"
+                android:id="@+id/tvStoreBookUser"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_default"
@@ -131,15 +132,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/size_book_item_name"
-                android:text="@string/book_config_illustrator"
-                android:textStyle="bold"/>
+                android:text="@string/book_config_email"/>
 
             <TextView
-                android:id="@+id/tvStoreBookIllustrator"
+                android:id="@+id/tvStoreBookEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_default"
-                android:textStyle="bold"
                 android:textSize="@dimen/size_book_item_name"
                 android:ellipsize="end"
                 android:singleLine="true"/>

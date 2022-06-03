@@ -36,6 +36,7 @@
 
     <string name="menu_remove_store">Remove from store</string>
     <string name="menu_download">Download</string>
+    <string name="menu_report_book">Report</string>
 
     <string name="menu_main_make">make book</string>
     <string name="menu_main_book">my book</string>
@@ -103,6 +104,9 @@
     <string name="book_config_date">date :&#160;</string>
     <string name="book_config_writer">writer :&#160;</string>
     <string name="book_config_illustrator">illustrator :&#160;</string>
+
+    <string name="book_config_user">User :&#160;</string>
+    <string name="book_config_email">Email :&#160;</string>
 
     <string name="book_config_pub">Publish code :&#160;</string>
 
@@ -236,6 +240,7 @@
     <string name="report_title">Report</string>
 
     <string name="reported_comment">This is a reported comment.</string>
+    <string name="reported_book">(Reported)</string>
 
     <string name="hint_book_title">Input book title.</string>
     <string name="hint_book_writer">Input writer.</string>

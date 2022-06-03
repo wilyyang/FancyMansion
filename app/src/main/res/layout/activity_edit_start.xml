@@ -253,7 +253,8 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/book_config_description"
                                         android:textSize="@dimen/size_book"
-                                        android:layout_marginTop="@dimen/margin_default"/>
+                                        android:layout_marginTop="@dimen/margin_default"
+                                        android:layout_marginBottom="@dimen/margin_small"/>
 
                                     <com.google.android.material.textfield.TextInputLayout
                                         style="@style/BookInputLayout"

@@ -110,7 +110,9 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
             binding.tvConfigTime.text = CommonUtil.longToTimeFormatss(updateTime)
             binding.tvConfigDownloads.text = "$downloads"
             binding.tvConfigGood.text = "$good"
-            binding.tvConfigWriter.text = "$writer ($email)"
+
+            binding.tvConfigUser.text = "$user ($email)"
+            binding.tvConfigWriter.text = writer
             binding.tvConfigIllustrator.text = illustrator
             binding.tvConfigPub.text = getString(R.string.book_config_pub)+publishCode
 
@@ -122,6 +124,8 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
             if(!firebaseUtil.checkAuth() || conf.uid != FirebaseUtil.auth.uid) {
                 binding.toolbar.menu.findItem(R.id.menu_remove_store).isVisible = false
+            }else{
+                binding.toolbar.menu.findItem(R.id.menu_report).isVisible = false
             }
         }
 
@@ -332,6 +336,41 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                             Toast.LENGTH_SHORT).show()
                     }
                 }
+            }
+            R.id.menu_report -> {
+                BottomSheetDialog(this@DisplayBookActivity).also { dialog ->
+                    val dialogView =
+                        LayoutReportBinding.inflate(layoutInflater).apply {
+                            val adapter = ReportItemAdapter(
+                                resources.getStringArray(R.array.report_book).toList(),
+                                object : ReportItemAdapter.OnItemClickListener {
+                                    override fun onClick(position: Int) {
+                                        util.getAlertDailog(
+                                            context = this@DisplayBookActivity,
+                                            title = getString(R.string.report_title), message = getString(R.string.report_question),
+                                            click = { _, _ ->
+                                                dialog.setCancelable(false)
+                                                progressbarReport.visibility = View.VISIBLE
+                                                layoutReport.visibility = View.GONE
+
+                                                CoroutineScope(Dispatchers.IO).launch {
+                                                    firebaseUtil.incrementBookReport(config, position)
+                                                    withContext(Main) {
+                                                        dialog.dismiss()
+                                                    }
+                                                }
+                                            }
+                                        ).setNegativeButton(getString(R.string.dialog_no)) { _, _ -> dialog.dismiss()}
+                                            .setOnCancelListener { dialog.dismiss() }
+                                            .show()
+                                    }
+                                }
+                            )
+                            recyclerReport.layoutManager = LinearLayoutManager(this@DisplayBookActivity)
+                            recyclerReport.adapter = adapter
+                        }
+                    dialog.setContentView(dialogView.root)
+                }.show()
             }
         }
         return super.onOptionsItemSelected(item)

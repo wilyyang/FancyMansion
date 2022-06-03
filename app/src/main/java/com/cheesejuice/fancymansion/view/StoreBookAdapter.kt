@@ -1,6 +1,7 @@
 package com.cheesejuice.fancymansion.view
 
 import android.content.Context
+import android.graphics.Typeface
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -62,30 +63,38 @@ class StoreBookAdapter(val datas: MutableList<Config>, val context: Context, val
                 binding.tvStoreBookId.text = "#${bookId} ${publishCode}"
                 binding.tvStoreBookUpdate.text = CommonUtil.longToTimeFormatss(updateTime)
 
-                binding.tvStoreBookTitle.text = title
-                binding.tvStoreBookWriter.text = if(writer == "") email else writer
-                binding.tvStoreBookIllustrator.text = illustrator
+                binding.tvStoreBookUser.text = user
+                binding.tvStoreBookEmail.text = email
 
                 binding.tvStoreBookDownloads.text = "$downloads"
                 binding.tvStoreBookGood.text = "$good"
 
                 binding.imageCover.clipToOutline = true
+            }
 
-                if(coverImage != ""){
-                    firebaseUtil.returnImageToCallback("/book/$uid/$publishCode/$coverImage",
+            if(datas[position].report > Const.REPORT_BOOK){
+                binding.tvStoreBookTitle.text = "${datas[position].title} ${context.getString(R.string.reported_book)}"
+                binding.tvStoreBookTitle.setTypeface(null, Typeface.ITALIC)
+                Glide.with(context).load(R.drawable.default_image).into(holder.binding.imageCover)
+                return
+            }else{
+                binding.tvStoreBookTitle.text = datas[position].title
+                if(datas[position].coverImage != ""){
+                    firebaseUtil.returnImageToCallback("/book/${datas[position].uid}/${datas[position].publishCode}/${datas[position].coverImage}",
                         { result -> Glide.with(context).load(result).into(holder.binding.imageCover)},
                         { Glide.with(context).load(R.drawable.default_image).into(holder.binding.imageCover) }
                     )
                 }else{
                     Glide.with(context).load(R.drawable.default_image).into(holder.binding.imageCover)
                 }
-            }
 
-            holder.apply {
-                itemView.setOnClickListener {
-                    itemClickListener.onClick(it, datas[this.bindingAdapterPosition])
+                holder.apply {
+                    itemView.setOnClickListener {
+                        itemClickListener.onClick(it, datas[this.bindingAdapterPosition])
+                    }
                 }
             }
+
         }else if (holder is ReadBookAdapter.LoadingViewHolder){
 
         }

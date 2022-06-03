@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menu_play"
+        android:icon="@drawable/ic_play"
+        android:title="@string/menu_slide_play"
+        app:showAsAction="always"/>
+
+    <item
         app:showAsAction="always"
         android:title="more"
         android:icon="@drawable/ic_more_vertical"
@@ -25,12 +31,6 @@
                 android:id="@+id/menu_delete"
                 android:icon="@drawable/ic_file_minus"
                 android:title="@string/menu_slide_delete"
-                app:showAsAction="always"/>
-
-            <item
-                android:id="@+id/menu_play"
-                android:icon="@drawable/ic_play"
-                android:title="@string/menu_slide_play"
                 app:showAsAction="always"/>
         </menu>
 

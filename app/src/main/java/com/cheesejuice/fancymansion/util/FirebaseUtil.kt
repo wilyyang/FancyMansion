@@ -291,6 +291,7 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
         return 0
     }
 
+    // Downloads
     private suspend fun getDownloads(publishCode: String):Int{
         return db.collection(Const.FB_DB_KEY_BOOK).document(publishCode).collection(Const.FB_DB_KEY_DOWNLOADS).get().await().size()
     }
@@ -305,6 +306,25 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
             }
         }
         return 0
+    }
+
+    // Book Report
+    suspend fun incrementBookReport(config:Config, type:Int):Int{
+        with(db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode)){
+            if(collection(Const.FB_DB_KEY_REPORT).whereEqualTo(Const.FB_DB_KEY_UID, auth.uid).get().await().size() <1){
+                collection(Const.FB_DB_KEY_REPORT).add( hashMapOf(Const.FB_DB_KEY_UID to auth.uid,
+                    Const.FB_DB_KEY_REPORT_TYPE to type)).await()
+                val reports = getBookReports(config)
+                update(Const.FB_DB_KEY_REPORT, reports).await()
+                return reports
+            }
+        }
+        return 0
+    }
+
+    private suspend fun getBookReports(config: Config):Int{
+        return db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode)
+            .collection(Const.FB_DB_KEY_REPORT).get().await().size()
     }
 
     // Comment
