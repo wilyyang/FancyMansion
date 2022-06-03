@@ -68,7 +68,6 @@
                             android:layout_height="wrap_content"
                             android:padding="@dimen/padding_item"
                             android:background="@drawable/divider_bottom"
-                            app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
 
                             <ImageView
@@ -79,7 +78,7 @@
 
                             <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:orientation="vertical"
                                 android:layout_marginStart="@dimen/margin_default">
 
@@ -101,9 +100,28 @@
                                     android:ellipsize="end"
                                     android:singleLine="true"/>
 
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="@dimen/margin_small"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/user_upload_books"
+                                        android:textSize="@dimen/size_config"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/tvUserBooks"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/margin_default"
+                                        android:textSize="@dimen/size_config" />
+
+                                </LinearLayout>
                             </LinearLayout>
-
-
                         </LinearLayout>
 
                     </androidx.constraintlayout.widget.ConstraintLayout>

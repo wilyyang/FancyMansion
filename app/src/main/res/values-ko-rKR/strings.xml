@@ -251,4 +251,7 @@
     <string name="hint_slide_question">질문을 입력해주세요.</string>
 
     <string name="hint_choice_title">선택지를 입력해주세요.</string>
+
+    <string name="user_upload_books">업로드한 책 :&#160;</string>
+    <string name="user_received_good">받은 좋아요 :&#160;</string>
 </resources>

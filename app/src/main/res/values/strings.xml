@@ -254,4 +254,7 @@
     <string name="hint_slide_question">Input question.</string>
 
     <string name="hint_choice_title">Input choice text.</string>
+
+    <string name="user_upload_books">Upload Book :&#160;</string>
+    <string name="user_received_good">Received Good :&#160;</string>
 </resources>

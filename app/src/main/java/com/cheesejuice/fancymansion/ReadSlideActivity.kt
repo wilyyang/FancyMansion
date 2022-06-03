@@ -144,7 +144,7 @@ class ReadSlideActivity : AppCompatActivity() {
 
             val slideNext = fileUtil.getSlideFromFile(logic.bookId, nextSlideId, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode)
 
-            delay(100)
+            delay(300)
             withContext(Main){
                 slideNext?.also {
                     slide = it

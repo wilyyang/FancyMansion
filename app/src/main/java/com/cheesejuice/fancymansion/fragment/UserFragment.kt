@@ -55,6 +55,8 @@ class UserFragment : Fragment(), View.OnClickListener {
         if(firebaseUtil.name != null && firebaseUtil.email != null && firebaseUtil.photoUrl != null) {
             binding.tvProfileName.text = firebaseUtil.name
             binding.tvProfileEmail.text = firebaseUtil.email
+            val size = (FirebaseUtil.userInfo?.uploadBookIds?.size)?:0
+            binding.tvUserBooks.text = "$size"
 
             Glide.with(this).load(firebaseUtil.photoUrl).circleCrop().into(binding.imageProfile)
         }else{
