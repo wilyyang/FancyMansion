@@ -14,6 +14,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FancyMansion">
         <activity
+            android:name=".GuideActivity"
+            android:exported="true"
+            android:noHistory="true"
+            android:screenOrientation="portrait">
+
+        </activity>
+        <activity
             android:name=".AuthActivity"
             android:exported="true"
             android:noHistory="true"

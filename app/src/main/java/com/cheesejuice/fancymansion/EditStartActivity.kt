@@ -312,6 +312,10 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                     }
                 }
             }
+            R.id.menu_guide -> {
+                val intent = Intent(this@EditStartActivity, GuideActivity::class.java)
+                startActivity(intent)
+            }
         }
         return super.onOptionsItemSelected(item)
     }
