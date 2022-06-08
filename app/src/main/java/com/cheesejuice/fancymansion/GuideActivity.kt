@@ -19,12 +19,15 @@ class GuideActivity : AppCompatActivity() {
         guideList.apply {
             add(Guide(R.drawable.guide_cover_basic, "1번째"))
             add(Guide(R.drawable.guide_cover_image, "2번째"))
-            add(Guide(R.drawable.guide_cover_menu, "3번째"))
             add(Guide(R.drawable.guide_slide_basic, "4번째"))
             add(Guide(R.drawable.guide_slide_image, "2번째"))
             add(Guide(R.drawable.guide_slide_choice, "2번째"))
             add(Guide(R.drawable.guide_slide_nav, "2번째"))
-            add(Guide(R.drawable.guide_slide_menu, "2번째"))
+
+            add(Guide(R.drawable.guide_choice_basic, "4번째"))
+            add(Guide(R.drawable.guide_choice_route, "2번째"))
+            add(Guide(R.drawable.guide_choice_multi, "2번째"))
+            add(Guide(R.drawable.guide_choice_show, "2번째"))
         }
 
         binding.viewPagerGuide.adapter = GuideItemAdapter(guideList)

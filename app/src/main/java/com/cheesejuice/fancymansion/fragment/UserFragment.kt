@@ -64,8 +64,8 @@ class UserFragment : Fragment(), View.OnClickListener {
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_frag_store_book))
         CoroutineScope(Dispatchers.Default).launch {
             storeBookList.clear()
-            val addList = firebaseUtil.getBookList(limit = Const.PAGE_COUNT_LONG, orderKey = Const.ORDER_LATEST_IDX, searchKeyword = "")
-            storeBookList.addAll(addList)
+//            val addList = firebaseUtil.getBookList(limit = Const.PAGE_COUNT_LONG, orderKey = Const.ORDER_LATEST_IDX, searchKeyword = "")
+//            storeBookList.addAll(addList)
             withContext(Dispatchers.Main) {
                 showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
                 if(firebaseUtil.name != null && firebaseUtil.email != null && firebaseUtil.photoUrl != null) {
