@@ -6,7 +6,6 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.databinding.ActivityReadSlideBinding
-import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.*
 import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.view.ChoiceAdapter
@@ -24,6 +23,7 @@ class ReadSlideActivity : AppCompatActivity() {
 
     private lateinit var publishCode: String
     var mode: String = ""
+    private lateinit var adapter:ChoiceAdapter
 
     @Inject
     lateinit var util: CommonUtil
@@ -36,7 +36,7 @@ class ReadSlideActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityReadSlideBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_get_read_slide))
+        showReadBookLoadingScreen(true)
 
         if(bookUtil.getEditPlay()) { mode = Const.EDIT_PLAY}
 
@@ -73,7 +73,7 @@ class ReadSlideActivity : AppCompatActivity() {
     }
 
     private fun makeSlideScreen(logic: Logic, slide: Slide) {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
+        showReadBookLoadingScreen(false)
         with(slide){
             // Make Main Content
             fileUtil.getImageFile(logic.bookId, slideImage, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode)
@@ -106,7 +106,7 @@ class ReadSlideActivity : AppCompatActivity() {
 
             // Make Choice Item
             binding.recyclerChoice.layoutManager = LinearLayoutManager(baseContext)
-            val adapter = ChoiceAdapter(passChoiceItems)
+            adapter = ChoiceAdapter(passChoiceItems)
             adapter.setItemClickListener(object : ChoiceAdapter.OnItemClickListener {
                 override fun onClick(v: View, choiceItem: ChoiceItem) {
                     bookUtil.incrementIdCount(logic.bookId, FirebaseUtil.auth.uid!!, publishCode, choiceItem.id, mode)
@@ -123,13 +123,14 @@ class ReadSlideActivity : AppCompatActivity() {
     }
 
     private fun makeNotHaveSlide() {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
+        showReadBookLoadingScreen(false)
         binding.layoutEmpty.root.visibility = View.VISIBLE
         binding.layoutActive.visibility = View.GONE
     }
 
     private fun enterNextSlide(logic: Logic, choiceItem: ChoiceItem){
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_get_read_slide))
+        adapter.setDisabled(disabled = true)
+        showReadBookLoadingScreen(true)
 
         CoroutineScope(Default).launch {
             // Get Next Slide Id
@@ -151,11 +152,16 @@ class ReadSlideActivity : AppCompatActivity() {
                     bookUtil.incrementIdCount(logic.bookId, FirebaseUtil.auth.uid!!, publishCode, slide.slideId, mode)
                     makeSlideScreen(logic, slide)
                 }?:also {
-                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
+                    showReadBookLoadingScreen(false)
                     binding.layoutEmpty.root.visibility = View.VISIBLE
                     binding.layoutContain.visibility = View.GONE
                 }
             }
         }
+    }
+
+    private fun showReadBookLoadingScreen(isLoading: Boolean) {
+        binding.layoutLoading.root.visibility = if(isLoading) View.VISIBLE else View.GONE
+        binding.recyclerChoice.isEnabled = !isLoading
     }
 }

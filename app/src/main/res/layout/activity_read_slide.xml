@@ -6,13 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include
-        android:id="@+id/layoutLoading"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        layout="@layout/layout_loading"
-        android:visibility="gone"/>
-
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/layoutActive"
         android:layout_width="match_parent"
@@ -151,4 +144,11 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"/>-->
     </androidx.drawerlayout.widget.DrawerLayout>
+
+    <include
+        android:id="@+id/layoutLoading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/layout_loading_book"
+        android:visibility="gone"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

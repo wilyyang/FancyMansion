@@ -10,6 +10,8 @@ import com.cheesejuice.fancymansion.model.ChoiceItem
 class ChoiceAdapter(val datas: MutableList<ChoiceItem>):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
+    private var disabled = false
+
     // OnItemClickListener
     private lateinit var itemClickListener : OnItemClickListener
 
@@ -32,10 +34,24 @@ class ChoiceAdapter(val datas: MutableList<ChoiceItem>):
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val binding=(holder as ChoiceViewHolder).binding
         binding.tvItemText.text = datas[position].title
-        holder.apply {
-            itemView.setOnClickListener {
-                itemClickListener.onClick(it, datas[this.bindingAdapterPosition])
+
+        if (this.disabled) {
+            binding.root.isEnabled = false
+        } else {
+            holder.apply {
+                itemView.setOnClickListener {
+                    itemClickListener.onClick(it, datas[this.bindingAdapterPosition])
+                }
             }
+        }
+    }
+
+    fun setDisabled(disabled: Boolean) {
+        if(disabled){
+            this.disabled = true
+            notifyDataSetChanged()
+        }else{
+            this.disabled = false
         }
     }
 
