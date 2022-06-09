@@ -194,6 +194,19 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
         }
         unregisterBookInUserInfo(config.publishCode)
     }
+    suspend fun getUserBookList(uid:String):MutableList<Config> {
+        val configList = mutableListOf<Config>()
+        val documents = db.collection(Const.FB_DB_KEY_BOOK).whereEqualTo(Const.FB_DB_KEY_UID, uid)
+            .orderBy(Const.FB_DB_KEY_TIME).get().await().documents
+
+        for (document in documents){
+            val item = document.toObject(Config::class.java)
+            if (item != null) {
+                configList.add(item)
+            }
+        }
+        return configList
+    }
 
     suspend fun getBookList(limit:Long = FB_ALL_BOOK, startConfig:Config? = null, orderKey:Int, searchKeyword:String?):MutableList<Config>{
         val (sortKeyword, isAscending) = if(searchKeyword != null && searchKeyword != ""){

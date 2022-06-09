@@ -123,49 +123,107 @@
                                         android:textSize="@dimen/size_config" />
 
                                 </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="@dimen/margin_small"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/user_received_good"
+                                        android:textSize="@dimen/size_config"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/tvUserGood"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/margin_default"
+                                        android:textSize="@dimen/size_config" />
+
+                                </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>
 
+
                         <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/layoutEmptyBook"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
                             android:background="@drawable/divider_top"
                             app:layout_constraintTop_toBottomOf="@+id/layoutProfile"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            android:visibility="invisible">
+                            app:layout_constraintBottom_toBottomOf="parent">
 
-                            <ImageView
-                                android:id="@+id/imageViewEmpty"
-                                android:layout_width="250dp"
-                                android:layout_height="250dp"
-                                android:src="@drawable/image_no_my_book"
-                                app:layout_constraintVertical_bias="0.4"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
+                            <LinearLayout
+                                android:id="@+id/layoutUploadBookTitle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/margin_small"
                                 app:layout_constraintTop_toTopOf="parent"
+                                android:background="@drawable/divider_bottom_light"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/ic_dot"
+                                    android:layout_gravity="center_vertical"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/frag_user_upload_list"
+                                    android:textColor="@color/black_8"
+                                    android:textSize="@dimen/size_small"
+                                    android:textStyle="bold"
+                                    android:paddingVertical="@dimen/padding_default"
+                                    android:layout_gravity="center_vertical"/>
+                            </LinearLayout>
+
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/layoutEmptyBook"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                app:layout_constraintTop_toBottomOf="@+id/layoutUploadBookTitle"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                android:visibility="invisible">
+
+                                <ImageView
+                                    android:id="@+id/imageViewEmpty"
+                                    android:layout_width="250dp"
+                                    android:layout_height="250dp"
+                                    android:src="@drawable/image_no_book"
+                                    app:layout_constraintVertical_bias="0.4"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+                                <TextView
+                                    android:id="@+id/tvEmptyBook"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/frag_no_upload_book"
+                                    android:textSize="@dimen/size_item"
+                                    android:textAlignment="center"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@id/imageViewEmpty"/>
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recyclerUserUploadBook"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                app:layout_constraintTop_toBottomOf="@+id/layoutUploadBookTitle"
                                 app:layout_constraintBottom_toBottomOf="parent"/>
 
-                            <TextView
-                                android:id="@+id/tvEmptyBook"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/frag_no_store_book"
-                                android:textSize="@dimen/size_item"
-                                android:textAlignment="center"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/imageViewEmpty"/>
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/recyclerStoreBook"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:background="@drawable/divider_top"
-                            app:layout_constraintTop_toBottomOf="@+id/layoutProfile"
-                            app:layout_constraintBottom_toBottomOf="parent"/>
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 

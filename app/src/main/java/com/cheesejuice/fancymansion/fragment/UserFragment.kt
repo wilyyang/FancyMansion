@@ -30,7 +30,7 @@ class UserFragment : Fragment(), View.OnClickListener {
     private var _binding: FragmentUserBinding? = null
     private val binding get() = _binding!!
 
-    private var storeBookList : MutableList<Config> = mutableListOf()
+    private var userUploadBookList : MutableList<Config> = mutableListOf()
 
     @Inject
     lateinit var util: CommonUtil
@@ -45,7 +45,19 @@ class UserFragment : Fragment(), View.OnClickListener {
 
     private val displayBookForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            //
+            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_frag_store_book))
+            CoroutineScope(Dispatchers.Default).launch {
+                userUploadBookList.clear()
+                val addList = firebaseUtil.getUserBookList(FirebaseUtil.auth.uid!!)
+                userUploadBookList.addAll(addList)
+                withContext(Dispatchers.Main) {
+                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
+                    binding.tvUserBooks.text = "${userUploadBookList.size}"
+                    binding.tvUserGood.text = "${userUploadBookList.map { it.good }.sum()}"
+                    storeBookAdapter.notifyDataSetChanged()
+                    updateEmptyBook()
+                }
+            }
         }
 
     override fun onCreateView(
@@ -63,19 +75,19 @@ class UserFragment : Fragment(), View.OnClickListener {
 
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_frag_store_book))
         CoroutineScope(Dispatchers.Default).launch {
-            storeBookList.clear()
-//            val addList = firebaseUtil.getBookList(limit = Const.PAGE_COUNT_LONG, orderKey = Const.ORDER_LATEST_IDX, searchKeyword = "")
-//            storeBookList.addAll(addList)
+            userUploadBookList.clear()
+            val addList = firebaseUtil.getUserBookList(FirebaseUtil.auth.uid!!)
+            userUploadBookList.addAll(addList)
             withContext(Dispatchers.Main) {
                 showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
                 if(firebaseUtil.name != null && firebaseUtil.email != null && firebaseUtil.photoUrl != null) {
                     binding.tvProfileName.text = firebaseUtil.name
                     binding.tvProfileEmail.text = firebaseUtil.email
-                    val size = (FirebaseUtil.userInfo?.uploadBookIds?.size)?:0
-                    binding.tvUserBooks.text = "$size"
+                    binding.tvUserBooks.text = "${userUploadBookList.size}"
+                    binding.tvUserGood.text = "${userUploadBookList.map { it.good }.sum()}"
                     Glide.with(this@UserFragment).load(firebaseUtil.photoUrl).circleCrop().into(binding.imageProfile)
 
-                    storeBookAdapter = StoreUserBookAdapter(storeBookList, requireActivity(), firebaseUtil)
+                    storeBookAdapter = StoreUserBookAdapter(userUploadBookList, requireActivity(), firebaseUtil)
                     storeBookAdapter.setItemClickListener(object: StoreUserBookAdapter.OnItemClickListener{
                         override fun onClick(v: View, config: Config) {
                             val intent = Intent(activity, DisplayBookActivity::class.java).apply {
@@ -85,8 +97,8 @@ class UserFragment : Fragment(), View.OnClickListener {
                         }
                     })
 
-                    binding.recyclerStoreBook.layoutManager = LinearLayoutManager(context)
-                    binding.recyclerStoreBook.adapter = storeBookAdapter
+                    binding.recyclerUserUploadBook.layoutManager = LinearLayoutManager(context)
+                    binding.recyclerUserUploadBook.adapter = storeBookAdapter
                     updateEmptyBook()
                 }else{
                     util.getAlertDailog(activity as AppCompatActivity).show()
@@ -97,13 +109,13 @@ class UserFragment : Fragment(), View.OnClickListener {
     }
 
     private fun updateEmptyBook(){
-        if(storeBookList.size < 1 && _binding != null)
+        if(userUploadBookList.size < 1 && _binding != null)
         {
             binding.layoutEmptyBook.visibility = View.VISIBLE
-            binding.recyclerStoreBook.visibility = View.INVISIBLE
+            binding.recyclerUserUploadBook.visibility = View.INVISIBLE
         }else{
             binding.layoutEmptyBook.visibility = View.INVISIBLE
-            binding.recyclerStoreBook.visibility = View.VISIBLE
+            binding.recyclerUserUploadBook.visibility = View.VISIBLE
         }
     }
 

@@ -44,6 +44,9 @@
     <string name="frag_no_make_book">만들고 있는 책이 없습니다. \n한번 만들어볼까요?</string>
     <string name="frag_no_my_book">책방에서 책을 다운로드 받아보세요!</string>
     <string name="frag_no_store_book">스토어에서 책을 찾지 못했어요!</string>
+    <string name="frag_no_upload_book">아직 업로드한 책이 없습니다!</string>
+
+    <string name="frag_user_upload_list">업로드한 책 목록</string>
 
     <string name="no_have_choice">선택 항목이 없습니다.\n 한번 만들어보세요!</string>
     <string name="no_have_enter">진입 항목이 없습니다.\n 한번 만들어보세요!</string>

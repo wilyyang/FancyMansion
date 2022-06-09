@@ -55,6 +55,9 @@
     <string name="frag_no_make_book">There is no book being created. \nShall we give it a try?</string>
     <string name="frag_no_my_book">Download the book from the bookstore!</string>
     <string name="frag_no_store_book">Could not find a book registered in the store!</string>
+    <string name="frag_no_upload_book">No books have been uploaded yet!</string>
+
+    <string name="frag_user_upload_list">Uploaded Book List</string>
 
     <string name="no_have_choice">There are no choice items.</string>
     <string name="no_have_enter">There are no enter items.</string>
