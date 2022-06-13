@@ -78,10 +78,10 @@ class ReadSlideActivity : AppCompatActivity() {
             // Make Main Content
             fileUtil.getImageFile(logic.bookId, slideImage, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode)
                 ?.also {
+                    binding.layoutShow.visibility = View.VISIBLE
                     Glide.with(applicationContext).load(it).into(binding.imageViewShowMain)
                 } ?: also {
-                Glide.with(applicationContext).load(R.drawable.default_image)
-                    .into(binding.imageViewShowMain)
+                binding.layoutShow.visibility = View.GONE
             }
 
             binding.tvSlideTitle.text = slideTitle
@@ -145,7 +145,7 @@ class ReadSlideActivity : AppCompatActivity() {
 
             val slideNext = fileUtil.getSlideFromFile(logic.bookId, nextSlideId, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode)
 
-            delay(300)
+            delay(500)
             withContext(Main){
                 slideNext?.also {
                     slide = it

@@ -129,6 +129,8 @@
 
     <string name="book_slide_type">유형 :&#160;</string>
 
+    <string name="book_slide_empty_image">이미지가 없습니다.</string>
+
     <string name="slide_type_normal">일반</string>
     <string name="slide_type_start">시작</string>
     <string name="slide_type_ending">엔딩</string>
