@@ -17,17 +17,26 @@ class GuideActivity : AppCompatActivity() {
 
         guideList = mutableListOf()
         guideList.apply {
-            add(Guide(R.drawable.guide_cover_basic, "1번째"))
-            add(Guide(R.drawable.guide_cover_image, "2번째"))
-            add(Guide(R.drawable.guide_slide_basic, "4번째"))
-            add(Guide(R.drawable.guide_slide_image, "2번째"))
-            add(Guide(R.drawable.guide_slide_choice, "2번째"))
-            add(Guide(R.drawable.guide_slide_nav, "2번째"))
+            add(Guide(R.drawable.guide_cover_basic, "guide"))
+            add(Guide(R.drawable.guide_cover_image, "guide"))
 
-            add(Guide(R.drawable.guide_choice_basic, "4번째"))
-            add(Guide(R.drawable.guide_choice_route, "2번째"))
-            add(Guide(R.drawable.guide_choice_multi, "2번째"))
-            add(Guide(R.drawable.guide_choice_show, "2번째"))
+            add(Guide(R.drawable.guide_slide_basic, "guide"))
+            add(Guide(R.drawable.guide_slide_image, "guide"))
+            add(Guide(R.drawable.guide_slide_choice, "guide"))
+            add(Guide(R.drawable.guide_slide_nav, "guide"))
+
+            add(Guide(R.drawable.guide_choice_basic, "guide"))
+            add(Guide(R.drawable.guide_choice_route, "guide"))
+            add(Guide(R.drawable.guide_choice_multi, "guide"))
+            add(Guide(R.drawable.guide_choice_show, "guide"))
+
+            add(Guide(R.drawable.guide_enter_basic, "guide"))
+            add(Guide(R.drawable.guide_enter_condition, "guide"))
+
+            add(Guide(R.drawable.guide_condition_basic, "guide"))
+            add(Guide(R.drawable.guide_condition_id, "guide"))
+            add(Guide(R.drawable.guide_condition_op, "guide"))
+            add(Guide(R.drawable.guide_condition_next, "guide"))
         }
 
         binding.viewPagerGuide.adapter = GuideItemAdapter(guideList)
