@@ -79,7 +79,6 @@
                                     android:layout_height="@dimen/size_image_height"
                                     android:background="@drawable/divider_bottom_light">
 
-
                                 <ImageView
                                         android:id="@+id/imageViewShowMain"
                                         android:layout_width="match_parent"
@@ -110,6 +109,34 @@
                                             app:srcCompat="@drawable/ic_image" />
 
                                     </LinearLayout>
+
+                                    <androidx.constraintlayout.widget.ConstraintLayout
+                                        android:id="@+id/layoutEmptyImage"
+                                        android:orientation="vertical"
+                                        android:background="@color/not_choice"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent">
+
+                                        <ImageView
+                                            android:id="@+id/imageViewEmpty"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="220dp"
+                                            android:src="@drawable/ic_no_image"
+                                            app:layout_constraintVertical_bias="0.4"
+                                            app:layout_constraintTop_toTopOf="parent"
+                                            app:layout_constraintBottom_toBottomOf="parent"/>
+
+                                        <TextView
+                                            android:id="@+id/tvEmptyImage"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="0dp"
+                                            android:textAlignment="center"
+                                            android:text="@string/book_slide_empty_image"
+                                            android:textStyle="bold"
+                                            android:textColor="@color/gray"
+                                            app:layout_constraintTop_toBottomOf="@+id/imageViewEmpty"
+                                            app:layout_constraintBottom_toBottomOf="parent"/>
+                                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                                 </androidx.constraintlayout.widget.ConstraintLayout>
 

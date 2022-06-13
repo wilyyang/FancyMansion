@@ -5,26 +5,29 @@
     android:background="@color/black_8"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ImageView
-        android:id="@+id/imageViewReadLoading"
-        android:layout_width="350dp"
-        android:layout_height="350dp"
-        android:src="@drawable/default_image"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+    <ProgressBar
+        android:progressDrawable="@drawable/circular_book_progress"
+        android:indeterminateDuration="800"
+        android:indeterminate="true"
+        android:id="@+id/progressbarLoading"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.4" />
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <TextView
         android:id="@+id/tvLoading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/loading_text_get_read_slide"
-        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textColor="@color/not_choice"
         android:textSize="@dimen/size_item"
+        android:layout_margin="@dimen/margin_wide"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageViewReadLoading"/>
+        app:layout_constraintTop_toBottomOf="@id/progressbarLoading"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

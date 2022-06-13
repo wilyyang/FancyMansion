@@ -230,13 +230,14 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             binding.etSlideDescription.setText(description)
             binding.etSlideQuestion.setText(question)
         }
-        Glide.with(applicationContext).load(
-            fileUtil.getImageFile(logic.bookId, slide.slideImage)?.apply{
-                this
-            }?:let {
-                R.drawable.default_image
-            }
-        ).into(binding.imageViewShowMain)
+
+        fileUtil.getImageFile(logic.bookId, slide.slideImage)?.also{
+            binding.layoutEmptyImage.visibility = View.GONE
+            Glide.with(applicationContext).load(it).into(binding.imageViewShowMain)
+        }?:also{
+            binding.layoutEmptyImage.visibility = View.VISIBLE
+        }
+
 
         when(slideLogic.type){
             Const.SLIDE_TYPE_NORMAL -> {

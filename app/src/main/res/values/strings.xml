@@ -128,6 +128,8 @@
 
     <string name="book_slide_type">type :&#160;</string>
 
+    <string name="book_slide_empty_image">no image</string>
+
     <string name="slide_type_normal">Normal</string>
     <string name="slide_type_start">Start</string>
     <string name="slide_type_ending">Ending</string>
