@@ -51,11 +51,13 @@ class UserFragment : Fragment(), View.OnClickListener {
                 val addList = firebaseUtil.getUserBookList(FirebaseUtil.auth.uid!!)
                 userUploadBookList.addAll(addList)
                 withContext(Dispatchers.Main) {
-                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
-                    binding.tvUserBooks.text = "${userUploadBookList.size}"
-                    binding.tvUserGood.text = "${userUploadBookList.map { it.good }.sum()}"
-                    storeBookAdapter.notifyDataSetChanged()
-                    updateEmptyBook()
+                    _binding?.let {
+                        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
+                        binding.tvUserBooks.text = "${userUploadBookList.size}"
+                        binding.tvUserGood.text = "${userUploadBookList.map { it.good }.sum()}"
+                        storeBookAdapter.notifyDataSetChanged()
+                        updateEmptyBook()
+                    }
                 }
             }
         }
@@ -79,29 +81,31 @@ class UserFragment : Fragment(), View.OnClickListener {
             val addList = firebaseUtil.getUserBookList(FirebaseUtil.auth.uid!!)
             userUploadBookList.addAll(addList)
             withContext(Dispatchers.Main) {
-                showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
-                if(firebaseUtil.name != null && firebaseUtil.email != null && firebaseUtil.photoUrl != null) {
-                    binding.tvProfileName.text = firebaseUtil.name
-                    binding.tvProfileEmail.text = firebaseUtil.email
-                    binding.tvUserBooks.text = "${userUploadBookList.size}"
-                    binding.tvUserGood.text = "${userUploadBookList.map { it.good }.sum()}"
-                    Glide.with(this@UserFragment).load(firebaseUtil.photoUrl).circleCrop().into(binding.imageProfile)
+                _binding?.let {
+                    showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
+                    if(firebaseUtil.name != null && firebaseUtil.email != null && firebaseUtil.photoUrl != null) {
+                        binding.tvProfileName.text = firebaseUtil.name
+                        binding.tvProfileEmail.text = firebaseUtil.email
+                        binding.tvUserBooks.text = "${userUploadBookList.size}"
+                        binding.tvUserGood.text = "${userUploadBookList.map { it.good }.sum()}"
+                        Glide.with(this@UserFragment).load(firebaseUtil.photoUrl).circleCrop().into(binding.imageProfile)
 
-                    storeBookAdapter = StoreUserBookAdapter(userUploadBookList, requireActivity(), firebaseUtil)
-                    storeBookAdapter.setItemClickListener(object: StoreUserBookAdapter.OnItemClickListener{
-                        override fun onClick(v: View, config: Config) {
-                            val intent = Intent(activity, DisplayBookActivity::class.java).apply {
-                                putExtra(Const.INTENT_PUBLISH_CODE, config.publishCode)
+                        storeBookAdapter = StoreUserBookAdapter(userUploadBookList, requireActivity(), firebaseUtil)
+                        storeBookAdapter.setItemClickListener(object: StoreUserBookAdapter.OnItemClickListener{
+                            override fun onClick(v: View, config: Config) {
+                                val intent = Intent(activity, DisplayBookActivity::class.java).apply {
+                                    putExtra(Const.INTENT_PUBLISH_CODE, config.publishCode)
+                                }
+                                displayBookForResult.launch(intent)
                             }
-                            displayBookForResult.launch(intent)
-                        }
-                    })
+                        })
 
-                    binding.recyclerUserUploadBook.layoutManager = LinearLayoutManager(context)
-                    binding.recyclerUserUploadBook.adapter = storeBookAdapter
-                    updateEmptyBook()
-                }else{
-                    util.getAlertDailog(activity as AppCompatActivity).show()
+                        binding.recyclerUserUploadBook.layoutManager = LinearLayoutManager(context)
+                        binding.recyclerUserUploadBook.adapter = storeBookAdapter
+                        updateEmptyBook()
+                    }else{
+                        util.getAlertDailog(activity as AppCompatActivity).show()
+                    }
                 }
             }
         }

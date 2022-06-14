@@ -1,6 +1,7 @@
 package com.cheesejuice.fancymansion
 
 import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -379,6 +380,12 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
                     setResult(Const.RESULT_DELETE)
                 }
                 finish()
+            }
+
+            R.id.menu_guide -> {
+                val intent = Intent(this@EditConditionActivity, GuideActivity::class.java)
+                intent.putExtra(Const.INTENT_GUIDE, Const.GUIDE_CONDITION)
+                startActivity(intent)
             }
         }
         return super.onOptionsItemSelected(item)

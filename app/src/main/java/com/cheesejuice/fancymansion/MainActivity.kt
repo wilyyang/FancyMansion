@@ -6,13 +6,11 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.cheesejuice.fancymansion.databinding.ActivityMainBinding
 import com.cheesejuice.fancymansion.extension.createEditSampleFiles
-import com.cheesejuice.fancymansion.extension.createReadOnlySampleFiles
 import com.cheesejuice.fancymansion.fragment.EditListFragment
 import com.cheesejuice.fancymansion.fragment.ReadListFragment
 import com.cheesejuice.fancymansion.fragment.StoreFragment
 import com.cheesejuice.fancymansion.fragment.UserFragment
 import com.cheesejuice.fancymansion.util.BookUtil
-import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FileUtil
 import com.cheesejuice.fancymansion.util.FirebaseUtil
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,8 +19,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    @Inject
-    lateinit var util: CommonUtil
     @Inject
     lateinit var bookUtil: BookUtil
     @Inject
@@ -42,8 +38,6 @@ class MainActivity : AppCompatActivity() {
                 createEditSampleFiles(FirebaseUtil.auth.uid!!)
             }
         }
-
-        util.checkRequestPermissions()
 
         binding.bottomMenuMain.apply {
             setOnItemSelectedListener { item ->

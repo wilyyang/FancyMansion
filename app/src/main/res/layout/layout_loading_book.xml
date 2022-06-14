@@ -2,16 +2,18 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black_8"
+    android:background="@color/black_9"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ProgressBar
-        android:progressDrawable="@drawable/circular_book_progress"
-        android:indeterminateDuration="800"
+        android:indeterminateDrawable="@drawable/circular_progress"
+        android:progressDrawable="@drawable/circular_progress_determinate"
+        android:indeterminateOnly="false"
         android:indeterminate="true"
         android:id="@+id/progressbarLoading"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:indeterminateDuration="800"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

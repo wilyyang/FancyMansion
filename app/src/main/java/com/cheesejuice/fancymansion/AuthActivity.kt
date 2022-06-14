@@ -9,23 +9,23 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.cheesejuice.fancymansion.databinding.ActivityAuthBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.UserInfo
+import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FirebaseUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class AuthActivity : AppCompatActivity() {
     lateinit var binding: ActivityAuthBinding
 
+    @Inject
+    lateinit var util: CommonUtil
     @Inject
     lateinit var firebaseUtil: FirebaseUtil
 
@@ -74,8 +74,11 @@ class AuthActivity : AppCompatActivity() {
         binding= ActivityAuthBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        util.checkRequestPermissions()
+
         if(firebaseUtil.checkAuth()){
             CoroutineScope(Dispatchers.Default).launch {
+                delay(1000L)
                 FirebaseUtil.userInfo =
                     firebaseUtil.getUserInfo(uid = FirebaseUtil.auth.uid!!) ?: let {
                         firebaseUtil.addUserInfo(

@@ -253,6 +253,12 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
                 }
                 finish()
             }
+
+            R.id.menu_guide -> {
+                val intent = Intent(this@EditEnterActivity, GuideActivity::class.java)
+                intent.putExtra(Const.INTENT_GUIDE, Const.GUIDE_ENTER)
+                startActivity(intent)
+            }
         }
         return super.onOptionsItemSelected(item)
     }

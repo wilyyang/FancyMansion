@@ -120,6 +120,8 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         gallaryForResult = registerGallaryResultName(binding.imageViewShowMain) { imageName ->
             slide.slideImage = imageName
             updateImage = true
+
+            binding.layoutEmptyImage.visibility = View.GONE
         }
 
         binding.imageViewSlideAdd.setOnClickListener(this)
@@ -417,6 +419,12 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                     }
                     readSlideForResult.launch(intent)
                 }
+            }
+
+            R.id.menu_guide -> {
+                val intent = Intent(this@EditSlideActivity, GuideActivity::class.java)
+                intent.putExtra(Const.INTENT_GUIDE, Const.GUIDE_SLIDE)
+                startActivity(intent)
             }
         }
         return super.onOptionsItemSelected(item)

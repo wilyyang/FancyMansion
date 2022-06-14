@@ -23,7 +23,7 @@
         android:background="@android:color/transparent"
         app:tabBackground="@drawable/tab_selector"
         app:tabGravity="center"
-        app:tabIndicatorHeight="1dp"
+        app:tabIndicatorHeight="0dp"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

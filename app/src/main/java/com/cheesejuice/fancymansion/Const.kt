@@ -45,6 +45,12 @@ class Const {
         const val COUNT_ENTER_ID = 1_00L
         const val COUNT_ENTER_COND = 1L
 
+        const val GUIDE_COVER = 0
+        const val GUIDE_SLIDE = 1
+        const val GUIDE_CHOICE = 2
+        const val GUIDE_ENTER = 3
+        const val GUIDE_CONDITION = 4
+
         const val CONST_TIME_LIMIT_COMMENT = 10000 // 10 second
         const val CONST_TIME_LIMIT_BOOK = 600000 // 10 minute
 
@@ -59,6 +65,7 @@ class Const {
         const val INTENT_PUBLISH_CODE = "INTENT_PUBLISH_CODE"
 
         const val INTENT_READ_ONLY = "INTENT_READ_ONLY"
+        const val INTENT_GUIDE = "INTENT_GUIDE"
 
         const val RESULT_NEW = 1
         const val RESULT_UPDATE = 2

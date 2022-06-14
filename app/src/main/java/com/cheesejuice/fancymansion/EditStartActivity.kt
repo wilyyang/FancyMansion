@@ -314,6 +314,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             }
             R.id.menu_guide -> {
                 val intent = Intent(this@EditStartActivity, GuideActivity::class.java)
+                intent.putExtra(Const.INTENT_GUIDE, Const.GUIDE_COVER)
                 startActivity(intent)
             }
         }
