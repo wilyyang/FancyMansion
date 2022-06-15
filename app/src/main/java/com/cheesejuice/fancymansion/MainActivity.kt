@@ -11,6 +11,7 @@ import com.cheesejuice.fancymansion.fragment.ReadListFragment
 import com.cheesejuice.fancymansion.fragment.StoreFragment
 import com.cheesejuice.fancymansion.fragment.UserFragment
 import com.cheesejuice.fancymansion.util.BookUtil
+import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FileUtil
 import com.cheesejuice.fancymansion.util.FirebaseUtil
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,6 +20,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
+    @Inject
+    lateinit var util: CommonUtil
     @Inject
     lateinit var bookUtil: BookUtil
     @Inject
@@ -64,6 +67,7 @@ class MainActivity : AppCompatActivity() {
             }
             selectedItemId = R.id.menu_store
         }
+        util.checkRequestPermissions()
     }
 
     private fun replaceFragment(fragment: Fragment) {

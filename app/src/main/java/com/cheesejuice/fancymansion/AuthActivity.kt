@@ -3,6 +3,8 @@ package com.cheesejuice.fancymansion
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,6 +21,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
 import javax.inject.Inject
+import android.view.animation.TranslateAnimation
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.transition.AutoTransition
+import androidx.transition.TransitionManager
+
 
 @AndroidEntryPoint
 class AuthActivity : AppCompatActivity() {
@@ -69,16 +76,11 @@ class AuthActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_auth)
-
-        binding= ActivityAuthBinding.inflate(layoutInflater)
+        binding = ActivityAuthBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        util.checkRequestPermissions()
-
-        if(firebaseUtil.checkAuth()){
-            CoroutineScope(Dispatchers.Default).launch {
-                delay(1000L)
+        FirebaseUtil.userInfo = null
+        CoroutineScope(Dispatchers.Default).launch {
+            if (firebaseUtil.checkAuth()) {
                 FirebaseUtil.userInfo =
                     firebaseUtil.getUserInfo(uid = FirebaseUtil.auth.uid!!) ?: let {
                         firebaseUtil.addUserInfo(
@@ -90,11 +92,33 @@ class AuthActivity : AppCompatActivity() {
                             )
                         )
                     }
-                withContext(Main){
+            }
+            delay(500L)
+            withContext(Main) {
+                val constraintSet = ConstraintSet()
+                constraintSet.clone(binding.layoutImage)
+                constraintSet.clear(binding.imageViewMid.id, ConstraintSet.TOP)
+                constraintSet.connect(
+                    binding.imageViewMid.id,
+                    ConstraintSet.BOTTOM,
+                    binding.imageViewBottom.id,
+                    ConstraintSet.TOP
+                )
+
+                val autoTransition = AutoTransition()
+                autoTransition.duration = 1500
+                TransitionManager.beginDelayedTransition(binding.layoutImage, autoTransition)
+                constraintSet.applyTo(binding.layoutImage)
+
+                delay(1500L)
+
+                FirebaseUtil.userInfo?.also {
                     val intent = Intent(this@AuthActivity, MainActivity::class.java).apply {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     }
                     startActivity(intent)
+                }?:also {
+                    binding.googleLoginBtn.visibility = View.VISIBLE
                 }
             }
         }
