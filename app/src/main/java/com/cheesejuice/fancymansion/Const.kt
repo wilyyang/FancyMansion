@@ -67,6 +67,8 @@ class Const {
         const val INTENT_READ_ONLY = "INTENT_READ_ONLY"
         const val INTENT_GUIDE = "INTENT_GUIDE"
 
+        const val INTENT_LOGOUT = "INTENT_LOGOUT"
+
         const val RESULT_NEW = 1
         const val RESULT_UPDATE = 2
         const val RESULT_NEW_DELETE = 3

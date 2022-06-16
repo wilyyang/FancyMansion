@@ -140,6 +140,7 @@ class UserFragment : Fragment(), View.OnClickListener {
 
                 val intent = Intent(activity, AuthActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    putExtra(Const.INTENT_LOGOUT, true)
                 }
                 startActivity(intent)
             }

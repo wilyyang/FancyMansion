@@ -3,6 +3,7 @@ package com.cheesejuice.fancymansion
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
@@ -25,7 +26,7 @@ import android.view.animation.TranslateAnimation
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
-
+import com.cheesejuice.fancymansion.Const.Companion.TAG
 
 @AndroidEntryPoint
 class AuthActivity : AppCompatActivity() {
@@ -38,39 +39,41 @@ class AuthActivity : AppCompatActivity() {
 
     private val googleLoginForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutBody, getString(R.string.loading_text_login))
-            val task = GoogleSignIn.getSignedInAccountFromIntent(result?.data)
-            try {
-                val account = task.getResult(ApiException::class.java)!!
-                val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-                FirebaseUtil.auth.signInWithCredential(credential)
-                    .addOnCompleteListener(this) { task ->
-                        if (task.isSuccessful) {
-                            CoroutineScope(Dispatchers.Default).launch {
-                                FirebaseUtil.userInfo =
-                                    firebaseUtil.getUserInfo(uid = FirebaseUtil.auth.uid!!) ?: let {
-                                        firebaseUtil.addUserInfo(
-                                            UserInfo(
-                                                uid = FirebaseUtil.auth.uid!!,
-                                                email = firebaseUtil.email!!,
-                                                userName = firebaseUtil.name!!,
-                                                photoUrl = firebaseUtil.photoUrl.toString()
+            if(result.resultCode == -1){
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutBody, getString(R.string.loading_text_login))
+                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                try {
+                    val account = task.getResult(ApiException::class.java)!!
+                    val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+                    FirebaseUtil.auth.signInWithCredential(credential)
+                        .addOnCompleteListener(this) { task ->
+                            if (task.isSuccessful) {
+                                CoroutineScope(Dispatchers.Default).launch {
+                                    FirebaseUtil.userInfo =
+                                        firebaseUtil.getUserInfo(uid = FirebaseUtil.auth.uid!!) ?: let {
+                                            firebaseUtil.addUserInfo(
+                                                UserInfo(
+                                                    uid = FirebaseUtil.auth.uid!!,
+                                                    email = firebaseUtil.email!!,
+                                                    userName = firebaseUtil.name!!,
+                                                    photoUrl = firebaseUtil.photoUrl.toString()
+                                                )
                                             )
-                                        )
+                                        }
+                                    withContext(Main){
+                                        val intent = Intent(this@AuthActivity, MainActivity::class.java)
+                                        startActivity(intent)
                                     }
-                                withContext(Main){
-                                    val intent = Intent(this@AuthActivity, MainActivity::class.java)
-                                    startActivity(intent)
                                 }
+                            } else {
+                                showLoadingScreen(false, binding.layoutLoading.root, binding.layoutBody, "")
+                                Toast.makeText(this, "Failed login", Toast.LENGTH_SHORT).show()
                             }
-                        } else {
-                            showLoadingScreen(false, binding.layoutLoading.root, binding.layoutBody, "")
-                            Toast.makeText(this, "Failed login", Toast.LENGTH_SHORT).show()
                         }
-                    }
-            } catch (e: ApiException) {
-                e.printStackTrace()
-                Toast.makeText(this, "Failed ${e.message}", Toast.LENGTH_SHORT).show()
+                } catch (e: ApiException) {
+                    e.printStackTrace()
+                    Toast.makeText(this, "Failed ${e.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
@@ -78,6 +81,8 @@ class AuthActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAuthBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val logoutExtra = intent.getBooleanExtra(Const.INTENT_LOGOUT, false)
         FirebaseUtil.userInfo = null
         CoroutineScope(Dispatchers.Default).launch {
             if (firebaseUtil.checkAuth()) {
@@ -93,8 +98,11 @@ class AuthActivity : AppCompatActivity() {
                         )
                     }
             }
-            delay(500L)
             withContext(Main) {
+                if(!logoutExtra){
+                    delay(500L)
+                }
+
                 val constraintSet = ConstraintSet()
                 constraintSet.clone(binding.layoutImage)
                 constraintSet.clear(binding.imageViewMid.id, ConstraintSet.TOP)
@@ -105,12 +113,17 @@ class AuthActivity : AppCompatActivity() {
                     ConstraintSet.TOP
                 )
 
-                val autoTransition = AutoTransition()
-                autoTransition.duration = 1500
-                TransitionManager.beginDelayedTransition(binding.layoutImage, autoTransition)
+                if(!logoutExtra){
+                    val autoTransition = AutoTransition()
+                    autoTransition.duration = 1500
+                    TransitionManager.beginDelayedTransition(binding.layoutImage, autoTransition)
+                }
+
                 constraintSet.applyTo(binding.layoutImage)
 
-                delay(1500L)
+                if(!logoutExtra){
+                    delay(2000L)
+                }
 
                 FirebaseUtil.userInfo?.also {
                     val intent = Intent(this@AuthActivity, MainActivity::class.java).apply {
@@ -118,6 +131,9 @@ class AuthActivity : AppCompatActivity() {
                     }
                     startActivity(intent)
                 }?:also {
+                    if(!logoutExtra){
+                        TransitionManager.beginDelayedTransition(binding.layoutBody)
+                    }
                     binding.googleLoginBtn.visibility = View.VISIBLE
                 }
             }
