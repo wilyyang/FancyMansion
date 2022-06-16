@@ -9,6 +9,8 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -30,6 +32,8 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
 
     @Inject
+    lateinit var util: CommonUtil
+    @Inject
     lateinit var bookUtil: BookUtil
     @Inject
     lateinit var fileUtil: FileUtil
@@ -37,7 +41,9 @@ class MainActivity : AppCompatActivity() {
     lateinit var firebaseUtil: FirebaseUtil
 
     private val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-    private val PERMISSION_REQUEST_CODE = 20
+    companion object {
+        private const val PERMISSION_REQUEST_CODE = 20
+    }
 
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,7 +83,14 @@ class MainActivity : AppCompatActivity() {
             }
             selectedItemId = R.id.menu_store
         }
-        checkRequestPermissions()
+        requestPermissions()
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(binding.containerMain.id, fragment)
+            .commit()
     }
 
     private fun checkPermissions() :Boolean{
@@ -88,7 +101,7 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    fun checkRequestPermissions(): Boolean{
+    private fun requestPermissions(): Boolean{
         if(!checkPermissions()){
             ActivityCompat.requestPermissions(
                 MainActivity@this as Activity,
@@ -108,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         when(requestCode){
             PERMISSION_REQUEST_CODE -> {
                 if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    //권한 허용
+                    // PERMISSION_GRANTED
                 }else{
                     showDialogToGetPermission()
                 }
@@ -117,32 +130,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showDialogToGetPermission() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Permisisons request")
-            .setMessage("We need the location permission for some reason. " +
-                    "You need to move on Settings to grant some permissions")
 
-        builder.setPositiveButton("OK") { dialogInterface, i ->
-            val intent = Intent(
-                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.fromParts("package", packageName, null))
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)   // 6
-        }
-        builder.setOnCancelListener {
-            finish()
-        }
-        builder.setNegativeButton("Later") { _, _ ->
-            finish()
-        }
-        val dialog = builder.create()
-        dialog.show()
-    }
-
-    private fun replaceFragment(fragment: Fragment) {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(binding.containerMain.id, fragment)
-            .commit()
+        util.getAlertDailog(
+            context = this@MainActivity,
+            title = getString(R.string.permission_title), message = getString(R.string.permission_message),
+            click = { _, _ ->
+                val intent = Intent(
+                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.fromParts("package", packageName, null))
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+                finish()
+            }
+        ).setNegativeButton(getString(R.string.dialog_no)) { _, _ -> finish() }
+            .setOnCancelListener { finish() }
+            .show()
     }
 }

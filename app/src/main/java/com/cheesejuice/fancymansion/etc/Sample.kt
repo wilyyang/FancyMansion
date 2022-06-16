@@ -16,8 +16,9 @@ class Sample {
             "uid":"",
             "title":"나의 고양이 찾기",
             "writer":"팀 치즈쥬스",
-            "illustrator":"무료 이미지",
-            "description":"나의 고양이 존 크리스탈을 찾아주세요.. \n누군가 데려간걸까요? \n크리스탈의 친구들을 유심히 살펴보면 단서를 얻을지도 모르죠..",
+            "illustrator":"Ekaterina Rogova",
+            "description":"나의 고양이 존 크리스탈을 찾아주세요.. \n누군가 데려간걸까요? \n크리스탈의 친구들을 유심히 살펴보면 단서를 얻을지도 모르죠..
+            \nimage : Purr\nlink : https://icons8.kr/",
             "coverImage":"image_1.gif",
             "defaultEndId":100000000,
             "readMode":"edit",

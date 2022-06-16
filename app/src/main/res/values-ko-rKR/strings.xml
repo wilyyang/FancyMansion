@@ -259,4 +259,7 @@
 
     <string name="user_upload_books">업로드한 책 :&#160;</string>
     <string name="user_received_good">받은 좋아요 :&#160;</string>
+
+    <string name="permission_title">권한 요청</string>
+    <string name="permission_message">책을 만들기 위해 갤러리에 접근할 권한이 필요합니다. 앱 설정으로 이동해 권한을 허용하고 다시 시작해주세요!</string>
 </resources>

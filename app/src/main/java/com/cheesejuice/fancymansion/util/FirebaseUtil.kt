@@ -55,6 +55,20 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
     }
 
     // User
+    suspend fun initUserInfo(){
+        userInfo =
+            getUserInfo(uid = FirebaseUtil.auth.uid!!) ?: let {
+                addUserInfo(
+                    UserInfo(
+                        uid = FirebaseUtil.auth.uid!!,
+                        email = email!!,
+                        userName = name!!,
+                        photoUrl = photoUrl.toString()
+                    )
+                )
+            }
+    }
+
     suspend fun getUserInfo(uid: String): UserInfo?{
         val documents = db.collection(Const.FB_DB_KEY_USER).whereEqualTo(Const.FB_DB_KEY_UID, uid).get().await().documents
         return if(documents.size > 0) {

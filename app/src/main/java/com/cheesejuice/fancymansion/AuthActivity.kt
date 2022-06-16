@@ -49,17 +49,7 @@ class AuthActivity : AppCompatActivity() {
                         .addOnCompleteListener(this) { task ->
                             if (task.isSuccessful) {
                                 CoroutineScope(Dispatchers.Default).launch {
-                                    FirebaseUtil.userInfo =
-                                        firebaseUtil.getUserInfo(uid = FirebaseUtil.auth.uid!!) ?: let {
-                                            firebaseUtil.addUserInfo(
-                                                UserInfo(
-                                                    uid = FirebaseUtil.auth.uid!!,
-                                                    email = firebaseUtil.email!!,
-                                                    userName = firebaseUtil.name!!,
-                                                    photoUrl = firebaseUtil.photoUrl.toString()
-                                                )
-                                            )
-                                        }
+                                    firebaseUtil.initUserInfo()
                                     withContext(Main){
                                         val intent = Intent(this@AuthActivity, MainActivity::class.java)
                                         startActivity(intent)
@@ -86,36 +76,24 @@ class AuthActivity : AppCompatActivity() {
         FirebaseUtil.userInfo = null
         CoroutineScope(Dispatchers.Default).launch {
             if (firebaseUtil.checkAuth()) {
-                FirebaseUtil.userInfo =
-                    firebaseUtil.getUserInfo(uid = FirebaseUtil.auth.uid!!) ?: let {
-                        firebaseUtil.addUserInfo(
-                            UserInfo(
-                                uid = FirebaseUtil.auth.uid!!,
-                                email = firebaseUtil.email!!,
-                                userName = firebaseUtil.name!!,
-                                photoUrl = firebaseUtil.photoUrl.toString()
-                            )
-                        )
-                    }
+                firebaseUtil.initUserInfo()
             }
             withContext(Main) {
-                if(!logoutExtra){
-                    delay(500L)
+                val constraintSet = ConstraintSet().apply {
+                    clone(binding.layoutImage)
+                    clear(binding.imageViewMid.id, ConstraintSet.TOP)
+                    connect(binding.imageViewMid.id,
+                        ConstraintSet.BOTTOM,
+                        binding.imageViewBottom.id,
+                        ConstraintSet.TOP
+                    )
                 }
 
-                val constraintSet = ConstraintSet()
-                constraintSet.clone(binding.layoutImage)
-                constraintSet.clear(binding.imageViewMid.id, ConstraintSet.TOP)
-                constraintSet.connect(
-                    binding.imageViewMid.id,
-                    ConstraintSet.BOTTOM,
-                    binding.imageViewBottom.id,
-                    ConstraintSet.TOP
-                )
-
                 if(!logoutExtra){
-                    val autoTransition = AutoTransition()
-                    autoTransition.duration = 1500
+                    delay(500L)
+                    val autoTransition = AutoTransition().apply {
+                        duration = 1500
+                    }
                     TransitionManager.beginDelayedTransition(binding.layoutImage, autoTransition)
                 }
 

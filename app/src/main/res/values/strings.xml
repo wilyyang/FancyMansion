@@ -262,4 +262,7 @@
 
     <string name="user_upload_books">Upload Book :&#160;</string>
     <string name="user_received_good">Received Good :&#160;</string>
+
+    <string name="permission_title">Permissions request</string>
+    <string name="permission_message">You need permission to access the user gallery to create a book in FancyMansion. Go to FancyMansion App Settings and allow permission and restart!</string>
 </resources>

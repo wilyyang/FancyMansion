@@ -14,6 +14,8 @@ import com.cheesejuice.fancymansion.Const.Companion.FIRST_SLIDE
 import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
 import com.cheesejuice.fancymansion.extension.showDialogAndStart
 import com.cheesejuice.fancymansion.extension.startReadSlideActivity
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Default
@@ -46,6 +48,10 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
 
         val bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
         val publishCode = intent.getStringExtra(Const.INTENT_PUBLISH_CODE)?: ""
+
+        MobileAds.initialize(applicationContext) {}
+        val adRequest = AdRequest.Builder().build()
+        binding.adView.loadAd(adRequest)
 
         CoroutineScope(Default).launch {
             val conf = fileUtil.getConfigFromFile(bookId, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode)

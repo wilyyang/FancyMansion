@@ -113,6 +113,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging-ktx'
     implementation 'com.google.firebase:firebase-functions-ktx'
 
+    implementation("androidx.work:work-runtime-ktx:2.7.0")
+    implementation 'com.google.android.gms:play-services-ads:20.1.0'
     // test
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

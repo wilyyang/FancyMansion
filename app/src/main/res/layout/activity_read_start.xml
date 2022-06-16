@@ -246,9 +246,23 @@
                             android:enabled="false"
                             android:id="@+id/btnStartBook"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:text="@string/start_book"/>
+                            android:layout_height="wrap_content"
+                            android:text="@string/start_book"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toTopOf="@id/adView"/>
 
+                        <com.google.android.gms.ads.AdView
+                            xmlns:ads="http://schemas.android.com/apk/res-auto"
+                            android:id="@+id/adView"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_centerHorizontal="true"
+                            android:layout_alignParentBottom="true"
+                            ads:adSize="BANNER"
+                            ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
+                            ads:layout_constraintTop_toBottomOf="@id/btnStartBook"
+                            ads:layout_constraintBottom_toBottomOf="parent">
+                        </com.google.android.gms.ads.AdView>
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
