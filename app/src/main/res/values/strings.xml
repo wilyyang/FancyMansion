@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">FancyMansion</string>
 
+    <string name="app_ad_id" translatable="false">ca-app-pub-1173724039182059~5762941845</string>
+    <string name="banner_id" translatable="false">ca-app-pub-1173724039182059/6884451827</string>
+    <string name="banner_id_test" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
+
     <string name="google_login">Google Login</string>
     <string name="menu_user_logout">Log out</string>
 

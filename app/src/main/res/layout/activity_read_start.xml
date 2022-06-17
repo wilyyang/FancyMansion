@@ -67,165 +67,163 @@
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
-                        <TextView
-                            android:id="@+id/tvConfigTitle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/margin_default_left"
-                            android:layout_marginEnd="@dimen/margin_default_right"
-                            android:layout_marginTop="@dimen/margin_title"
-                            android:text="타이틀"
-                            android:textSize="@dimen/size_title"
-                            android:textStyle="bold"
-                            android:maxLength="@integer/count_config_title"
-                            app:layout_constraintTop_toBottomOf="@+id/layoutShow"/>
-
-                        <LinearLayout
-                            android:id="@+id/layoutConfig"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/margin_default_left"
-                            android:layout_marginEnd="@dimen/margin_default_right"
-                            android:layout_marginTop="@dimen/margin_title"
-                            app:layout_constraintTop_toBottomOf="@id/tvConfigTitle"
-                            android:orientation="vertical">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:weightSum="1">
-
-                                <TextView
-                                    android:id="@+id/tvConfigVersion"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:textSize="@dimen/size_config"
-                                    android:layout_marginEnd="@dimen/margin_default"
-                                    android:layout_weight="0.5"
-                                    android:ellipsize="end"
-                                    android:maxLines="1"/>
-
-                                <TextView
-                                    android:id="@+id/tvConfigTime"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:textSize="@dimen/size_config"
-                                    android:layout_weight="0.5"
-                                    android:layout_marginStart="@dimen/margin_default"
-                                    android:gravity="right"/>
-
-                            </LinearLayout>
-
-                            <TextView
-                                android:id="@+id/tvConfigPub"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textSize="@dimen/size_small_brief_id"
-                                android:textColor="@color/black_4"
-                                android:layout_marginBottom="@dimen/margin_default"
-                                android:ellipsize="end"
-                                android:maxLines="1"/>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/book_config_user"
-                                    android:textSize="@dimen/size_config"
-                                    android:textStyle="bold"/>
-
-                                <TextView
-                                    android:id="@+id/tvConfigUser"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textSize="@dimen/size_config"
-                                    android:maxLines="1"
-                                    android:ellipsize="end"/>
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/book_config_writer"
-                                    android:textSize="@dimen/size_config"
-                                    android:textStyle="bold"/>
-
-                                <TextView
-                                    android:id="@+id/tvConfigWriter"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textSize="@dimen/size_config"
-                                    android:maxLines="1"
-                                    android:ellipsize="end"/>
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/book_config_illustrator"
-                                    android:textSize="@dimen/size_config"
-                                    android:textStyle="bold"/>
-
-                                <TextView
-                                    android:id="@+id/tvConfigIllustrator"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textSize="@dimen/size_config"
-                                    android:maxLength="@integer/count_config_illustrator"
-                                    android:maxLines="1"
-                                    android:ellipsize="end"/>
-
-                            </LinearLayout>
-
-                            <TextView
-                                android:id="@+id/tvRemoveBook"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="end"
-                                android:text="@string/book_remove_my_book"
-                                android:textSize="@dimen/size_config"
-                                android:textColor="@color/purple_light1"
-                                android:textStyle="bold"/>
-                        </LinearLayout>
                         <ScrollView
                             android:id="@+id/scrollSlideContent"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:layout_marginTop="@dimen/margin_detail"
-                            app:layout_constraintTop_toBottomOf="@id/layoutConfig"
+                            app:layout_constraintTop_toBottomOf="@id/layoutShow"
                             app:layout_constraintBottom_toBottomOf="parent">
 
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:id="@+id/layoutDescriptionContent"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/margin_default_left"
-                                android:layout_marginEnd="@dimen/margin_default_right"
                                 app:layout_constraintTop_toTopOf="parent">
+
+                                <TextView
+                                    android:id="@+id/tvConfigTitle"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginHorizontal="@dimen/margin_wide"
+                                    android:layout_marginTop="@dimen/margin_title"
+                                    android:text="타이틀"
+                                    android:textSize="@dimen/size_title"
+                                    android:textStyle="bold"
+                                    android:maxLength="@integer/count_config_title"
+                                    app:layout_constraintTop_toTopOf="parent"/>
+
+                                <LinearLayout
+                                    android:id="@+id/layoutConfig"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginHorizontal="@dimen/margin_wide"
+                                    android:layout_marginTop="@dimen/margin_title"
+                                    app:layout_constraintTop_toBottomOf="@id/tvConfigTitle"
+                                    android:orientation="vertical">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal"
+                                        android:weightSum="1">
+
+                                        <TextView
+                                            android:id="@+id/tvConfigVersion"
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:textSize="@dimen/size_config"
+                                            android:layout_marginEnd="@dimen/margin_default"
+                                            android:layout_weight="0.5"
+                                            android:ellipsize="end"
+                                            android:maxLines="1"/>
+
+                                        <TextView
+                                            android:id="@+id/tvConfigTime"
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:textSize="@dimen/size_config"
+                                            android:layout_weight="0.5"
+                                            android:layout_marginStart="@dimen/margin_default"
+                                            android:gravity="right"/>
+
+                                    </LinearLayout>
+
+                                    <TextView
+                                        android:id="@+id/tvConfigPub"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="@dimen/size_small_brief_id"
+                                        android:textColor="@color/black_4"
+                                        android:layout_marginBottom="@dimen/margin_default"
+                                        android:ellipsize="end"
+                                        android:maxLines="1"/>
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal">
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="@string/book_config_user"
+                                            android:textSize="@dimen/size_config"
+                                            android:textStyle="bold"/>
+
+                                        <TextView
+                                            android:id="@+id/tvConfigUser"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:textSize="@dimen/size_config"
+                                            android:maxLines="1"
+                                            android:ellipsize="end"/>
+
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal">
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="@string/book_config_writer"
+                                            android:textSize="@dimen/size_config"
+                                            android:textStyle="bold"/>
+
+                                        <TextView
+                                            android:id="@+id/tvConfigWriter"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:textSize="@dimen/size_config"
+                                            android:maxLines="1"
+                                            android:ellipsize="end"/>
+
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal">
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="@string/book_config_illustrator"
+                                            android:textSize="@dimen/size_config"
+                                            android:textStyle="bold"/>
+
+                                        <TextView
+                                            android:id="@+id/tvConfigIllustrator"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:textSize="@dimen/size_config"
+                                            android:maxLength="@integer/count_config_illustrator"
+                                            android:maxLines="1"
+                                            android:ellipsize="end"/>
+
+                                    </LinearLayout>
+
+                                    <TextView
+                                        android:id="@+id/tvRemoveBook"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="end"
+                                        android:text="@string/book_remove_my_book"
+                                        android:textSize="@dimen/size_config"
+                                        android:textColor="@color/purple_light1"
+                                        android:textStyle="bold"/>
+                                </LinearLayout>
 
                                 <TextView
                                     android:id="@+id/tvConfigDescription"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginTop="@dimen/margin_detail"
+                                    android:layout_marginHorizontal="@dimen/margin_wide"
                                     android:textSize="@dimen/size_detail"
-                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/layoutConfig"
                                     android:maxLength="@integer/count_config_description"/>
 
                             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -246,23 +244,9 @@
                             android:enabled="false"
                             android:id="@+id/btnStartBook"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/start_book"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toTopOf="@id/adView"/>
+                            android:layout_height="match_parent"
+                            android:text="@string/start_book"/>
 
-                        <com.google.android.gms.ads.AdView
-                            xmlns:ads="http://schemas.android.com/apk/res-auto"
-                            android:id="@+id/adView"
-                            android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:layout_centerHorizontal="true"
-                            android:layout_alignParentBottom="true"
-                            ads:adSize="BANNER"
-                            ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
-                            ads:layout_constraintTop_toBottomOf="@id/btnStartBook"
-                            ads:layout_constraintBottom_toBottomOf="parent">
-                        </com.google.android.gms.ads.AdView>
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>

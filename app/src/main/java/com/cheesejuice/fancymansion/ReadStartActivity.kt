@@ -49,10 +49,6 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
         val bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
         val publishCode = intent.getStringExtra(Const.INTENT_PUBLISH_CODE)?: ""
 
-        MobileAds.initialize(applicationContext) {}
-        val adRequest = AdRequest.Builder().build()
-        binding.adView.loadAd(adRequest)
-
         CoroutineScope(Default).launch {
             val conf = fileUtil.getConfigFromFile(bookId, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode)
 

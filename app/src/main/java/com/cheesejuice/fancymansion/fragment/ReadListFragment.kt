@@ -22,6 +22,8 @@ import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FileUtil
 import com.cheesejuice.fancymansion.view.EditBookAdapter
 import com.cheesejuice.fancymansion.view.ReadBookAdapter
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import javax.inject.Inject
@@ -96,6 +98,10 @@ class ReadListFragment : Fragment() {
                     _binding?.let {
                         makeReadList(readList)
                         isListLoading = false
+
+                        MobileAds.initialize(requireContext()) {}
+                        val adRequest = AdRequest.Builder().build()
+                        binding.adView.loadAd(adRequest)
                     }
                 }else{
                     util.getAlertDailog(activity as AppCompatActivity).show()

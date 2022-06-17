@@ -92,7 +92,7 @@ class AuthActivity : AppCompatActivity() {
                 if(!logoutExtra){
                     delay(500L)
                     val autoTransition = AutoTransition().apply {
-                        duration = 1500
+                        duration = 1200
                     }
                     TransitionManager.beginDelayedTransition(binding.layoutImage, autoTransition)
                 }
@@ -100,7 +100,7 @@ class AuthActivity : AppCompatActivity() {
                 constraintSet.applyTo(binding.layoutImage)
 
                 if(!logoutExtra){
-                    delay(2000L)
+                    delay(1500L)
                 }
 
                 FirebaseUtil.userInfo?.also {

@@ -24,6 +24,8 @@ import com.cheesejuice.fancymansion.util.BookUtil
 import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FileUtil
 import com.cheesejuice.fancymansion.view.EditBookAdapter
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import javax.inject.Inject
@@ -100,6 +102,10 @@ class EditListFragment : Fragment(), View.OnClickListener {
                     _binding?.let {
                         makeEditList(editList)
                         isListLoading = false
+
+                        MobileAds.initialize(requireContext()) {}
+                        val adRequest = AdRequest.Builder().build()
+                        binding.adView.loadAd(adRequest)
                     }
                 }else{
                     util.getAlertDailog(activity as AppCompatActivity).show()
