@@ -57,10 +57,10 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
     // User
     suspend fun initUserInfo(){
         userInfo =
-            getUserInfo(uid = FirebaseUtil.auth.uid!!) ?: let {
+            getUserInfo(uid = auth.uid!!) ?: let {
                 addUserInfo(
                     UserInfo(
-                        uid = FirebaseUtil.auth.uid!!,
+                        uid = auth.uid!!,
                         email = email!!,
                         userName = name!!,
                         photoUrl = photoUrl.toString()
@@ -88,6 +88,7 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
 
     private suspend fun registerBookInUserInfo(publishCode: String): Boolean {
         var result = false
+        initUserInfo()
         userInfo!!.apply {
             uploadBookTime = System.currentTimeMillis()
             uploadBookIds.add(publishCode)
@@ -100,6 +101,7 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
 
     private suspend fun unregisterBookInUserInfo(publishCode: String): Boolean {
         var result = false
+        initUserInfo()
         userInfo!!.apply {
             uploadBookIds.remove(publishCode)
             db.collection(Const.FB_DB_KEY_USER).document(id).set(this).addOnSuccessListener {
@@ -111,6 +113,7 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
 
     suspend fun updateCommentInUserInfo(): Boolean {
         var result = false
+        initUserInfo()
         userInfo!!.apply {
             addCommentTime = System.currentTimeMillis()
             db.collection(Const.FB_DB_KEY_USER).document(id).set(this).addOnSuccessListener {

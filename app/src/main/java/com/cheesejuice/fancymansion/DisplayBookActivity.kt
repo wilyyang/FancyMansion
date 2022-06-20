@@ -438,46 +438,48 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
     }
 
     private fun clickAddComment(){
-        val current = System.currentTimeMillis()
-        if(FirebaseUtil.userInfo!!.addCommentTime+Const.CONST_TIME_LIMIT_COMMENT > current){
-
-            val leftTime = (FirebaseUtil.userInfo!!.addCommentTime+Const.CONST_TIME_LIMIT_COMMENT - current) / 1000
-            util.getAlertDailog(
-                context = this@DisplayBookActivity,
-                title = getString(R.string.dialog_time_limit_title),
-                message = String.format(getString(R.string.dialog_time_limit_comment), leftTime),
-                click = { _, _ -> }
-            ).show()
-            return
-        }
-
         CoroutineScope(Dispatchers.IO).launch {
             if(firebaseUtil.checkAuth()){
                 isListLoading = true
-                val comment = Comment(id = "", uid = FirebaseUtil.auth.uid!!, email = firebaseUtil.email!!, userName = firebaseUtil.name!!,
-                    photoUrl = firebaseUtil.photoUrl.toString(), comment = binding.etAddComment.text.toString(),
-                    updateTime = System.currentTimeMillis(), bookPublishCode = config.publishCode)
-
-                comment.id = firebaseUtil.addComment(comment)
-                firebaseUtil.editComment(comment)
-                firebaseUtil.updateCommentInUserInfo()
-
-                commentList.clear()
-                val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, isOrderRecent = isCommentOrderRecent)
-                commentList.addAll(addList)
-
-                withContext(Main) {
-                    commentAdapter.notifyDataSetChanged()
-
-                    binding.etAddComment.let {
-                        it.text?.clear()
-                        it.clearFocus()
-                        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                        imm.hideSoftInputFromWindow(it.windowToken, 0)
+                firebaseUtil.initUserInfo()
+                val current = System.currentTimeMillis()
+                if(FirebaseUtil.userInfo!!.addCommentTime+Const.CONST_TIME_LIMIT_COMMENT > current){
+                    val leftTime = (FirebaseUtil.userInfo!!.addCommentTime+Const.CONST_TIME_LIMIT_COMMENT - current) / 1000
+                    withContext(Main){
+                        isListLoading = false
+                        util.getAlertDailog(
+                            context = this@DisplayBookActivity,
+                            title = getString(R.string.dialog_time_limit_title),
+                            message = String.format(getString(R.string.dialog_time_limit_comment), leftTime),
+                            click = { _, _ -> }
+                        ).show()
                     }
-                    binding.layoutBody.fullScroll(View.FOCUS_DOWN)
-                    isListLoading = false
-                    updateEmptyComment()
+                }else{
+                    val comment = Comment(id = "", uid = FirebaseUtil.auth.uid!!, email = firebaseUtil.email!!, userName = firebaseUtil.name!!,
+                        photoUrl = firebaseUtil.photoUrl.toString(), comment = binding.etAddComment.text.toString(),
+                        updateTime = System.currentTimeMillis(), bookPublishCode = config.publishCode)
+
+                    comment.id = firebaseUtil.addComment(comment)
+                    firebaseUtil.editComment(comment)
+                    firebaseUtil.updateCommentInUserInfo()
+
+                    commentList.clear()
+                    val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, isOrderRecent = isCommentOrderRecent)
+                    commentList.addAll(addList)
+
+                    withContext(Main) {
+                        commentAdapter.notifyDataSetChanged()
+
+                        binding.etAddComment.let {
+                            it.text?.clear()
+                            it.clearFocus()
+                            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                            imm.hideSoftInputFromWindow(it.windowToken, 0)
+                        }
+                        binding.layoutBody.fullScroll(View.FOCUS_DOWN)
+                        isListLoading = false
+                        updateEmptyComment()
+                    }
                 }
             }
         }
