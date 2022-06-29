@@ -41,6 +41,7 @@ class UserFragment : Fragment(), View.OnClickListener {
     @Inject
     lateinit var firebaseUtil: FirebaseUtil
 
+    private var isInit = false
     private lateinit var storeBookAdapter: StoreUserBookAdapter
 
     private val displayBookForResult =
@@ -107,6 +108,7 @@ class UserFragment : Fragment(), View.OnClickListener {
                         util.getAlertDailog(activity as AppCompatActivity).show()
                     }
                 }
+                isInit = true
             }
         }
         return binding.root
@@ -134,6 +136,7 @@ class UserFragment : Fragment(), View.OnClickListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
+        if(!isInit) return true
         when(item.itemId) {
             R.id.menu_logout -> {
                 firebaseUtil.signOut(requireActivity())

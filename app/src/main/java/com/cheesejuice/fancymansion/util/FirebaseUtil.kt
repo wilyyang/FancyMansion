@@ -126,13 +126,17 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
     // Book
     fun returnImageToCallback(filePath:String, successCallback:(Uri?)->Unit, failCallback:()->Unit = {}){
         storage.reference.child(filePath).downloadUrl.addOnCompleteListener {
-            if (it.isSuccessful) {
-                successCallback(it.result)
-            }else{
-                failCallback()
-            }
+            try{
+                if (it.isSuccessful) {
+                    successCallback(it.result)
+                }else{
+                    failCallback()
+                }
+            }catch (exception: IllegalArgumentException){}
         }.addOnFailureListener {
-            failCallback()
+            try{
+                failCallback()
+            }catch (exception: IllegalArgumentException){}
         }
     }
 
