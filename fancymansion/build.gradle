@@ -16,10 +16,10 @@ android {
 
     defaultConfig {
         applicationId "com.cheesejuice.fancymansion"
-        minSdk 28
+        minSdk 26
         targetSdk 31
-        versionCode 1
-        versionName "1.0"
+        versionCode 100002
+        versionName "1.0.2"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
