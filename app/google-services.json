@@ -14,27 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "435120044273-8jqk543taf3uhk7601ovvr2ehea4h752.apps.googleusercontent.com",
+          "client_id": "435120044273-lmjivumtk3o1rmb5ml79actn4f7sft80.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.cheesejuice.fancymansion",
             "certificate_hash": "fa12d19f55811826c4c4f858ecb34f19c8229810"
-          }
-        },
-        {
-          "client_id": "435120044273-rr41a6h8p9jesmt5fepckd5dpf9vb2v8.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.cheesejuice.fancymansion",
-            "certificate_hash": "46bff3d0dae04dc054b852920a94243d4763f530"
-          }
-        },
-        {
-          "client_id": "435120044273-umimo26d3ed8miisjn0fkffj8jdsiara.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.cheesejuice.fancymansion",
-            "certificate_hash": "d4905b26fc5106133c16097f7fe5c1b6cea73495"
           }
         },
         {
