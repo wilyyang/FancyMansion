@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "435120044273-l3gp0bf5e86ojplch4dfi2fd6dtob4n0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cheesejuice.fancymansion",
+            "certificate_hash": "9658d6b18a6407d7aa9c804fd5e24e1b33bfc035"
+          }
+        },
+        {
           "client_id": "435120044273-lmjivumtk3o1rmb5ml79actn4f7sft80.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -40,7 +48,8 @@
             }
           ]
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-1173724039182059~5762941845"
     }
   ],
   "configuration_version": "1"
