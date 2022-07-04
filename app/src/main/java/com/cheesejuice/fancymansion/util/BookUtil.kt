@@ -7,6 +7,7 @@ import com.cheesejuice.fancymansion.CondOp
 import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.Const.Companion.COUNT_SLIDE
 import com.cheesejuice.fancymansion.R
+import com.cheesejuice.fancymansion.model.ChoiceItem
 import com.cheesejuice.fancymansion.model.Condition
 import com.cheesejuice.fancymansion.model.EnterItem
 import com.cheesejuice.fancymansion.model.SlideLogic
@@ -145,6 +146,33 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
         conditions.map { ( it.id - enterId ).toInt() }.forEach { idMap[it] = true }
         val result = idMap.indexOf(false)
         return if(result != -1)( result + enterId ) else { -1 }
+    }
+
+    fun applySlideElementsId(slideLogic: SlideLogic, slideId:Long){
+        slideLogic.choiceItems.forEach {
+            it.id = (it.id % COUNT_SLIDE) + slideId
+            applyChoiceElementsId(it, it.id)
+        }
+    }
+
+    fun applyChoiceElementsId(choice: ChoiceItem, choiceId: Long){
+        choice.enterItems.forEach {
+            it.id = (it.id % Const.COUNT_CHOICE) + choiceId
+            applyEnterConditionsId(it.enterConditions, it.id)
+        }
+        applyShowConditionsId(choice.showConditions, choiceId)
+    }
+
+    fun applyShowConditionsId(conditions: MutableList<Condition>, choiceId:Long){
+        conditions.forEach {
+            it.id = (it.id % Const.COUNT_CHOICE) + choiceId
+        }
+    }
+
+    fun applyEnterConditionsId(conditions: MutableList<Condition>, enterId:Long){
+        conditions.forEach {
+            it.id = (it.id % Const.COUNT_ENTER_ID) + enterId
+        }
     }
 
     fun getSlideIdFromOther(id:Long): Long{

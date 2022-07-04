@@ -14,10 +14,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cheesejuice.fancymansion.databinding.ActivityEditEnterBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
-import com.cheesejuice.fancymansion.model.ChoiceItem
-import com.cheesejuice.fancymansion.model.EnterItem
-import com.cheesejuice.fancymansion.model.Logic
-import com.cheesejuice.fancymansion.model.SlideLogic
+import com.cheesejuice.fancymansion.model.*
 import com.cheesejuice.fancymansion.util.BookUtil
 import com.cheesejuice.fancymansion.view.EditConditionListAdapter
 import com.cheesejuice.fancymansion.view.EditConditionListDragCallback
@@ -70,6 +67,15 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
                         enterItem.enterConditions[enterItem.enterConditions.indexOfFirst { it.id == condition.id }] =
                             Json.decodeFromString(Json.encodeToString(condition))
                     }
+                    Const.RESULT_NEW_COPY -> {
+                        enterItem.enterConditions.add(Json.decodeFromString(Json.encodeToString(condition)))
+                        copyCondition(condition)
+                    }
+                    Const.RESULT_UPDATE_COPY -> {
+                        enterItem.enterConditions[enterItem.enterConditions.indexOfFirst { it.id == condition.id }] =
+                            Json.decodeFromString(Json.encodeToString(condition))
+                        copyCondition(condition)
+                    }
                     Const.RESULT_DELETE -> {
                         enterItem.enterConditions.removeIf { it.id == condition.id }
                     }
@@ -79,6 +85,15 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
                 (application as MainApplication).condition = null
             }
         }
+
+    private fun copyCondition(condition:Condition){
+        val newEnterConditionId = bookUtil.nextEnterConditionId(enterItem.enterConditions, enterItem.id)
+        if (newEnterConditionId > 0) {
+            enterItem.enterConditions.add(Json.decodeFromString<Condition>(Json.encodeToString(condition)).apply {
+                id = newEnterConditionId
+            })
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -244,6 +259,17 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
         }
 
         when(item.itemId) {
+            R.id.menu_copy -> {
+                enterItem.enterSlideId = logic.logics[binding.spinnerSelectSlide.selectedItemPosition].slideId
+                (application as MainApplication).enter = enterItem
+                if (makeEnter) {
+                    setResult(Const.RESULT_NEW_COPY)
+                } else {
+                    setResult(Const.RESULT_UPDATE_COPY)
+                }
+                finish()
+            }
+
             R.id.menu_delete -> {
                 if (makeEnter) {
                     setResult(Const.RESULT_NEW_DELETE)

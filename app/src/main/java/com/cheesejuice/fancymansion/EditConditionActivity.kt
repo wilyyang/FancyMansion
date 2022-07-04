@@ -315,33 +315,7 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(view: View?) {
         when(view?.id){
             R.id.btnSaveCondition -> {
-                condition.apply {
-                    val slideLogic1 = logic.logics[binding.spinnerSlideCondition1.selectedItemPosition]
-                    conditionId1 = if(slideLogic1.choiceItems.size == binding.spinnerChoiceCondition1.selectedItemPosition){
-                        slideLogic1.slideId
-                    }else{
-                        slideLogic1.choiceItems[binding.spinnerChoiceCondition1.selectedItemPosition].id
-                    }
-
-                    conditionOp = CondOp.values()[binding.spinnerOperator.selectedItemPosition].opName
-
-                    when(binding.radioGroupCondOption.checkedRadioButtonId){
-                        binding.radioCondCount.id -> {
-                            conditionCount = binding.pickerCount.value
-                            conditionId2 = Const.ID_NOT_FOUND
-                        }
-                        binding.radioCondId.id -> {
-                            conditionCount = 0
-                            val slideLogic2 = logic.logics[binding.spinnerSlideCondition2.selectedItemPosition]
-                            conditionId2 = if(slideLogic2.choiceItems.size == binding.spinnerChoiceCondition2.selectedItemPosition){
-                                slideLogic2.slideId
-                            }else{
-                                slideLogic2.choiceItems[binding.spinnerChoiceCondition2.selectedItemPosition].id
-                            }
-                        }
-                    }
-                    conditionNext = CondNext.values()[binding.spinnerNext.selectedItemPosition].relName
-                }
+                updateCondition()
 
                 (application as MainApplication).condition = condition
                 if (makeCondition) {
@@ -359,6 +333,36 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    fun updateCondition(){
+        condition.apply {
+            val slideLogic1 = logic.logics[binding.spinnerSlideCondition1.selectedItemPosition]
+            conditionId1 = if(slideLogic1.choiceItems.size == binding.spinnerChoiceCondition1.selectedItemPosition){
+                slideLogic1.slideId
+            }else{
+                slideLogic1.choiceItems[binding.spinnerChoiceCondition1.selectedItemPosition].id
+            }
+
+            conditionOp = CondOp.values()[binding.spinnerOperator.selectedItemPosition].opName
+
+            when(binding.radioGroupCondOption.checkedRadioButtonId){
+                binding.radioCondCount.id -> {
+                    conditionCount = binding.pickerCount.value
+                    conditionId2 = Const.ID_NOT_FOUND
+                }
+                binding.radioCondId.id -> {
+                    conditionCount = 0
+                    val slideLogic2 = logic.logics[binding.spinnerSlideCondition2.selectedItemPosition]
+                    conditionId2 = if(slideLogic2.choiceItems.size == binding.spinnerChoiceCondition2.selectedItemPosition){
+                        slideLogic2.slideId
+                    }else{
+                        slideLogic2.choiceItems[binding.spinnerChoiceCondition2.selectedItemPosition].id
+                    }
+                }
+            }
+            conditionNext = CondNext.values()[binding.spinnerNext.selectedItemPosition].relName
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_edit_choice, menu)
@@ -372,6 +376,18 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         when(item.itemId) {
+            R.id.menu_copy -> {
+                updateCondition()
+
+                (application as MainApplication).condition = condition
+                if (makeCondition) {
+                    setResult(Const.RESULT_NEW_COPY)
+                } else {
+                    setResult(Const.RESULT_UPDATE_COPY)
+                }
+                finish()
+            }
+
             R.id.menu_delete -> {
                 if (makeCondition) {
                     setResult(Const.RESULT_NEW_DELETE)

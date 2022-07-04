@@ -13,9 +13,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cheesejuice.fancymansion.databinding.ActivityEditChoiceBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
-import com.cheesejuice.fancymansion.model.ChoiceItem
-import com.cheesejuice.fancymansion.model.Logic
-import com.cheesejuice.fancymansion.model.SlideLogic
+import com.cheesejuice.fancymansion.model.*
 import com.cheesejuice.fancymansion.util.BookUtil
 import com.cheesejuice.fancymansion.view.EditConditionListAdapter
 import com.cheesejuice.fancymansion.view.EditConditionListDragCallback
@@ -67,6 +65,15 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
                         choice.enterItems[choice.enterItems.indexOfFirst { it.id == enterItem.id }] =
                             Json.decodeFromString(Json.encodeToString(enterItem))
                     }
+                    Const.RESULT_NEW_COPY -> {
+                        choice.enterItems.add(Json.decodeFromString(Json.encodeToString(enterItem)))
+                        copyEnterItem(enterItem)
+                    }
+                    Const.RESULT_UPDATE_COPY -> {
+                        choice.enterItems[choice.enterItems.indexOfFirst { it.id == enterItem.id }] =
+                            Json.decodeFromString(Json.encodeToString(enterItem))
+                        copyEnterItem(enterItem)
+                    }
                     Const.RESULT_DELETE -> {
                         choice.enterItems.removeIf { it.id == enterItem.id }
                     }
@@ -88,6 +95,15 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
                         choice.showConditions[choice.showConditions.indexOfFirst { it.id == condition.id }] =
                             Json.decodeFromString(Json.encodeToString(condition))
                     }
+                    Const.RESULT_NEW_COPY -> {
+                        choice.showConditions.add(Json.decodeFromString(Json.encodeToString(condition)))
+                        copyCondition(condition)
+                    }
+                    Const.RESULT_UPDATE_COPY -> {
+                        choice.showConditions[choice.showConditions.indexOfFirst { it.id == condition.id }] =
+                            Json.decodeFromString(Json.encodeToString(condition))
+                        copyCondition(condition)
+                    }
                     Const.RESULT_DELETE -> {
                         choice.showConditions.removeIf { it.id == condition.id }
                     }
@@ -96,6 +112,25 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
                 (application as MainApplication).condition = null
             }
         }
+
+    private fun copyEnterItem(enterItem: EnterItem){
+        val nextEnterId = bookUtil.nextEnterId(choice.enterItems, choice.id)
+        if(nextEnterId > 0){
+            choice.enterItems.add(Json.decodeFromString<EnterItem>(Json.encodeToString(enterItem)).apply {
+                id = nextEnterId
+                bookUtil.applyEnterConditionsId(enterConditions, nextEnterId)
+            })
+        }
+    }
+
+    private fun copyCondition(condition: Condition){
+        val newShowConditionId = bookUtil.nextShowConditionId(choice.showConditions, choice.id)
+        if (newShowConditionId > 0) {
+            choice.showConditions.add(Json.decodeFromString<Condition>(Json.encodeToString(condition)).apply {
+                id = newShowConditionId
+            })
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -292,6 +327,16 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         when(item.itemId) {
+            R.id.menu_copy -> {
+                choice.title = binding.etChoiceTitle.text.toString()
+                (application as MainApplication).choice = choice
+                if(makeChoice){
+                    setResult(Const.RESULT_NEW_COPY)
+                }else{
+                    setResult(Const.RESULT_UPDATE_COPY)
+                }
+                finish()
+            }
             R.id.menu_delete -> {
                 if(makeChoice){
                     setResult(Const.RESULT_NEW_DELETE)

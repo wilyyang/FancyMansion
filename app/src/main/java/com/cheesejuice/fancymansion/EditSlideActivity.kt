@@ -16,14 +16,12 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.cheesejuice.fancymansion.model.Slide
-import com.cheesejuice.fancymansion.model.SlideLogic
-import com.cheesejuice.fancymansion.model.Logic
 import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
 import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.databinding.ActivityEditSlideBinding
 import com.cheesejuice.fancymansion.extension.*
+import com.cheesejuice.fancymansion.model.*
 import com.cheesejuice.fancymansion.view.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -88,6 +86,15 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                         slideLogic.choiceItems[slideLogic.choiceItems.indexOfFirst { it.id == choiceItem.id }] =
                             Json.decodeFromString(Json.encodeToString(choiceItem))
                     }
+                    Const.RESULT_NEW_COPY -> {
+                        slideLogic.choiceItems.add(Json.decodeFromString(Json.encodeToString(choiceItem)))
+                        copyChoiceItem(choiceItem)
+                    }
+                    Const.RESULT_UPDATE_COPY -> {
+                        slideLogic.choiceItems[slideLogic.choiceItems.indexOfFirst { it.id == choiceItem.id }] =
+                            Json.decodeFromString(Json.encodeToString(choiceItem))
+                        copyChoiceItem(choiceItem)
+                    }
                     Const.RESULT_DELETE -> {
                         slideLogic.choiceItems.removeIf { it.id == choiceItem.id }
                     }
@@ -105,6 +112,17 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                 updateEmptyChoice()
             }
         }
+
+    private fun copyChoiceItem(choiceItem: ChoiceItem){
+        val nextChoiceId = bookUtil.nextChoiceId(slideLogic)
+        if(nextChoiceId > 0){
+            slideLogic.choiceItems.add(
+                Json.decodeFromString<ChoiceItem>(Json.encodeToString(choiceItem)).apply {
+                    id = nextChoiceId
+                    bookUtil.applyChoiceElementsId(this, nextChoiceId)
+                })
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -426,6 +444,11 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                 intent.putExtra(Const.INTENT_GUIDE, Const.GUIDE_SLIDE)
                 startActivity(intent)
             }
+            R.id.menu_copy -> {
+                startAfterSaveEdits {
+                    addNewSlide(isThisCopy = true)
+                }
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -446,7 +469,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         }
     }
 
-    private fun addNewSlide(){
+    private fun addNewSlide(isThisCopy : Boolean = false){
         // Get new slide id
         val nextId = bookUtil.nextSlideId(logic.logics)
         if(nextId < 0){
@@ -460,8 +483,22 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             logic = fileUtil.getLogicFromFile(logic.bookId)!!
 
             // Object Process
-            slide = Slide(slideId = nextId, slideTitle = getString(R.string.name_slide_prefix), question = getString(R.string.text_question_default))
-            slideLogic = SlideLogic(slide.slideId, slide.slideTitle)
+            if (isThisCopy) {
+                // copy slide and apply slide elements
+                slide = Json.decodeFromString<Slide>(Json.encodeToString(slide)).apply {
+                    slideId = nextId
+                }
+                slideLogic = Json.decodeFromString<SlideLogic>(Json.encodeToString(slideLogic)).apply {
+                    slideId = nextId
+                    bookUtil.applySlideElementsId(this, nextId)
+                    if(type == Const.SLIDE_TYPE_START){
+                        type = Const.SLIDE_TYPE_NORMAL
+                    }
+                }
+            } else {
+                slide = Slide(slideId = nextId, slideTitle = getString(R.string.name_slide_prefix), question = getString(R.string.text_question_default))
+                slideLogic = SlideLogic(slide.slideId, slide.slideTitle)
+            }
             logic.logics.add(slideLogic)
 
             // File Process
