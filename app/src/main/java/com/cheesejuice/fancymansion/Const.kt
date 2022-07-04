@@ -74,6 +74,8 @@ class Const {
         const val RESULT_NEW_DELETE = 3
         const val RESULT_DELETE = 4
         const val RESULT_CANCEL = 5
+        const val RESULT_NEW_COPY = 11
+        const val RESULT_UPDATE_COPY = 12
 
         // Pref
         const val PREF_SETTING = "PREF_SETTING"

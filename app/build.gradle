@@ -18,8 +18,8 @@ android {
         applicationId "com.cheesejuice.fancymansion"
         minSdk 26
         targetSdk 31
-        versionCode 100004
-        versionName "1.0.4"
+        versionCode 100005
+        versionName "1.0.5"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

@@ -26,10 +26,12 @@
     <string name="nav_select_slide">Select Slide</string>
 
     <string name="menu_slide_add">Slide Add</string>
+    <string name="menu_slide_copy">Slide Copy</string>
     <string name="menu_slide_delete">Slide Delete</string>
     <string name="menu_slide_play">Slide Play</string>
     <string name="menu_slide_save">Slide Save</string>
     <string name="menu_common_delete">Delete</string>
+    <string name="menu_common_copy">Copy</string>
 
     <string name="menu_book_play">Play Book</string>
     <string name="menu_book_save">Save Book</string>

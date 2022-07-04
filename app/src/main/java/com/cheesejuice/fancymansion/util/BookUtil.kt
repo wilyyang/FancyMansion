@@ -105,7 +105,7 @@ class BookUtil @Inject constructor(@ActivityContext private val context: Context
 
     // 00 / 00 / 00 / 00 / 00 = slide / choice / showCondition / enterId / enterCondition
     fun nextSlideId(logics: List<SlideLogic>): Long{
-        var idMap = Array(100){ i -> false }
+        var idMap = Array(400){ i -> false }
         idMap[0] = true
         logics.map { (it.slideId / Const.COUNT_SLIDE).toInt() }.forEach { idMap[it] = true }
 
