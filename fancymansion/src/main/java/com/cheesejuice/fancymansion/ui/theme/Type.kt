@@ -1,4 +1,4 @@
-package com.cheesejuice.fancymansion.view.ui.theme
+package com.cheesejuice.fancymansion.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle
