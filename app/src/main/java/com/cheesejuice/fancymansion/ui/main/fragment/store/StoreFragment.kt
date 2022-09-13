@@ -17,13 +17,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.cheesejuice.fancymansion.*
 import com.cheesejuice.fancymansion.databinding.FragmentStoreBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
-import com.cheesejuice.fancymansion.model.Config
+import com.cheesejuice.fancymansion.data.models.Config
 import com.cheesejuice.fancymansion.ui.display.DisplayBookActivity
-import com.cheesejuice.fancymansion.util.BookUtil
-import com.cheesejuice.fancymansion.util.CommonUtil
-import com.cheesejuice.fancymansion.util.FileUtil
-import com.cheesejuice.fancymansion.util.FirebaseUtil
-import com.cheesejuice.fancymansion.view.StoreBookAdapter
+import com.cheesejuice.fancymansion.data.repositories.PreferenceProvider
+import com.cheesejuice.fancymansion.util.Util
+import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
+import com.cheesejuice.fancymansion.data.repositories.networking.FirebaseRepository
+import com.cheesejuice.fancymansion.ui.main.fragment.store.components.StoreBookAdapter
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,13 +48,13 @@ class StoreFragment : Fragment() {
     private lateinit var searchView : SearchView
 
     @Inject
-    lateinit var util: CommonUtil
+    lateinit var util: Util
     @Inject
-    lateinit var bookUtil: BookUtil
+    lateinit var preferenceProvider: PreferenceProvider
     @Inject
-    lateinit var fileUtil: FileUtil
+    lateinit var fileRepository: FileRepository
     @Inject
-    lateinit var firebaseUtil: FirebaseUtil
+    lateinit var firebaseRepository: FirebaseRepository
 
     // ui
     private lateinit var storeBookAdapter: StoreBookAdapter
@@ -103,7 +103,7 @@ class StoreFragment : Fragment() {
     private fun makeStoreList(_storeList : MutableList<Config>) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
 
-        storeBookAdapter = StoreBookAdapter(_storeList, requireActivity(), firebaseUtil)
+        storeBookAdapter = StoreBookAdapter(_storeList, requireActivity(), firebaseRepository)
         storeBookAdapter.setItemClickListener(object: StoreBookAdapter.OnItemClickListener{
             override fun onClick(v: View, config: Config) {
                 val intent = Intent(activity, DisplayBookActivity::class.java).apply {
@@ -186,7 +186,7 @@ class StoreFragment : Fragment() {
             showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_frag_store_book))
             CoroutineScope(Dispatchers.Default).launch {
                 storeBookList.clear()
-                val addList = firebaseUtil.getBookList(limit = Const.PAGE_COUNT_LONG, orderKey = orderKey, searchKeyword = searchKeyword)
+                val addList = firebaseRepository.getBookList(limit = Const.PAGE_COUNT_LONG, orderKey = orderKey, searchKeyword = searchKeyword)
                 storeBookList.addAll(addList)
                 withContext(Main){
                     _binding?.let {
@@ -207,7 +207,7 @@ class StoreFragment : Fragment() {
             storeBookAdapter.notifyItemInserted(storeBookList.size -1)
 
             CoroutineScope(Dispatchers.Default).launch {
-                val addList = firebaseUtil.getBookList(limit = Const.PAGE_COUNT_LONG, startConfig = lastConfig, orderKey = orderKey, searchKeyword = searchKeyword)
+                val addList = firebaseRepository.getBookList(limit = Const.PAGE_COUNT_LONG, startConfig = lastConfig, orderKey = orderKey, searchKeyword = searchKeyword)
 
                 withContext(Main) {
                     val beforeSize = storeBookList.size

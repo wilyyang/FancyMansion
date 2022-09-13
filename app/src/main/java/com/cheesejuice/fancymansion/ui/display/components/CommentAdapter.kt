@@ -1,4 +1,4 @@
-package com.cheesejuice.fancymansion.view
+package com.cheesejuice.fancymansion.ui.display.components
 
 import android.content.Context
 import android.graphics.Typeface
@@ -12,9 +12,9 @@ import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.databinding.ItemCommentBinding
 import com.cheesejuice.fancymansion.databinding.ItemCommentLoadingBinding
-import com.cheesejuice.fancymansion.model.Comment
-import com.cheesejuice.fancymansion.util.CommonUtil
-import com.cheesejuice.fancymansion.util.FirebaseUtil
+import com.cheesejuice.fancymansion.data.models.Comment
+import com.cheesejuice.fancymansion.util.Util
+import com.cheesejuice.fancymansion.data.repositories.networking.FirebaseRepository
 
 class CommentAdapter(val datas: MutableList<Comment>, val context: Context, val bookUid:String):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
@@ -43,7 +43,7 @@ class CommentAdapter(val datas: MutableList<Comment>, val context: Context, val 
             TYPE_LOADING
         }else if(datas[position].report > Const.REPORT_COMMENT){
             TYPE_REPORT
-        }else if(FirebaseUtil.auth.uid == datas[position].uid){
+        }else if(FirebaseRepository.auth.uid == datas[position].uid){
             TYPE_ME
         }else{
             TYPE_ITEM
@@ -68,9 +68,9 @@ class CommentAdapter(val datas: MutableList<Comment>, val context: Context, val 
 
                 binding.tvCommentUserName.text = userName
                 if(editCount == 0){
-                    binding.tvCommentDate.text = CommonUtil.longToTimeFormatss(updateTime)
+                    binding.tvCommentDate.text = Util.longToTimeFormatss(updateTime)
                 }else{
-                    binding.tvCommentDate.text = CommonUtil.longToTimeFormatss(editTime)+" "+context.getString(R.string.display_comment_is_edit)
+                    binding.tvCommentDate.text = Util.longToTimeFormatss(editTime)+" "+context.getString(R.string.display_comment_is_edit)
                 }
 
                 binding.tvComment.text = if(holder.itemViewType == TYPE_REPORT){

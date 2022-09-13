@@ -1,4 +1,4 @@
-package com.cheesejuice.fancymansion.util
+package com.cheesejuice.fancymansion.data.repositories.file
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -9,12 +9,12 @@ import android.util.Log
 import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.Const.Companion.TAG
-import com.cheesejuice.fancymansion.MainApplication
 import com.cheesejuice.fancymansion.R
-import com.cheesejuice.fancymansion.model.Config
-import com.cheesejuice.fancymansion.model.Slide
-import com.cheesejuice.fancymansion.model.SlideLogic
-import com.cheesejuice.fancymansion.model.Logic
+import com.cheesejuice.fancymansion.data.models.Config
+import com.cheesejuice.fancymansion.data.models.Logic
+import com.cheesejuice.fancymansion.data.models.Slide
+import com.cheesejuice.fancymansion.data.models.SlideLogic
+import com.cheesejuice.fancymansion.data.repositories.networking.FirebaseRepository
 import dagger.hilt.android.qualifiers.ActivityContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -23,25 +23,27 @@ import net.lingala.zip4j.ZipFile
 import net.lingala.zip4j.model.ZipParameters
 import net.lingala.zip4j.model.enums.CompressionLevel
 import net.lingala.zip4j.model.enums.CompressionMethod
-import java.io.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.nio.ByteBuffer
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 
-class FileUtil @Inject constructor(@ActivityContext private val context: Context){
+class FileRepository @Inject constructor(@ActivityContext private val context: Context){
     private val path = context.getExternalFilesDir(null)
     private val bookPath = File(path, Const.FILE_DIR_BOOK)
     private val readOnlyPath = File(path, Const.FILE_DIR_READONLY)
     val bookUserPath: File
         get() {
-            return File(bookPath, FirebaseUtil.auth.uid!!)
+            return File(bookPath, FirebaseRepository.auth.uid!!)
         }
 
     val readOnlyUserPath: File
         get() {
-            return File(readOnlyPath, FirebaseUtil.auth.uid!!)
+            return File(readOnlyPath, FirebaseRepository.auth.uid!!)
         }
 
     fun initRootFolder():Boolean{

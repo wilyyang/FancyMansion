@@ -1,17 +1,15 @@
-package com.cheesejuice.fancymansion.util
+package com.cheesejuice.fancymansion.data.repositories.networking
 
 import android.app.Activity
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.Const.Companion.FB_ALL_BOOK
 import com.cheesejuice.fancymansion.Const.Companion.FB_ALL_COMMENT
-import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.R
-import com.cheesejuice.fancymansion.model.Comment
-import com.cheesejuice.fancymansion.model.Config
-import com.cheesejuice.fancymansion.model.UserInfo
+import com.cheesejuice.fancymansion.data.models.Comment
+import com.cheesejuice.fancymansion.data.models.Config
+import com.cheesejuice.fancymansion.data.models.UserInfo
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -24,12 +22,11 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.qualifiers.ActivityContext
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.tasks.await
 import java.io.File
 import javax.inject.Inject
 
-class FirebaseUtil @Inject constructor(@ActivityContext private val context: Context){
+class FirebaseRepository @Inject constructor(@ActivityContext private val context: Context){
     companion object{
         val auth: FirebaseAuth by lazy { Firebase.auth }
         private val db: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
@@ -146,7 +143,7 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
         return uploadConfig.documents.size > 0
     }
 
-    suspend fun getBookConfig(publishCode: String):Config?{
+    suspend fun getBookConfig(publishCode: String): Config?{
         val documents = db.collection(Const.FB_DB_KEY_BOOK).whereEqualTo(Const.FB_DB_KEY_PUBLISH, publishCode).get().await().documents
         return if(documents.size > 0) {
             documents[0].toObject(Config::class.java)
@@ -229,7 +226,7 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
         return configList
     }
 
-    suspend fun getBookList(limit:Long = FB_ALL_BOOK, startConfig:Config? = null, orderKey:Int, searchKeyword:String?):MutableList<Config>{
+    suspend fun getBookList(limit:Long = FB_ALL_BOOK, startConfig: Config? = null, orderKey:Int, searchKeyword:String?):MutableList<Config>{
         val (sortKeyword, isAscending) = if(searchKeyword != null && searchKeyword != ""){
             Pair(Const.FB_DB_KEY_TITLE, true)
         }else{
@@ -343,7 +340,7 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
     }
 
     // Book Report
-    suspend fun incrementBookReport(config:Config, type:Int):Int{
+    suspend fun incrementBookReport(config: Config, type:Int):Int{
         with(db.collection(Const.FB_DB_KEY_BOOK).document(config.publishCode)){
             if(collection(Const.FB_DB_KEY_REPORT).whereEqualTo(Const.FB_DB_KEY_UID, auth.uid).get().await().size() <1){
                 collection(Const.FB_DB_KEY_REPORT).add( hashMapOf(Const.FB_DB_KEY_UID to auth.uid,
@@ -366,17 +363,17 @@ class FirebaseUtil @Inject constructor(@ActivityContext private val context: Con
         return db.collection(Const.FB_DB_KEY_BOOK).document(comment.bookPublishCode).collection(Const.FB_DB_KEY_COMMENT).add(comment).await().id
     }
 
-    suspend fun editComment(comment:Comment){
+    suspend fun editComment(comment: Comment){
         db.collection(Const.FB_DB_KEY_BOOK).document(comment.bookPublishCode).collection(Const.FB_DB_KEY_COMMENT)
             .document(comment.id).set(comment).await()
     }
 
-    suspend fun deleteComment(comment:Comment){
+    suspend fun deleteComment(comment: Comment){
         db.collection(Const.FB_DB_KEY_BOOK).document(comment.bookPublishCode).collection(Const.FB_DB_KEY_COMMENT)
             .document(comment.id).delete().await()
     }
 
-    suspend fun incrementCommentReport(comment:Comment, type:Int):Int{
+    suspend fun incrementCommentReport(comment: Comment, type:Int):Int{
         with(db.collection(Const.FB_DB_KEY_BOOK).document(comment.bookPublishCode).collection(Const.FB_DB_KEY_COMMENT).document(comment.id)){
             if(collection(Const.FB_DB_KEY_REPORT).whereEqualTo(Const.FB_DB_KEY_UID, auth.uid).get().await().size() <1){
                 collection(Const.FB_DB_KEY_REPORT).add( hashMapOf(Const.FB_DB_KEY_UID to auth.uid,

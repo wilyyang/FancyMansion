@@ -1,8 +1,8 @@
-package com.cheesejuice.fancymansion.etc
+package com.cheesejuice.fancymansion.data.repositories.file
 
 import com.cheesejuice.fancymansion.R
 
-class Sample {
+class MakeSample {
     companion object {
         // 00 / 00 / 00 / 00 / 00 = slide / choice / showCondition / enterId / enterCondition
         fun getConfigSample(bookId: Long): String = """

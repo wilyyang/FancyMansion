@@ -16,12 +16,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.cheesejuice.fancymansion.*
 import com.cheesejuice.fancymansion.databinding.FragmentReadListBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
-import com.cheesejuice.fancymansion.model.Config
+import com.cheesejuice.fancymansion.data.models.Config
 import com.cheesejuice.fancymansion.ui.reader.start.ReadStartActivity
-import com.cheesejuice.fancymansion.util.BookUtil
-import com.cheesejuice.fancymansion.util.CommonUtil
-import com.cheesejuice.fancymansion.util.FileUtil
-import com.cheesejuice.fancymansion.view.ReadBookAdapter
+import com.cheesejuice.fancymansion.data.repositories.PreferenceProvider
+import com.cheesejuice.fancymansion.util.Util
+import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
+import com.cheesejuice.fancymansion.ui.main.fragment.read.components.ReadBookAdapter
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,11 +42,11 @@ class ReadListFragment : Fragment() {
     private lateinit var spinnerOrder: AppCompatSpinner
 
     @Inject
-    lateinit var util: CommonUtil
+    lateinit var util: Util
     @Inject
-    lateinit var bookUtil: BookUtil
+    lateinit var preferenceProvider: PreferenceProvider
     @Inject
-    lateinit var fileUtil: FileUtil
+    lateinit var fileRepository: FileRepository
 
     // ui
     private lateinit var readBookAdapter: ReadBookAdapter
@@ -60,7 +60,7 @@ class ReadListFragment : Fragment() {
                 readList.clear()
                 page = 1
 
-                val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isReadOnly = true, isLatest = isLatest)
+                val list = fileRepository.getConfigListRange(0, page * Const.PAGE_COUNT -1, isReadOnly = true, isLatest = isLatest)
                 withContext(Dispatchers.Main) {
                     if(list != null) {
                         readList.addAll(list)
@@ -91,7 +91,7 @@ class ReadListFragment : Fragment() {
 
         isListLoading = true
         CoroutineScope(Dispatchers.Default).launch {
-            val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isReadOnly = true, isLatest = isLatest)
+            val list = fileRepository.getConfigListRange(0, page * Const.PAGE_COUNT -1, isReadOnly = true, isLatest = isLatest)
             withContext(Dispatchers.Main) {
                 if(list != null) {
                     readList.addAll(list)
@@ -130,10 +130,10 @@ class ReadListFragment : Fragment() {
     private fun makeReadList(_readList : MutableList<Config>) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
 
-        readBookAdapter = ReadBookAdapter(_readList, fileUtil, requireActivity())
+        readBookAdapter = ReadBookAdapter(_readList, fileRepository, requireActivity())
         readBookAdapter.setItemClickListener(object: ReadBookAdapter.OnItemClickListener{
             override fun onClick(v: View, config: Config) {
-                bookUtil.setEditPlay(false)
+                preferenceProvider.setEditPlay(false)
                 val intent = Intent(activity, ReadStartActivity::class.java).apply {
                     putExtra(Const.INTENT_BOOK_ID, config.bookId)
                     putExtra(Const.INTENT_PUBLISH_CODE, config.publishCode)
@@ -168,7 +168,7 @@ class ReadListFragment : Fragment() {
 
         CoroutineScope(Dispatchers.Default).launch {
             delay(500L)
-            val list = fileUtil.getConfigListRange(page * Const.PAGE_COUNT, ++page * Const.PAGE_COUNT -1, isReadOnly = true, isLatest = isLatest)
+            val list = fileRepository.getConfigListRange(page * Const.PAGE_COUNT, ++page * Const.PAGE_COUNT -1, isReadOnly = true, isLatest = isLatest)
             withContext(Dispatchers.Main) {
                 if(list != null) {
                     val beforeSize = readList.size
@@ -203,7 +203,7 @@ class ReadListFragment : Fragment() {
                             readList.clear()
                             page = 1
 
-                            val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isReadOnly = true, isLatest = isLatest)
+                            val list = fileRepository.getConfigListRange(0, page * Const.PAGE_COUNT -1, isReadOnly = true, isLatest = isLatest)
                             withContext(Dispatchers.Main) {
                                 if(list != null) {
                                     readList.addAll(list)

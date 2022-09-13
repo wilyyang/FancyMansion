@@ -7,14 +7,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.databinding.ActivityReadSlideBinding
-import com.cheesejuice.fancymansion.model.ChoiceItem
-import com.cheesejuice.fancymansion.model.Logic
-import com.cheesejuice.fancymansion.model.Slide
-import com.cheesejuice.fancymansion.util.BookUtil
-import com.cheesejuice.fancymansion.util.CommonUtil
-import com.cheesejuice.fancymansion.util.FileUtil
-import com.cheesejuice.fancymansion.util.FirebaseUtil
-import com.cheesejuice.fancymansion.view.ChoiceAdapter
+import com.cheesejuice.fancymansion.data.models.ChoiceItem
+import com.cheesejuice.fancymansion.data.models.Logic
+import com.cheesejuice.fancymansion.data.models.Slide
+import com.cheesejuice.fancymansion.data.repositories.PreferenceProvider
+import com.cheesejuice.fancymansion.util.Util
+import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
+import com.cheesejuice.fancymansion.data.repositories.networking.FirebaseRepository
+import com.cheesejuice.fancymansion.ui.ChoiceAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
@@ -32,14 +32,14 @@ class ReadSlideActivity : AppCompatActivity() {
 
     private lateinit var publishCode: String
     var mode: String = ""
-    private lateinit var adapter:ChoiceAdapter
+    private lateinit var adapter: ChoiceAdapter
 
     @Inject
-    lateinit var util: CommonUtil
+    lateinit var util: Util
     @Inject
-    lateinit var bookUtil: BookUtil
+    lateinit var preferenceProvider: PreferenceProvider
     @Inject
-    lateinit var fileUtil: FileUtil
+    lateinit var fileRepository: FileRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +47,7 @@ class ReadSlideActivity : AppCompatActivity() {
         setContentView(binding.root)
         showReadBookLoadingScreen(true)
 
-        if(bookUtil.getEditPlay()) { mode = Const.EDIT_PLAY
+        if(preferenceProvider.getEditPlay()) { mode = Const.EDIT_PLAY
         }
 
         // init config & slide object
@@ -56,13 +56,13 @@ class ReadSlideActivity : AppCompatActivity() {
         publishCode = intent.getStringExtra(Const.INTENT_PUBLISH_CODE).orEmpty()
 
         CoroutineScope(Default).launch {
-            val logicTemp = fileUtil.getLogicFromFile(bookId, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode)
+            val logicTemp = fileRepository.getLogicFromFile(bookId, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode)
             val slideTemp = logicTemp?.let {
                 // Slide is First
                 if(slideId == Const.FIRST_SLIDE && it.logics.size > 0){
                     slideId = it.logics[0].slideId
                 }
-                fileUtil.getSlideFromFile(bookId, slideId, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode)
+                fileRepository.getSlideFromFile(bookId, slideId, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode)
             }
 
             withContext(Main) {
@@ -71,8 +71,8 @@ class ReadSlideActivity : AppCompatActivity() {
                     slide = slideTemp
 
                     // if not play mode and have save, not count save
-                    val isSave = ((mode != Const.EDIT_PLAY) && slideId == bookUtil.getSaveSlideId(logic.bookId, FirebaseUtil.auth.uid!!, publishCode))
-                    if(!isSave){ bookUtil.incrementIdCount(logic.bookId, FirebaseUtil.auth.uid!!, publishCode, slide.slideId, mode) }
+                    val isSave = ((mode != Const.EDIT_PLAY) && slideId == preferenceProvider.getSaveSlideId(logic.bookId, FirebaseRepository.auth.uid!!, publishCode))
+                    if(!isSave){ preferenceProvider.incrementIdCount(logic.bookId, FirebaseRepository.auth.uid!!, publishCode, slide.slideId, mode) }
 
                     makeSlideScreen(logic, slide)
                 }else{
@@ -86,7 +86,7 @@ class ReadSlideActivity : AppCompatActivity() {
         showReadBookLoadingScreen(false)
         with(slide){
             // Make Main Content
-            fileUtil.getImageFile(logic.bookId, slideImage, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode)
+            fileRepository.getImageFile(logic.bookId, slideImage, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode)
                 ?.also {
                     binding.layoutShow.visibility = View.VISIBLE
                     Glide.with(applicationContext).load(it).into(binding.imageViewShowMain)
@@ -108,7 +108,7 @@ class ReadSlideActivity : AppCompatActivity() {
                 }
 
                 for(choiceItem in it.choiceItems){
-                    if(bookUtil.checkConditions(logic.bookId, FirebaseUtil.auth.uid!!, publishCode, choiceItem.showConditions, mode)){
+                    if(preferenceProvider.checkConditions(logic.bookId, FirebaseRepository.auth.uid!!, publishCode, choiceItem.showConditions, mode)){
                         passChoiceItems.add(choiceItem)
                     }
                 }
@@ -119,7 +119,7 @@ class ReadSlideActivity : AppCompatActivity() {
             adapter = ChoiceAdapter(passChoiceItems)
             adapter.setItemClickListener(object : ChoiceAdapter.OnItemClickListener {
                 override fun onClick(v: View, choiceItem: ChoiceItem) {
-                    bookUtil.incrementIdCount(logic.bookId, FirebaseUtil.auth.uid!!, publishCode, choiceItem.id, mode)
+                    preferenceProvider.incrementIdCount(logic.bookId, FirebaseRepository.auth.uid!!, publishCode, choiceItem.id, mode)
                     enterNextSlide(logic, choiceItem)
                 }
             })
@@ -128,7 +128,7 @@ class ReadSlideActivity : AppCompatActivity() {
 
         // Save read slide point
         if(mode != Const.EDIT_PLAY){
-            bookUtil.setSaveSlideId(logic.bookId, FirebaseUtil.auth.uid!!, publishCode, slide.slideId)
+            preferenceProvider.setSaveSlideId(logic.bookId, FirebaseRepository.auth.uid!!, publishCode, slide.slideId)
         }
     }
 
@@ -146,20 +146,20 @@ class ReadSlideActivity : AppCompatActivity() {
             // Get Next Slide Id
             var nextSlideId = Const.END_SLIDE_ID
             for(enterItem in choiceItem.enterItems) {
-                if(bookUtil.checkConditions(logic.bookId, FirebaseUtil.auth.uid!!, publishCode, enterItem.enterConditions, mode)){
-                    bookUtil.incrementIdCount(logic.bookId, FirebaseUtil.auth.uid!!, publishCode, enterItem.id, mode)
+                if(preferenceProvider.checkConditions(logic.bookId, FirebaseRepository.auth.uid!!, publishCode, enterItem.enterConditions, mode)){
+                    preferenceProvider.incrementIdCount(logic.bookId, FirebaseRepository.auth.uid!!, publishCode, enterItem.id, mode)
                     nextSlideId = enterItem.enterSlideId
                     break
                 }
             }
 
-            val slideNext = fileUtil.getSlideFromFile(logic.bookId, nextSlideId, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode)
+            val slideNext = fileRepository.getSlideFromFile(logic.bookId, nextSlideId, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = publishCode)
 
             delay(500)
             withContext(Main){
                 slideNext?.also {
                     slide = it
-                    bookUtil.incrementIdCount(logic.bookId, FirebaseUtil.auth.uid!!, publishCode, slide.slideId, mode)
+                    preferenceProvider.incrementIdCount(logic.bookId, FirebaseRepository.auth.uid!!, publishCode, slide.slideId, mode)
                     makeSlideScreen(logic, slide)
                 }?:also {
                     showReadBookLoadingScreen(false)

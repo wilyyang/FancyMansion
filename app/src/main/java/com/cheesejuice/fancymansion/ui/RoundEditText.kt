@@ -1,10 +1,7 @@
-package com.cheesejuice.fancymansion.view
+package com.cheesejuice.fancymansion.ui
 
 import android.content.Context
 import android.graphics.Rect
-import android.graphics.Typeface
-import android.text.InputType.*
-import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.res.ResourcesCompat

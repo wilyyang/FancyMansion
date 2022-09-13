@@ -1,4 +1,4 @@
-package com.cheesejuice.fancymansion.model
+package com.cheesejuice.fancymansion.data.models
 
 import com.cheesejuice.fancymansion.CondNext
 import com.cheesejuice.fancymansion.CondOp

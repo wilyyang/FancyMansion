@@ -174,7 +174,7 @@
                                             app:hintEnabled="false"
                                             app:counterMaxLength="@integer/count_config_title">
 
-                                            <com.cheesejuice.fancymansion.view.RoundEditText
+                                            <com.cheesejuice.fancymansion.ui.RoundEditText
                                                 android:id="@+id/etConfigTitle"
                                                 android:layout_width="match_parent"
                                                 android:layout_height="wrap_content"
@@ -206,7 +206,7 @@
                                             app:hintEnabled="false"
                                             app:counterMaxLength="@integer/count_config_writer">
 
-                                            <com.cheesejuice.fancymansion.view.RoundEditText
+                                            <com.cheesejuice.fancymansion.ui.RoundEditText
                                                 android:id="@+id/etConfigWriter"
                                                 android:layout_width="match_parent"
                                                 android:layout_height="wrap_content"
@@ -236,7 +236,7 @@
                                             app:hintEnabled="false"
                                             app:counterMaxLength="@integer/count_config_illustrator">
 
-                                            <com.cheesejuice.fancymansion.view.RoundEditText
+                                            <com.cheesejuice.fancymansion.ui.RoundEditText
                                                 android:id="@+id/etConfigIllustrator"
                                                 android:layout_width="match_parent"
                                                 android:layout_height="wrap_content"
@@ -263,7 +263,7 @@
                                         app:hintEnabled="false"
                                         app:counterMaxLength="@integer/count_config_description">
 
-                                        <com.cheesejuice.fancymansion.view.RoundEditText
+                                        <com.cheesejuice.fancymansion.ui.RoundEditText
                                             android:id="@+id/etConfigDescription"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"

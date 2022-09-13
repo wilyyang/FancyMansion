@@ -1,16 +1,11 @@
 package com.cheesejuice.fancymansion.extension
 
-import android.app.AlertDialog
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.cheesejuice.fancymansion.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.cheesejuice.fancymansion.R
 
 // UI
 fun Fragment.showLoadingScreen(isLoading: Boolean, loading: View, main: View, loadingText:String){

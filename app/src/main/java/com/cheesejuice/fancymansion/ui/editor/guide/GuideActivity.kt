@@ -5,8 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.databinding.ActivityGuideBinding
-import com.cheesejuice.fancymansion.model.Guide
-import com.cheesejuice.fancymansion.view.GuideItemAdapter
+import com.cheesejuice.fancymansion.data.models.Guide
+import com.cheesejuice.fancymansion.ui.editor.guide.components.GuideItemAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 
 class GuideActivity : AppCompatActivity() {

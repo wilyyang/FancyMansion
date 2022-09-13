@@ -18,13 +18,13 @@ import com.cheesejuice.fancymansion.ui.editor.guide.GuideActivity
 import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.databinding.ActivityEditStartBinding
 import com.cheesejuice.fancymansion.extension.*
-import com.cheesejuice.fancymansion.model.Config
+import com.cheesejuice.fancymansion.data.models.Config
 import com.cheesejuice.fancymansion.ui.reader.start.ReadStartActivity
-import com.cheesejuice.fancymansion.util.BookUtil
-import com.cheesejuice.fancymansion.util.CommonUtil
-import com.cheesejuice.fancymansion.util.FileUtil
-import com.cheesejuice.fancymansion.util.FirebaseUtil
-import com.cheesejuice.fancymansion.view.RoundEditText
+import com.cheesejuice.fancymansion.data.repositories.PreferenceProvider
+import com.cheesejuice.fancymansion.util.Util
+import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
+import com.cheesejuice.fancymansion.data.repositories.networking.FirebaseRepository
+import com.cheesejuice.fancymansion.ui.RoundEditText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
@@ -45,13 +45,13 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
     private var updateImage = false
 
     @Inject
-    lateinit var util: CommonUtil
+    lateinit var util: Util
     @Inject
-    lateinit var bookUtil: BookUtil
+    lateinit var preferenceProvider: PreferenceProvider
     @Inject
-    lateinit var fileUtil: FileUtil
+    lateinit var fileRepository: FileRepository
     @Inject
-    lateinit var firebaseUtil: FirebaseUtil
+    lateinit var firebaseRepository: FirebaseRepository
 
     private var makeBook = false
     private var isBookUpload = false
@@ -63,7 +63,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_get_make_book))
 
             CoroutineScope(Default).launch {
-                val conf = fileUtil.getConfigFromFile(config.bookId)
+                val conf = fileRepository.getConfigFromFile(config.bookId)
                 withContext(Main) {
                     conf?.also{
                         config = it
@@ -99,17 +99,17 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
         CoroutineScope(Default).launch {
             if(isCreate || bookId == ID_NOT_FOUND){
                 makeBook = true
-                bookId = fileUtil.getNewEditBookId()
+                bookId = fileRepository.getNewEditBookId()
 
                 if(bookId != -1L){
-                    fileUtil.makeEmptyBook(bookId)
+                    fileRepository.makeEmptyBook(bookId)
                 }
             }
 
-            val conf = fileUtil.getConfigFromFile(bookId)
+            val conf = fileRepository.getConfigFromFile(bookId)
             conf?.let {
                 if(conf.publishCode != ""){
-                    isBookUpload = firebaseUtil.isBookUpload(conf.publishCode)
+                    isBookUpload = firebaseRepository.isBookUpload(conf.publishCode)
                 }
             }
 
@@ -134,8 +134,8 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         with(conf){
-            binding.tvConfigVersion.text = "v ${CommonUtil.versionToString(version)}"
-            binding.tvConfigTime.text = CommonUtil.longToTimeFormatss(updateTime)
+            binding.tvConfigVersion.text = "v ${Util.versionToString(version)}"
+            binding.tvConfigTime.text = Util.longToTimeFormatss(updateTime)
 
             binding.etConfigTitle.setText(title)
             binding.etConfigWriter.setText(writer)
@@ -143,7 +143,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             binding.etConfigDescription.setText(description)
             binding.tvConfigPub.text = getString(R.string.book_config_pub)+publishCode
         }
-        fileUtil.getImageFile(conf.bookId, conf.coverImage, isCover = true)?.also {
+        fileRepository.getImageFile(conf.bookId, conf.coverImage, isCover = true)?.also {
             Glide.with(applicationContext).load(it).into(binding.imageViewShowMain)
         }?:also {
             Glide.with(applicationContext).load(R.drawable.default_image).into(binding.imageViewShowMain)
@@ -162,10 +162,10 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             description = binding.etConfigDescription.text.toString()
 
             if(updateImage){
-                coverImage = fileUtil.makeImageFile(binding.imageViewShowMain.drawable,
+                coverImage = fileRepository.makeImageFile(binding.imageViewShowMain.drawable,
                     bookId, coverImage, isCover = true)
             }
-            fileUtil.makeConfigFile(this)
+            fileRepository.makeConfigFile(this)
         }
         RoundEditText.onceFocus = false
         updateImage = false
@@ -219,9 +219,9 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                 this@EditStartActivity.currentFocus?.clearFocus()
 
                 val current = System.currentTimeMillis()
-                if(!isBookUpload && FirebaseUtil.userInfo!!.uploadBookTime+ Const.CONST_TIME_LIMIT_BOOK > current){
+                if(!isBookUpload && FirebaseRepository.userInfo!!.uploadBookTime+ Const.CONST_TIME_LIMIT_BOOK > current){
 
-                    val leftTime = (FirebaseUtil.userInfo!!.uploadBookTime+ Const.CONST_TIME_LIMIT_BOOK - current) / 60000
+                    val leftTime = (FirebaseRepository.userInfo!!.uploadBookTime+ Const.CONST_TIME_LIMIT_BOOK - current) / 60000
                     util.getAlertDailog(
                         context = this@EditStartActivity,
                         title = getString(R.string.dialog_time_limit_title),
@@ -238,7 +238,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                     val dbSuccess = uploadBook()
                     val fileSuccess = uploadBookFile()
 
-                    isBookUpload = firebaseUtil.isBookUpload(config.publishCode)
+                    isBookUpload = firebaseRepository.isBookUpload(config.publishCode)
                     withContext(Main) {
                         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
 
@@ -259,7 +259,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.menu_play -> {
                 startAfterSaveEdits{
-                    bookUtil.setEditPlay(true); bookUtil.deleteBookPref(config.bookId, FirebaseUtil.auth.uid!!, config.publishCode,
+                    preferenceProvider.setEditPlay(true); preferenceProvider.deleteBookPref(config.bookId, FirebaseRepository.auth.uid!!, config.publishCode,
                     Const.EDIT_PLAY
                 );
                     val intent = Intent(this, ReadStartActivity::class.java).apply {
@@ -289,7 +289,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                     R.string.loading_text_delete_make_book
                 ))
                 CoroutineScope(IO).launch {
-                    fileUtil.deleteBookFolder(config.bookId)
+                    fileRepository.deleteBookFolder(config.bookId)
                     withContext(Main) {
                         if (makeBook) {
                             setResult(Const.RESULT_NEW_DELETE)
@@ -307,10 +307,10 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                     R.string.loading_text_copy_make_book
                 ))
                 CoroutineScope(IO).launch {
-                    val copyBookId = fileUtil.getNewEditBookId()
+                    val copyBookId = fileRepository.getNewEditBookId()
                     if (copyBookId != -1L) {
-                        val targetDir = File(fileUtil.bookUserPath, Const.FILE_PREFIX_BOOK + config.bookId)
-                        val copyDir = File(fileUtil.bookUserPath, Const.FILE_PREFIX_BOOK + copyBookId)
+                        val targetDir = File(fileRepository.bookUserPath, Const.FILE_PREFIX_BOOK + config.bookId)
+                        val copyDir = File(fileRepository.bookUserPath, Const.FILE_PREFIX_BOOK + copyBookId)
                         targetDir.copyRecursively(copyDir, overwrite = true)
                         val copyConfig = Json.decodeFromString<Config>(Json.encodeToString(config)).apply {
                             bookId = copyBookId
@@ -358,21 +358,21 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
     private suspend fun uploadBook():Boolean{
         var result = false
-        FirebaseUtil.auth.uid?.let { userId ->
+        FirebaseRepository.auth.uid?.let { userId ->
             config.apply {
-                user = firebaseUtil.name ?: ""
-                email = firebaseUtil.email ?: ""
+                user = firebaseRepository.name ?: ""
+                email = firebaseRepository.email ?: ""
                 uid = userId
                 updateTime = System.currentTimeMillis()
             }
 
             if(!isBookUpload){
-                config.publishCode = firebaseUtil.uploadBookConfig(config)
+                config.publishCode = firebaseRepository.uploadBookConfig(config)
             }
 
             if(config.publishCode != ""){
                 saveConfigFile(config)
-                firebaseUtil.updateBookConfig(config)
+                firebaseRepository.updateBookConfig(config)
                 result = true
             }
         }
@@ -381,13 +381,13 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
     private suspend fun uploadBookFile(): Boolean{
         var result = false
-        val localBookFile = fileUtil.compressBook(bookId = config.bookId)
+        val localBookFile = fileRepository.compressBook(bookId = config.bookId)
 
         val total = localBookFile?.listFiles()?.sumOf { it.length() }?:0L
         var current = 0L
         localBookFile?.listFiles()?.let { fileList ->
             for(subFile in fileList){
-                result = firebaseUtil.uploadBookFile("/${Const.FB_STORAGE_BOOK}/${config.uid}/${config.publishCode}/${subFile.name}", subFile)
+                result = firebaseRepository.uploadBookFile("/${Const.FB_STORAGE_BOOK}/${config.uid}/${config.publishCode}/${subFile.name}", subFile)
                 if(!result){
                     break
                 }
@@ -398,7 +398,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                 }
             }
         }
-        fileUtil.deleteTempFile(config.bookId, config.publishCode)
+        fileRepository.deleteTempFile(config.bookId, config.publishCode)
         return result
     }
 }

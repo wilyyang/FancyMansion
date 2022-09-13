@@ -15,11 +15,11 @@ import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.ui.editor.guide.GuideActivity
 import com.cheesejuice.fancymansion.MainApplication
 import com.cheesejuice.fancymansion.R
+import com.cheesejuice.fancymansion.data.models.*
 import com.cheesejuice.fancymansion.databinding.ActivityEditEnterBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
-import com.cheesejuice.fancymansion.model.*
 import com.cheesejuice.fancymansion.ui.editor.condition.EditConditionActivity
-import com.cheesejuice.fancymansion.util.BookUtil
+import com.cheesejuice.fancymansion.data.repositories.PreferenceProvider
 import com.cheesejuice.fancymansion.view.EditConditionListAdapter
 import com.cheesejuice.fancymansion.view.EditConditionListDragCallback
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,7 +57,7 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
     private lateinit var selectSlideAdapter: ArrayAdapter<String>
 
     @Inject
-    lateinit var bookUtil: BookUtil
+    lateinit var preferenceProvider: PreferenceProvider
 
     private val editEnterConditionForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -90,8 +90,8 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
             }
         }
 
-    private fun copyCondition(condition:Condition){
-        val newEnterConditionId = bookUtil.nextEnterConditionId(enterItem.enterConditions, enterItem.id)
+    private fun copyCondition(condition: Condition){
+        val newEnterConditionId = preferenceProvider.nextEnterConditionId(enterItem.enterConditions, enterItem.id)
         if (newEnterConditionId > 0) {
             enterItem.enterConditions.add(Json.decodeFromString<Condition>(Json.encodeToString(condition)).apply {
                 id = newEnterConditionId
@@ -135,7 +135,7 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
 
     private fun loadData(makeEnter:Boolean = false): Boolean{
         if (makeEnter) {
-            val nextEnterId = bookUtil.nextEnterId(choice.enterItems, choice.id)
+            val nextEnterId = preferenceProvider.nextEnterId(choice.enterItems, choice.id)
             if(nextEnterId > 0){
                 enterId = nextEnterId
                 enterItem = EnterItem(nextEnterId)
@@ -151,7 +151,7 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
     }
 
     private fun initEditConditionListView(){
-        editEnterConditionListAdapter = EditConditionListAdapter(bookUtil, context = this@EditEnterActivity)
+        editEnterConditionListAdapter = EditConditionListAdapter(preferenceProvider, context = this@EditEnterActivity)
         editEnterConditionListAdapter.setItemClickListener(object: EditConditionListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
                 enterItem.enterSlideId = logic.logics[binding.spinnerSelectSlide.selectedItemPosition].slideId
@@ -181,7 +181,7 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
         }
     }
 
-    private fun makeEditEnterScreen(logic:Logic, enterItem: EnterItem) {
+    private fun makeEditEnterScreen(logic: Logic, enterItem: EnterItem) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
         binding.tvEnterId.text = "${enterItem.id}"
 

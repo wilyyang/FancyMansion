@@ -6,8 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.cheesejuice.fancymansion.databinding.ItemEditEnterBinding
-import com.cheesejuice.fancymansion.model.EnterItem
-import com.cheesejuice.fancymansion.model.Logic
+import com.cheesejuice.fancymansion.data.models.EnterItem
+import com.cheesejuice.fancymansion.data.models.Logic
 import java.util.*
 
 class EditEnterListAdapter(var datas: MutableList<EnterItem> = mutableListOf(), var logic: Logic? = null):

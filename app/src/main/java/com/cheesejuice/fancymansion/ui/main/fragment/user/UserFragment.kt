@@ -15,12 +15,12 @@ import com.cheesejuice.fancymansion.ui.display.DisplayBookActivity
 import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.databinding.FragmentUserBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
-import com.cheesejuice.fancymansion.model.Config
-import com.cheesejuice.fancymansion.util.BookUtil
-import com.cheesejuice.fancymansion.util.CommonUtil
-import com.cheesejuice.fancymansion.util.FileUtil
-import com.cheesejuice.fancymansion.util.FirebaseUtil
-import com.cheesejuice.fancymansion.view.StoreUserBookAdapter
+import com.cheesejuice.fancymansion.data.models.Config
+import com.cheesejuice.fancymansion.data.repositories.PreferenceProvider
+import com.cheesejuice.fancymansion.util.Util
+import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
+import com.cheesejuice.fancymansion.data.repositories.networking.FirebaseRepository
+import com.cheesejuice.fancymansion.ui.main.fragment.user.components.StoreUserBookAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,13 +36,13 @@ class UserFragment : Fragment(), View.OnClickListener {
     private var userUploadBookList : MutableList<Config> = mutableListOf()
 
     @Inject
-    lateinit var util: CommonUtil
+    lateinit var util: Util
     @Inject
-    lateinit var bookUtil: BookUtil
+    lateinit var preferenceProvider: PreferenceProvider
     @Inject
-    lateinit var fileUtil: FileUtil
+    lateinit var fileRepository: FileRepository
     @Inject
-    lateinit var firebaseUtil: FirebaseUtil
+    lateinit var firebaseRepository: FirebaseRepository
 
     private var isInit = false
     private lateinit var storeBookAdapter: StoreUserBookAdapter
@@ -52,7 +52,7 @@ class UserFragment : Fragment(), View.OnClickListener {
             showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_frag_store_book))
             CoroutineScope(Dispatchers.Default).launch {
                 userUploadBookList.clear()
-                val addList = firebaseUtil.getUserBookList(FirebaseUtil.auth.uid!!)
+                val addList = firebaseRepository.getUserBookList(FirebaseRepository.auth.uid!!)
                 userUploadBookList.addAll(addList)
                 withContext(Dispatchers.Main) {
                     _binding?.let {
@@ -82,19 +82,19 @@ class UserFragment : Fragment(), View.OnClickListener {
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_frag_store_book))
         CoroutineScope(Dispatchers.Default).launch {
             userUploadBookList.clear()
-            val addList = firebaseUtil.getUserBookList(FirebaseUtil.auth.uid!!)
+            val addList = firebaseRepository.getUserBookList(FirebaseRepository.auth.uid!!)
             userUploadBookList.addAll(addList)
             withContext(Dispatchers.Main) {
                 _binding?.let {
                     showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
-                    if(firebaseUtil.name != null && firebaseUtil.email != null && firebaseUtil.photoUrl != null) {
-                        binding.tvProfileName.text = firebaseUtil.name
-                        binding.tvProfileEmail.text = firebaseUtil.email
+                    if(firebaseRepository.name != null && firebaseRepository.email != null && firebaseRepository.photoUrl != null) {
+                        binding.tvProfileName.text = firebaseRepository.name
+                        binding.tvProfileEmail.text = firebaseRepository.email
                         binding.tvUserBooks.text = "${userUploadBookList.size}"
                         binding.tvUserGood.text = "${userUploadBookList.map { it.good }.sum()}"
-                        Glide.with(this@UserFragment).load(firebaseUtil.photoUrl).circleCrop().into(binding.imageProfile)
+                        Glide.with(this@UserFragment).load(firebaseRepository.photoUrl).circleCrop().into(binding.imageProfile)
 
-                        storeBookAdapter = StoreUserBookAdapter(userUploadBookList, requireActivity(), firebaseUtil)
+                        storeBookAdapter = StoreUserBookAdapter(userUploadBookList, requireActivity(), firebaseRepository)
                         storeBookAdapter.setItemClickListener(object: StoreUserBookAdapter.OnItemClickListener{
                             override fun onClick(v: View, config: Config) {
                                 val intent = Intent(activity, DisplayBookActivity::class.java).apply {
@@ -142,7 +142,7 @@ class UserFragment : Fragment(), View.OnClickListener {
         if(!isInit) return true
         when(item.itemId) {
             R.id.menu_logout -> {
-                firebaseUtil.signOut(requireActivity())
+                firebaseRepository.signOut(requireActivity())
 
                 val intent = Intent(activity, AuthActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

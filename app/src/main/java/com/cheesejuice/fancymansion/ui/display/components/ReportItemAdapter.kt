@@ -1,11 +1,11 @@
-package com.cheesejuice.fancymansion.view
+package com.cheesejuice.fancymansion.ui.display.components
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.cheesejuice.fancymansion.databinding.ItemReportBinding
 
-class ReportItemAdapter(val datas: List<String>, val itemClickListener:OnItemClickListener):
+class ReportItemAdapter(val datas: List<String>, val itemClickListener: OnItemClickListener):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     interface OnItemClickListener {
@@ -18,7 +18,7 @@ class ReportItemAdapter(val datas: List<String>, val itemClickListener:OnItemCli
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is ReportItemAdapter.ReportItemViewHolder){
+        if (holder is ReportItemViewHolder){
             holder.binding.tvReportText.text = datas[position]
             holder.itemView.setOnClickListener {
                 itemClickListener.onClick(holder.bindingAdapterPosition)

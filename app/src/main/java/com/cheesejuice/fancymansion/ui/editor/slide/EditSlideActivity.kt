@@ -21,17 +21,18 @@ import com.cheesejuice.fancymansion.databinding.ActivityEditSlideBinding
 import com.cheesejuice.fancymansion.extension.registerGallaryResultName
 import com.cheesejuice.fancymansion.extension.showDialogAndStart
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
-import com.cheesejuice.fancymansion.model.ChoiceItem
-import com.cheesejuice.fancymansion.model.Logic
-import com.cheesejuice.fancymansion.model.Slide
-import com.cheesejuice.fancymansion.model.SlideLogic
+import com.cheesejuice.fancymansion.data.models.ChoiceItem
+import com.cheesejuice.fancymansion.data.models.Logic
+import com.cheesejuice.fancymansion.data.models.Slide
+import com.cheesejuice.fancymansion.data.models.SlideLogic
+import com.cheesejuice.fancymansion.ui.RoundEditText
 import com.cheesejuice.fancymansion.ui.editor.choice.EditChoiceActivity
 import com.cheesejuice.fancymansion.ui.editor.guide.GuideActivity
 import com.cheesejuice.fancymansion.ui.reader.slide.ReadSlideActivity
-import com.cheesejuice.fancymansion.util.BookUtil
-import com.cheesejuice.fancymansion.util.CommonUtil
-import com.cheesejuice.fancymansion.util.FileUtil
-import com.cheesejuice.fancymansion.util.FirebaseUtil
+import com.cheesejuice.fancymansion.data.repositories.PreferenceProvider
+import com.cheesejuice.fancymansion.util.Util
+import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
+import com.cheesejuice.fancymansion.data.repositories.networking.FirebaseRepository
 import com.cheesejuice.fancymansion.view.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -60,11 +61,11 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
     private lateinit var editChoiceListAdapter:EditChoiceListAdapter
 
     @Inject
-    lateinit var util: CommonUtil
+    lateinit var util: Util
     @Inject
-    lateinit var bookUtil: BookUtil
+    lateinit var preferenceProvider: PreferenceProvider
     @Inject
-    lateinit var fileUtil: FileUtil
+    lateinit var fileRepository: FileRepository
 
     private lateinit var gallaryForResult: ActivityResultLauncher<Intent>
 
@@ -124,12 +125,12 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         }
 
     private fun copyChoiceItem(choiceItem: ChoiceItem){
-        val nextChoiceId = bookUtil.nextChoiceId(slideLogic)
+        val nextChoiceId = preferenceProvider.nextChoiceId(slideLogic)
         if(nextChoiceId > 0){
             slideLogic.choiceItems.add(
                 Json.decodeFromString<ChoiceItem>(Json.encodeToString(choiceItem)).apply {
                     id = nextChoiceId
-                    bookUtil.applyChoiceElementsId(this, nextChoiceId)
+                    preferenceProvider.applyChoiceElementsId(this, nextChoiceId)
                 })
         }
     }
@@ -180,7 +181,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
 
     private fun loadData(bookId:Long, pSlideId:Long = Const.FIRST_SLIDE): Boolean{
         var slideId = pSlideId
-        fileUtil.getLogicFromFile(bookId)?.also { itLogic ->
+        fileRepository.getLogicFromFile(bookId)?.also { itLogic ->
             logic = itLogic
 
             if(slideId == Const.FIRST_SLIDE && logic.logics.size > 0){
@@ -190,7 +191,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             logic.logics.find { it.slideId == slideId }?.also{ itSlideLogic ->
                 slideLogic = itSlideLogic
 
-                fileUtil.getSlideFromFile(bookId, slideId)?.let { itSlide ->
+                fileRepository.getSlideFromFile(bookId, slideId)?.let { itSlide ->
                     slide = itSlide
                     return true
                 }
@@ -249,7 +250,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         editChoiceListAdapter.onceMove = flag
     }
 
-    private fun makeEditSlideScreen(logic:Logic, slide: Slide, slideLogic: SlideLogic) {
+    private fun makeEditSlideScreen(logic: Logic, slide: Slide, slideLogic: SlideLogic) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
         binding.layoutEmpty.root.visibility = View.GONE
         binding.layoutContain.visibility = View.VISIBLE
@@ -264,7 +265,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             binding.etSlideQuestion.setText(question)
         }
 
-        fileUtil.getImageFile(logic.bookId, slide.slideImage)?.also{
+        fileRepository.getImageFile(logic.bookId, slide.slideImage)?.also{
             binding.layoutEmptyImage.visibility = View.GONE
             Glide.with(applicationContext).load(it).into(binding.imageViewShowMain)
         }?:also{
@@ -363,12 +364,12 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             question = binding.etSlideQuestion.text.toString()
 
             if(updateImage){
-                slideImage = fileUtil.makeImageFile(binding.imageViewShowMain.drawable, logic.bookId, slideImage)
+                slideImage = fileRepository.makeImageFile(binding.imageViewShowMain.drawable, logic.bookId, slideImage)
             }
-            fileUtil.makeSlideFile(logic.bookId, this)
+            fileRepository.makeSlideFile(logic.bookId, this)
         }
         logic.logics.find { it.slideId == slide.slideId }!!.slideTitle = slide.slideTitle
-        fileUtil.makeLogicFile(logic)
+        fileRepository.makeLogicFile(logic)
     }
 
     override fun onClick(view: View?) {
@@ -443,8 +444,8 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             }
             R.id.menu_play -> {
                 startAfterSaveEdits {
-                    bookUtil.setEditPlay(true)
-                    bookUtil.deleteBookPref(logic.bookId, FirebaseUtil.auth.uid!!, "",
+                    preferenceProvider.setEditPlay(true)
+                    preferenceProvider.deleteBookPref(logic.bookId, FirebaseRepository.auth.uid!!, "",
                         Const.EDIT_PLAY
                     )
 
@@ -488,7 +489,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
 
     private fun addNewSlide(isThisCopy : Boolean = false){
         // Get new slide id
-        val nextId = bookUtil.nextSlideId(logic.logics)
+        val nextId = preferenceProvider.nextSlideId(logic.logics)
         if(nextId < 0){
             Toast.makeText(this@EditSlideActivity, R.string.alert_max_count, Toast.LENGTH_SHORT).show()
             return
@@ -497,7 +498,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_new_slide))
         CoroutineScope(IO).launch {
             // Update Logic (save or not save)
-            logic = fileUtil.getLogicFromFile(logic.bookId)!!
+            logic = fileRepository.getLogicFromFile(logic.bookId)!!
 
             // Object Process
             if (isThisCopy) {
@@ -507,7 +508,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                 }
                 slideLogic = Json.decodeFromString<SlideLogic>(Json.encodeToString(slideLogic)).apply {
                     slideId = nextId
-                    bookUtil.applySlideElementsId(this, nextId)
+                    preferenceProvider.applySlideElementsId(this, nextId)
                     if(type == Const.SLIDE_TYPE_START){
                         type = Const.SLIDE_TYPE_NORMAL
                     }
@@ -521,8 +522,8 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             logic.logics.add(slideLogic)
 
             // File Process
-            fileUtil.makeSlideFile(logic.bookId, slide)
-            fileUtil.makeLogicFile(logic)
+            fileRepository.makeSlideFile(logic.bookId, slide)
+            fileRepository.makeLogicFile(logic)
 
             // Make Slide screen
             withContext(Main) {
@@ -540,15 +541,15 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_delete_slide))
         CoroutineScope(IO).launch {
             // Update Logic (save or not save)
-            logic = fileUtil.getLogicFromFile(logic.bookId)!!
+            logic = fileRepository.getLogicFromFile(logic.bookId)!!
 
             // Object Process
             val position = logic.logics.indexOfFirst { it.slideId == slide.slideId  }
             logic.logics.removeAt(position)
 
             // File Process
-            fileUtil.deleteSlideFile(logic.bookId, slide.slideId)
-            fileUtil.makeLogicFile(logic)
+            fileRepository.deleteSlideFile(logic.bookId, slide.slideId)
+            fileRepository.makeLogicFile(logic)
 
             // Get next slide
             val nextId = if(logic.logics.size > 0 && position > 0) logic.logics[position-1].slideId else Const.FIRST_SLIDE

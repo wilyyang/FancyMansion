@@ -18,10 +18,10 @@ import com.cheesejuice.fancymansion.ui.main.fragment.edit.EditListFragment
 import com.cheesejuice.fancymansion.ui.main.fragment.read.ReadListFragment
 import com.cheesejuice.fancymansion.ui.main.fragment.store.StoreFragment
 import com.cheesejuice.fancymansion.ui.main.fragment.user.UserFragment
-import com.cheesejuice.fancymansion.util.BookUtil
-import com.cheesejuice.fancymansion.util.CommonUtil
-import com.cheesejuice.fancymansion.util.FileUtil
-import com.cheesejuice.fancymansion.util.FirebaseUtil
+import com.cheesejuice.fancymansion.data.repositories.PreferenceProvider
+import com.cheesejuice.fancymansion.util.Util
+import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
+import com.cheesejuice.fancymansion.data.repositories.networking.FirebaseRepository
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -29,13 +29,13 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var util: CommonUtil
+    lateinit var util: Util
     @Inject
-    lateinit var bookUtil: BookUtil
+    lateinit var preferenceProvider: PreferenceProvider
     @Inject
-    lateinit var fileUtil: FileUtil
+    lateinit var fileRepository: FileRepository
     @Inject
-    lateinit var firebaseUtil: FirebaseUtil
+    lateinit var firebaseRepository: FirebaseRepository
 
     private val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
     companion object {
@@ -48,10 +48,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if(firebaseUtil.checkAuth()){
-            fileUtil.initRootFolder()
-            if(!bookUtil.isSampleMake()){
-                createEditSampleFiles(FirebaseUtil.auth.uid!!)
+        if(firebaseRepository.checkAuth()){
+            fileRepository.initRootFolder()
+            if(!preferenceProvider.isSampleMake()){
+                createEditSampleFiles(FirebaseRepository.auth.uid!!)
             }
         }
 

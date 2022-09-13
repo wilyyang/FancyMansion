@@ -18,12 +18,12 @@ import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
 import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.databinding.FragmentEditListBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
-import com.cheesejuice.fancymansion.model.Config
+import com.cheesejuice.fancymansion.data.models.Config
 import com.cheesejuice.fancymansion.ui.editor.start.EditStartActivity
-import com.cheesejuice.fancymansion.util.BookUtil
-import com.cheesejuice.fancymansion.util.CommonUtil
-import com.cheesejuice.fancymansion.util.FileUtil
-import com.cheesejuice.fancymansion.view.EditBookAdapter
+import com.cheesejuice.fancymansion.data.repositories.PreferenceProvider
+import com.cheesejuice.fancymansion.util.Util
+import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
+import com.cheesejuice.fancymansion.ui.main.fragment.edit.components.EditBookAdapter
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,11 +44,11 @@ class EditListFragment : Fragment(), View.OnClickListener {
     private lateinit var spinnerOrder: AppCompatSpinner
 
     @Inject
-    lateinit var util: CommonUtil
+    lateinit var util: Util
     @Inject
-    lateinit var bookUtil: BookUtil
+    lateinit var preferenceProvider: PreferenceProvider
     @Inject
-    lateinit var fileUtil: FileUtil
+    lateinit var fileRepository: FileRepository
 
     // ui
     private lateinit var editBookAdapter: EditBookAdapter
@@ -62,7 +62,7 @@ class EditListFragment : Fragment(), View.OnClickListener {
                 editList.clear()
                 page = 1
 
-                val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isLatest = isLatest)
+                val list = fileRepository.getConfigListRange(0, page * Const.PAGE_COUNT -1, isLatest = isLatest)
                 withContext(Dispatchers.Main) {
                     if(list != null) {
                         editList.addAll(list)
@@ -95,7 +95,7 @@ class EditListFragment : Fragment(), View.OnClickListener {
 
         isListLoading = true
         CoroutineScope(Dispatchers.Default).launch {
-            val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isLatest = isLatest)
+            val list = fileRepository.getConfigListRange(0, page * Const.PAGE_COUNT -1, isLatest = isLatest)
             withContext(Dispatchers.Main) {
                 if(list != null) {
                     editList.addAll(list)
@@ -134,7 +134,7 @@ class EditListFragment : Fragment(), View.OnClickListener {
     private fun makeEditList(_editList : MutableList<Config>) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
 
-        editBookAdapter = EditBookAdapter(_editList, fileUtil, requireActivity())
+        editBookAdapter = EditBookAdapter(_editList, fileRepository, requireActivity())
         editBookAdapter.setItemClickListener(object: EditBookAdapter.OnItemClickListener{
             override fun onClick(v: View, config: Config) {
                 val intent = Intent(activity, EditStartActivity::class.java).apply {
@@ -183,7 +183,7 @@ class EditListFragment : Fragment(), View.OnClickListener {
 
         CoroutineScope(Dispatchers.Default).launch {
             delay(500L)
-            val list = fileUtil.getConfigListRange(page * Const.PAGE_COUNT, ++page * Const.PAGE_COUNT -1, isLatest = isLatest)
+            val list = fileRepository.getConfigListRange(page * Const.PAGE_COUNT, ++page * Const.PAGE_COUNT -1, isLatest = isLatest)
             withContext(Dispatchers.Main) {
                 if(list != null) {
                     val beforeSize = editList.size
@@ -218,7 +218,7 @@ class EditListFragment : Fragment(), View.OnClickListener {
                             editList.clear()
                             page = 1
 
-                            val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isLatest = isLatest)
+                            val list = fileRepository.getConfigListRange(0, page * Const.PAGE_COUNT -1, isLatest = isLatest)
                             withContext(Dispatchers.Main) {
                                 if(list != null) {
                                     editList.addAll(list)

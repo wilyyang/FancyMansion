@@ -1,4 +1,4 @@
-package com.cheesejuice.fancymansion.view
+package com.cheesejuice.fancymansion.ui.main.fragment.read.components
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -10,11 +10,11 @@ import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.databinding.ItemLoadingBinding
 import com.cheesejuice.fancymansion.databinding.ItemReadBookBinding
-import com.cheesejuice.fancymansion.model.Config
-import com.cheesejuice.fancymansion.util.CommonUtil
-import com.cheesejuice.fancymansion.util.FileUtil
+import com.cheesejuice.fancymansion.data.models.Config
+import com.cheesejuice.fancymansion.util.Util
+import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
 
-class ReadBookAdapter(val datas: MutableList<Config>, val fileUtil: FileUtil, val context: Context):
+class ReadBookAdapter(val datas: MutableList<Config>, val fileRepository: FileRepository, val context: Context):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     companion object {
@@ -55,14 +55,14 @@ class ReadBookAdapter(val datas: MutableList<Config>, val fileUtil: FileUtil, va
             val binding=(holder).binding
             with(datas[position]){
                 binding.tvReadBookId.text = "#${bookId} ${publishCode}"
-                binding.tvReadBookUpdate.text = CommonUtil.longToTimeFormatss(updateTime)
+                binding.tvReadBookUpdate.text = Util.longToTimeFormatss(updateTime)
 
                 binding.tvReadBookTitle.text = title
                 binding.tvReadBookUser.text = user
                 binding.tvReadBookEmail.text = email
 
                 binding.imageCover.clipToOutline = true
-                fileUtil.getImageFile(bookId, coverImage, isCover = true, isReadOnly = true, publishCode = publishCode)?.also {
+                fileRepository.getImageFile(bookId, coverImage, isCover = true, isReadOnly = true, publishCode = publishCode)?.also {
                     Glide.with(context).load(it)
                         .into(binding.imageCover)
                 }?:also {

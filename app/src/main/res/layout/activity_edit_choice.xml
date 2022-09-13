@@ -114,7 +114,7 @@
                                         app:hintEnabled="false"
                                         app:counterMaxLength="@integer/count_slide_choice">
 
-                                        <com.cheesejuice.fancymansion.view.RoundEditText
+                                        <com.cheesejuice.fancymansion.ui.RoundEditText
                                             android:id="@+id/etChoiceTitle"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"

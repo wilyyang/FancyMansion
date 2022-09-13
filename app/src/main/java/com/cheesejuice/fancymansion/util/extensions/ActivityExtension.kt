@@ -15,11 +15,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.*
-import com.cheesejuice.fancymansion.util.FileUtil
-import com.cheesejuice.fancymansion.etc.Sample
-import com.cheesejuice.fancymansion.model.Config
-import com.cheesejuice.fancymansion.model.Logic
-import com.cheesejuice.fancymansion.model.Slide
+import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
+import com.cheesejuice.fancymansion.data.repositories.file.MakeSample
+import com.cheesejuice.fancymansion.data.models.Config
+import com.cheesejuice.fancymansion.data.models.Logic
+import com.cheesejuice.fancymansion.data.models.Slide
 import com.cheesejuice.fancymansion.ui.editor.slide.EditSlideActivity
 import com.cheesejuice.fancymansion.ui.reader.slide.ReadSlideActivity
 import kotlinx.coroutines.CoroutineScope
@@ -141,16 +141,16 @@ fun Activity.showDialogAndStart(isShow: Boolean, loading: View? = null, main: Vi
 
 // Create Sample
 fun Activity.createEditSampleFiles(uid:String){
-    val fileUtil = FileUtil(this)
-    val config = Json.decodeFromString<Config>(Sample.getConfigSample(12345))
-    val logic = Json.decodeFromString<Logic>(Sample.getLogicSample(12345))
+    val fileRepository = FileRepository(this)
+    val config = Json.decodeFromString<Config>(MakeSample.getConfigSample(12345))
+    val logic = Json.decodeFromString<Logic>(MakeSample.getLogicSample(12345))
 
-    fileUtil.makeBookFolder(config.bookId)
-    fileUtil.makeConfigFile(config)
+    fileRepository.makeBookFolder(config.bookId)
+    fileRepository.makeConfigFile(config)
 
     for(i in 1 .. 9){
-        val slide = Json.decodeFromString<Slide>(Sample.getSlideSample(i * 1_00_00_00_00L))
-        fileUtil.makeSlideFile(config.bookId, slide!!)
+        val slide = Json.decodeFromString<Slide>(MakeSample.getSlideSample(i * 1_00_00_00_00L))
+        fileRepository.makeSlideFile(config.bookId, slide!!)
     }
 
 //    for(i in 10 .. 99){
@@ -159,12 +159,12 @@ fun Activity.createEditSampleFiles(uid:String){
 //        logic.logics.add(SlideLogic(slide.slideId, slide.slideTitle))
 //    }
 
-    fileUtil.makeLogicFile(logic)
+    fileRepository.makeLogicFile(logic)
     val bookUserPath = File(getExternalFilesDir(null), Const.FILE_DIR_BOOK+File.separator+uid)
     val array = arrayOf("image_1.gif", "image_2.gif", "image_3.gif", "image_4.gif", "image_5.gif", "image_6.gif", "fish_cat.jpg", "game_end.jpg")
     for (fileName in array){
         val file = File(bookUserPath, Const.FILE_PREFIX_BOOK+ config.bookId + File.separator+ Const.FILE_DIR_CONTENT + File.separator+ Const.FILE_DIR_MEDIA + File.separator+ fileName)
-        val input: InputStream = resources.openRawResource(Sample.getSampleImageId(fileName))
+        val input: InputStream = resources.openRawResource(MakeSample.getSampleImageId(fileName))
         val out = FileOutputStream(file)
         val buff = ByteArray(1024)
         var read = 0
@@ -180,7 +180,7 @@ fun Activity.createEditSampleFiles(uid:String){
 
     val coverName = "image_1.gif"
     val coverImage = File(bookUserPath, Const.FILE_PREFIX_BOOK+ config.bookId + File.separator + coverName)
-    val input: InputStream = resources.openRawResource(Sample.getSampleImageId(coverName))
+    val input: InputStream = resources.openRawResource(MakeSample.getSampleImageId(coverName))
     val out = FileOutputStream(coverImage)
     val buff = ByteArray(1024)
     var read = 0
@@ -195,8 +195,8 @@ fun Activity.createEditSampleFiles(uid:String){
 }
 
 fun Activity.createReadOnlySampleFiles(){
-    val fileUtil = FileUtil(this)
-    if (fileUtil.compressBook(12345) != null) {
+    val fileRepository = FileRepository(this)
+    if (fileRepository.compressBook(12345) != null) {
         val path = getExternalFilesDir(null)
         val bookPath = File(path, Const.FILE_DIR_BOOK)
         val readOnlyPath = File(path, Const.FILE_DIR_READONLY)
@@ -204,6 +204,6 @@ fun Activity.createReadOnlySampleFiles(){
         File(bookPath, Const.FILE_PREFIX_READ+12345+"_12345").copyRecursively(File(readOnlyPath, Const.FILE_PREFIX_READ+12345+"_12345"))
         File(bookPath, Const.FILE_PREFIX_READ+12345+"_12345").deleteRecursively()
 
-        fileUtil.extractBook(File(readOnlyPath, Const.FILE_PREFIX_READ+12345+"_12345"))
+        fileRepository.extractBook(File(readOnlyPath, Const.FILE_PREFIX_READ+12345+"_12345"))
     }
 }

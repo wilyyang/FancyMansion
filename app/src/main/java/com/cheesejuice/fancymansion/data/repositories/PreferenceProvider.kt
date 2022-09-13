@@ -1,4 +1,4 @@
-package com.cheesejuice.fancymansion.util
+package com.cheesejuice.fancymansion.data.repositories
 
 import android.content.Context
 import android.util.Log
@@ -6,15 +6,14 @@ import com.cheesejuice.fancymansion.CondNext
 import com.cheesejuice.fancymansion.CondOp
 import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.Const.Companion.COUNT_SLIDE
-import com.cheesejuice.fancymansion.R
-import com.cheesejuice.fancymansion.model.ChoiceItem
-import com.cheesejuice.fancymansion.model.Condition
-import com.cheesejuice.fancymansion.model.EnterItem
-import com.cheesejuice.fancymansion.model.SlideLogic
+import com.cheesejuice.fancymansion.data.models.ChoiceItem
+import com.cheesejuice.fancymansion.data.models.Condition
+import com.cheesejuice.fancymansion.data.models.EnterItem
+import com.cheesejuice.fancymansion.data.models.SlideLogic
 import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
 
-class BookUtil @Inject constructor(@ActivityContext private val context: Context){
+class PreferenceProvider @Inject constructor(@ActivityContext private val context: Context){
     // Setting Pref
     fun isSampleMake():Boolean{
         val pref = context.getSharedPreferences(Const.PREF_SETTING, Context.MODE_PRIVATE)

@@ -1,7 +1,7 @@
 package com.cheesejuice.fancymansion
 
 import androidx.multidex.MultiDexApplication
-import com.cheesejuice.fancymansion.model.*
+import com.cheesejuice.fancymansion.data.models.*
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp

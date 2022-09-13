@@ -6,11 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.databinding.ItemSlideTitleBinding
-import com.cheesejuice.fancymansion.model.SlideLogic
+import com.cheesejuice.fancymansion.data.models.SlideLogic
 import java.util.*
 
 class SlideTitleListAdapter(var datas: MutableList<SlideLogic> = mutableListOf(), val context: Context):

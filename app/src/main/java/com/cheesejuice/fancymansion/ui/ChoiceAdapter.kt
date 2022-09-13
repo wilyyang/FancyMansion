@@ -1,11 +1,11 @@
-package com.cheesejuice.fancymansion.view
+package com.cheesejuice.fancymansion.ui
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.cheesejuice.fancymansion.databinding.ItemChoiceBinding
-import com.cheesejuice.fancymansion.model.ChoiceItem
+import com.cheesejuice.fancymansion.data.models.ChoiceItem
 
 class ChoiceAdapter(val datas: MutableList<ChoiceItem>):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){

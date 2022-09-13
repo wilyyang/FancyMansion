@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.databinding.ItemEditChoiceBinding
-import com.cheesejuice.fancymansion.model.ChoiceItem
+import com.cheesejuice.fancymansion.data.models.ChoiceItem
 import java.util.*
 
 class EditChoiceListAdapter(var datas: MutableList<ChoiceItem> = mutableListOf(), val context: Context):

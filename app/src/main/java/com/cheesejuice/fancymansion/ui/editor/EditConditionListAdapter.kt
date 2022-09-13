@@ -11,12 +11,11 @@ import com.cheesejuice.fancymansion.CondOp
 import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.databinding.ItemEditConditionBinding
-import com.cheesejuice.fancymansion.model.Condition
-import com.cheesejuice.fancymansion.model.Logic
-import com.cheesejuice.fancymansion.util.BookUtil
+import com.cheesejuice.fancymansion.data.models.Condition
+import com.cheesejuice.fancymansion.data.repositories.PreferenceProvider
 import java.util.*
 
-class EditConditionListAdapter(val bookUtil: BookUtil, var datas: MutableList<Condition> = mutableListOf(), val context: Context):
+class EditConditionListAdapter(val preferenceProvider: PreferenceProvider, var datas: MutableList<Condition> = mutableListOf(), val context: Context):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), EditConditionListDragCallback.OnItemMoveListener{
 
     var onceMove = false

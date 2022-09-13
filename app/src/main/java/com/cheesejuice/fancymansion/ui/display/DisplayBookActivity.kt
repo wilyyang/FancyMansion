@@ -16,13 +16,13 @@ import com.cheesejuice.fancymansion.databinding.LayoutEditCommentBinding
 import com.cheesejuice.fancymansion.databinding.LayoutReportBinding
 import com.cheesejuice.fancymansion.extension.showLoadingPercent
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
-import com.cheesejuice.fancymansion.model.Comment
-import com.cheesejuice.fancymansion.model.Config
-import com.cheesejuice.fancymansion.util.CommonUtil
-import com.cheesejuice.fancymansion.util.FileUtil
-import com.cheesejuice.fancymansion.util.FirebaseUtil
-import com.cheesejuice.fancymansion.view.CommentAdapter
-import com.cheesejuice.fancymansion.view.ReportItemAdapter
+import com.cheesejuice.fancymansion.data.models.Comment
+import com.cheesejuice.fancymansion.data.models.Config
+import com.cheesejuice.fancymansion.util.Util
+import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
+import com.cheesejuice.fancymansion.data.repositories.networking.FirebaseRepository
+import com.cheesejuice.fancymansion.ui.display.components.CommentAdapter
+import com.cheesejuice.fancymansion.ui.display.components.ReportItemAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -45,11 +45,11 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
     private var isCommentOrderRecent = false
 
     @Inject
-    lateinit var util: CommonUtil
+    lateinit var util: Util
     @Inject
-    lateinit var fileUtil: FileUtil
+    lateinit var fileRepository: FileRepository
     @Inject
-    lateinit var firebaseUtil: FirebaseUtil
+    lateinit var firebaseRepository: FirebaseRepository
 
     // ui
     private lateinit var commentAdapter: CommentAdapter
@@ -69,9 +69,9 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
         CoroutineScope(Dispatchers.IO).launch {
             var item : Config? = null
             if(publishCode != ""){
-                item = firebaseUtil.getBookConfig(publishCode)?.also {
-                    isClickGood = firebaseUtil.isBookGoodUser(it.publishCode)
-                    val addList = firebaseUtil.getCommentList(publishCode = it.publishCode, limit = Const.COMMENT_COUNT, isOrderRecent = isCommentOrderRecent)
+                item = firebaseRepository.getBookConfig(publishCode)?.also {
+                    isClickGood = firebaseRepository.isBookGoodUser(it.publishCode)
+                    val addList = firebaseRepository.getCommentList(publishCode = it.publishCode, limit = Const.COMMENT_COUNT, isOrderRecent = isCommentOrderRecent)
                     commentList.addAll(addList)
                 }
             }
@@ -100,8 +100,8 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                 binding.tvConfigDescription.visibility = View.GONE
             }
 
-            binding.tvConfigVersion.text = "v ${CommonUtil.versionToString(version)}"
-            binding.tvConfigTime.text = CommonUtil.longToTimeFormatss(updateTime)
+            binding.tvConfigVersion.text = "v ${Util.versionToString(version)}"
+            binding.tvConfigTime.text = Util.longToTimeFormatss(updateTime)
             binding.tvConfigDownloads.text = "$downloads"
             binding.tvConfigGood.text = "$good"
 
@@ -110,13 +110,13 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
             binding.tvConfigIllustrator.text = illustrator
             binding.tvConfigPub.text = getString(R.string.book_config_pub)+publishCode
 
-            firebaseUtil.returnImageToCallback("/${Const.FB_STORAGE_BOOK}/$uid/$publishCode/$coverImage", { result ->
+            firebaseRepository.returnImageToCallback("/${Const.FB_STORAGE_BOOK}/$uid/$publishCode/$coverImage", { result ->
                 Glide.with(baseContext).load(result).into(binding.imageViewShowMain)
             }, {
                 Glide.with(baseContext).load(R.drawable.default_image).into(binding.imageViewShowMain)
             })
 
-            if(!firebaseUtil.checkAuth() || conf.uid != FirebaseUtil.auth.uid) {
+            if(!firebaseRepository.checkAuth() || conf.uid != FirebaseRepository.auth.uid) {
                 binding.toolbar.menu.findItem(R.id.menu_remove_store).isVisible = false
             }else{
                 binding.toolbar.menu.findItem(R.id.menu_report).isVisible = false
@@ -160,7 +160,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
             binding.etAddComment.clearFocus()
             BottomSheetDialog(this@DisplayBookActivity).also { dialog ->
                 val dialogView =
-                    if (firebaseUtil.checkAuth() && comment.uid == FirebaseUtil.auth.uid) {
+                    if (firebaseRepository.checkAuth() && comment.uid == FirebaseRepository.auth.uid) {
                         LayoutEditCommentBinding.inflate(layoutInflater).apply {
                             etAddComment.setText(comment.comment)
                             tvCommentEdit.setOnClickListener {
@@ -171,12 +171,12 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                                 }
 
                                 bottomSheetCommonProcess(dialog, progressbarComment, layoutCommentUpdate) {
-                                    firebaseUtil.editComment(comment)
+                                    firebaseRepository.editComment(comment)
                                 }
                             }
                             tvCommentDelete.setOnClickListener {
                                 bottomSheetCommonProcess(dialog, progressbarComment, layoutCommentUpdate) {
-                                    firebaseUtil.deleteComment(comment)
+                                    firebaseRepository.deleteComment(comment)
                                 }
                             }
                         }
@@ -193,7 +193,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                                             ),
                                             click = { _, _ ->
                                                 bottomSheetCommonProcess(dialog, progressbarReport, layoutReport) {
-                                                    firebaseUtil.incrementCommentReport(comment, position)
+                                                    firebaseRepository.incrementCommentReport(comment, position)
                                                 }
                                             }
                                         ).setNegativeButton(getString(R.string.dialog_no)) { _, _ -> dialog.dismiss()}
@@ -222,7 +222,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
             /**firebaseUtil.deleteComment(comment)*/
             /**firebaseUtil.incrementCommentReport(comment,position)*/
             logic()
-            val addList = firebaseUtil.getCommentList(
+            val addList = firebaseRepository.getCommentList(
                 publishCode = config.publishCode,
                 limit = commentList.size.toLong(),
                 isOrderRecent = isCommentOrderRecent
@@ -294,8 +294,8 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                     R.string.loading_text_remove_store_book
                 ))
                 CoroutineScope(Dispatchers.IO).launch {
-                    if(firebaseUtil.checkAuth() && config.uid == FirebaseUtil.auth.uid) {
-                        firebaseUtil.deleteBook(config)
+                    if(firebaseRepository.checkAuth() && config.uid == FirebaseRepository.auth.uid) {
+                        firebaseRepository.deleteBook(config)
                     }
 
                     withContext(Main){
@@ -310,11 +310,11 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                     R.string.loading_text_download_store_book
                 ))
                 CoroutineScope(Dispatchers.IO).launch {
-                    val dir = File(fileUtil.readOnlyUserPath, Const.FILE_PREFIX_READ +config.bookId+"_${config.publishCode}")
+                    val dir = File(fileRepository.readOnlyUserPath, Const.FILE_PREFIX_READ +config.bookId+"_${config.publishCode}")
 
                     val channel : Channel<Pair<String, Int>> = Channel()
                     launch {
-                        firebaseUtil.downloadBook(config, dir, channel)
+                        firebaseRepository.downloadBook(config, dir, channel)
                     }
 
                     for(data in channel ){
@@ -323,8 +323,8 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                         }
                     }
 
-                    val downloads: Int = firebaseUtil.incrementBookDownloads(config.publishCode)
-                    val isSuccess = fileUtil.extractBook(dir)
+                    val downloads: Int = firebaseRepository.incrementBookDownloads(config.publishCode)
+                    val isSuccess = fileRepository.extractBook(dir)
 
                     withContext(Main){
                         binding.tvConfigDownloads.text = "$downloads"
@@ -356,7 +356,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                                                 layoutReport.visibility = View.GONE
 
                                                 CoroutineScope(Dispatchers.IO).launch {
-                                                    firebaseUtil.incrementBookReport(config, position)
+                                                    firebaseRepository.incrementBookReport(config, position)
                                                     withContext(Main) {
                                                         dialog.dismiss()
                                                     }
@@ -388,7 +388,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                     CoroutineScope(Dispatchers.IO).launch {
                         isListLoading = true
                         isCommentOrderRecent = false
-                        val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = Const.COMMENT_COUNT, isOrderRecent = isCommentOrderRecent)
+                        val addList = firebaseRepository.getCommentList(publishCode = config.publishCode, limit = Const.COMMENT_COUNT, isOrderRecent = isCommentOrderRecent)
                         commentList.clear()
                         commentList.addAll(addList)
 
@@ -407,7 +407,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                     CoroutineScope(Dispatchers.IO).launch {
                         isListLoading = true
                         isCommentOrderRecent = true
-                        val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = Const.COMMENT_COUNT, isOrderRecent = isCommentOrderRecent)
+                        val addList = firebaseRepository.getCommentList(publishCode = config.publishCode, limit = Const.COMMENT_COUNT, isOrderRecent = isCommentOrderRecent)
                         commentList.clear()
                         commentList.addAll(addList)
 
@@ -426,8 +426,8 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
     private fun clickBookIsGood(){
         CoroutineScope(Dispatchers.IO).launch {
-            val good:Int = firebaseUtil.setBookGoodUser(config.publishCode, !isClickGood)
-            isClickGood = firebaseUtil.isBookGoodUser(config.publishCode)
+            val good:Int = firebaseRepository.setBookGoodUser(config.publishCode, !isClickGood)
+            isClickGood = firebaseRepository.isBookGoodUser(config.publishCode)
             withContext(Main){
                 if(isClickGood){
                     Glide.with(baseContext).load(R.drawable.ic_thumbs_up_check).into(binding.imageViewGood)
@@ -441,12 +441,12 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
     private fun clickAddComment(){
         CoroutineScope(Dispatchers.IO).launch {
-            if(firebaseUtil.checkAuth()){
+            if(firebaseRepository.checkAuth()){
                 isListLoading = true
-                firebaseUtil.initUserInfo()
+                firebaseRepository.initUserInfo()
                 val current = System.currentTimeMillis()
-                if(FirebaseUtil.userInfo!!.addCommentTime+ Const.CONST_TIME_LIMIT_COMMENT > current){
-                    val leftTime = (FirebaseUtil.userInfo!!.addCommentTime+ Const.CONST_TIME_LIMIT_COMMENT - current) / 1000
+                if(FirebaseRepository.userInfo!!.addCommentTime+ Const.CONST_TIME_LIMIT_COMMENT > current){
+                    val leftTime = (FirebaseRepository.userInfo!!.addCommentTime+ Const.CONST_TIME_LIMIT_COMMENT - current) / 1000
                     withContext(Main){
                         isListLoading = false
                         util.getAlertDailog(
@@ -457,16 +457,16 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                         ).show()
                     }
                 }else{
-                    val comment = Comment(id = "", uid = FirebaseUtil.auth.uid!!, email = firebaseUtil.email!!, userName = firebaseUtil.name!!,
-                        photoUrl = firebaseUtil.photoUrl.toString(), comment = binding.etAddComment.text.toString(),
+                    val comment = Comment(id = "", uid = FirebaseRepository.auth.uid!!, email = firebaseRepository.email!!, userName = firebaseRepository.name!!,
+                        photoUrl = firebaseRepository.photoUrl.toString(), comment = binding.etAddComment.text.toString(),
                         updateTime = System.currentTimeMillis(), bookPublishCode = config.publishCode)
 
-                    comment.id = firebaseUtil.addComment(comment)
-                    firebaseUtil.editComment(comment)
-                    firebaseUtil.updateCommentInUserInfo()
+                    comment.id = firebaseRepository.addComment(comment)
+                    firebaseRepository.editComment(comment)
+                    firebaseRepository.updateCommentInUserInfo()
 
                     commentList.clear()
-                    val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, isOrderRecent = isCommentOrderRecent)
+                    val addList = firebaseRepository.getCommentList(publishCode = config.publishCode, isOrderRecent = isCommentOrderRecent)
                     commentList.addAll(addList)
 
                     withContext(Main) {
@@ -497,7 +497,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
 
         CoroutineScope(Dispatchers.Default).launch {
             delay(500L)
-            val addList = firebaseUtil.getCommentList(publishCode = config.publishCode, limit = Const.COMMENT_COUNT, startComment = lastComment, isOrderRecent = isCommentOrderRecent)
+            val addList = firebaseRepository.getCommentList(publishCode = config.publishCode, limit = Const.COMMENT_COUNT, startComment = lastComment, isOrderRecent = isCommentOrderRecent)
 
             withContext(Main) {
                 val beforeSize = commentList.size

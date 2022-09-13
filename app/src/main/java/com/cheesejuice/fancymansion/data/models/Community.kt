@@ -1,4 +1,4 @@
-package com.cheesejuice.fancymansion.model
+package com.cheesejuice.fancymansion.data.models
 
 import kotlinx.serialization.Serializable
 

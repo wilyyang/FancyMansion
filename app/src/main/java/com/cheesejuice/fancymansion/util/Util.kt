@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class CommonUtil @Inject constructor(@ActivityContext private val context: Context){
+class Util @Inject constructor(@ActivityContext private val context: Context){
     companion object{
         val formatss = SimpleDateFormat("yyyy-MM-dd kk:mm:ss", Locale("ko", "KR"))
         val formatdate = SimpleDateFormat("yyyy-MM-dd", Locale("ko", "KR"))

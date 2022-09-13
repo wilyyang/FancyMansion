@@ -11,12 +11,12 @@ import androidx.appcompat.app.AppCompatActivity
 import com.cheesejuice.fancymansion.*
 import com.cheesejuice.fancymansion.databinding.ActivityEditConditionBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
-import com.cheesejuice.fancymansion.model.ChoiceItem
-import com.cheesejuice.fancymansion.model.Condition
-import com.cheesejuice.fancymansion.model.Logic
-import com.cheesejuice.fancymansion.model.SlideLogic
+import com.cheesejuice.fancymansion.data.models.ChoiceItem
+import com.cheesejuice.fancymansion.data.models.Condition
+import com.cheesejuice.fancymansion.data.models.Logic
+import com.cheesejuice.fancymansion.data.models.SlideLogic
 import com.cheesejuice.fancymansion.ui.editor.guide.GuideActivity
-import com.cheesejuice.fancymansion.util.BookUtil
+import com.cheesejuice.fancymansion.data.repositories.PreferenceProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -59,7 +59,7 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
     private var choice2InitPos = -1
 
     @Inject
-    lateinit var bookUtil: BookUtil
+    lateinit var preferenceProvider: PreferenceProvider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,7 +98,7 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
         if (isShowCondition) {
             if (makeCondition) {
                 // next show condition id
-                val showConditionId = bookUtil.nextShowConditionId(choice.showConditions, choice.id)
+                val showConditionId = preferenceProvider.nextShowConditionId(choice.showConditions, choice.id)
                 if (showConditionId > 0) {
                     conditionId = showConditionId
                     condition = Condition(showConditionId)
@@ -115,7 +115,7 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
             (application as MainApplication).enter?.also { enter ->
                 if (makeCondition) {
                     // next enter condition id
-                    val enterConditionId = bookUtil.nextEnterConditionId(enter.enterConditions, enter.id)
+                    val enterConditionId = preferenceProvider.nextEnterConditionId(enter.enterConditions, enter.id)
                     if (enterConditionId > 0) {
                         conditionId = enterConditionId
                         condition = Condition(enterConditionId)
@@ -181,7 +181,7 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun makeEditConditionScreen(logic:Logic, condition: Condition) {
+    private fun makeEditConditionScreen(logic: Logic, condition: Condition) {
         with(binding){
             showLoadingScreen(false, layoutLoading.root, layoutActive, "")
             binding.tvCondId.text = "${condition.id}"
@@ -271,7 +271,7 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
             spinnerNext.setSelection(nextIdx)
 
             // set first value
-            val slideIdx1 = logic.logics.indexOfFirst {  it.slideId == bookUtil.getSlideIdFromOther(condition.conditionId1) }.let {
+            val slideIdx1 = logic.logics.indexOfFirst {  it.slideId == preferenceProvider.getSlideIdFromOther(condition.conditionId1) }.let {
                 if (it > 0) { it } else { 0 }
             }
             logic.logics[slideIdx1].choiceItems.let { list ->
@@ -291,7 +291,7 @@ class EditConditionActivity : AppCompatActivity(), View.OnClickListener {
                 radioCondCount.isChecked = false
                 radioCondId.isChecked = true
 
-                val slideIdx2 = logic.logics.indexOfFirst { it.slideId == bookUtil.getSlideIdFromOther(condition.conditionId2) }.let {
+                val slideIdx2 = logic.logics.indexOfFirst { it.slideId == preferenceProvider.getSlideIdFromOther(condition.conditionId2) }.let {
                     if (it > 0) { it } else { 0 }
                 }
                 logic.logics[slideIdx2].choiceItems.let { list ->

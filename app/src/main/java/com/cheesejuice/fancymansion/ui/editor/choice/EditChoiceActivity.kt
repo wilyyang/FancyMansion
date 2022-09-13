@@ -11,13 +11,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cheesejuice.fancymansion.*
+import com.cheesejuice.fancymansion.data.models.*
 import com.cheesejuice.fancymansion.databinding.ActivityEditChoiceBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
-import com.cheesejuice.fancymansion.model.*
 import com.cheesejuice.fancymansion.ui.editor.condition.EditConditionActivity
 import com.cheesejuice.fancymansion.ui.editor.enter.EditEnterActivity
 import com.cheesejuice.fancymansion.ui.editor.guide.GuideActivity
-import com.cheesejuice.fancymansion.util.BookUtil
+import com.cheesejuice.fancymansion.data.repositories.PreferenceProvider
 import com.cheesejuice.fancymansion.view.EditConditionListAdapter
 import com.cheesejuice.fancymansion.view.EditConditionListDragCallback
 import com.cheesejuice.fancymansion.view.EditEnterListAdapter
@@ -54,7 +54,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var editShowConditionListAdapter: EditConditionListAdapter
 
     @Inject
-    lateinit var bookUtil: BookUtil
+    lateinit var preferenceProvider: PreferenceProvider
 
     private val editEnterForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -117,17 +117,17 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
         }
 
     private fun copyEnterItem(enterItem: EnterItem){
-        val nextEnterId = bookUtil.nextEnterId(choice.enterItems, choice.id)
+        val nextEnterId = preferenceProvider.nextEnterId(choice.enterItems, choice.id)
         if(nextEnterId > 0){
             choice.enterItems.add(Json.decodeFromString<EnterItem>(Json.encodeToString(enterItem)).apply {
                 id = nextEnterId
-                bookUtil.applyEnterConditionsId(enterConditions, nextEnterId)
+                preferenceProvider.applyEnterConditionsId(enterConditions, nextEnterId)
             })
         }
     }
 
     private fun copyCondition(condition: Condition){
-        val newShowConditionId = bookUtil.nextShowConditionId(choice.showConditions, choice.id)
+        val newShowConditionId = preferenceProvider.nextShowConditionId(choice.showConditions, choice.id)
         if (newShowConditionId > 0) {
             choice.showConditions.add(Json.decodeFromString<Condition>(Json.encodeToString(condition)).apply {
                 id = newShowConditionId
@@ -171,7 +171,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun loadData(makeChoice:Boolean = false): Boolean{
         if (makeChoice) {
-            val nextChoiceId = bookUtil.nextChoiceId(slideLogic)
+            val nextChoiceId = preferenceProvider.nextChoiceId(slideLogic)
             if(nextChoiceId > 0){
                 choiceId = nextChoiceId
                 choice = ChoiceItem(nextChoiceId, getString(R.string.name_choice_prefix))
@@ -209,7 +209,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun initEditShowConditionListView(){
-        editShowConditionListAdapter = EditConditionListAdapter(bookUtil, context = this@EditChoiceActivity)
+        editShowConditionListAdapter = EditConditionListAdapter(preferenceProvider, context = this@EditChoiceActivity)
         editShowConditionListAdapter.setItemClickListener(object: EditConditionListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
                 choice.title = binding.etChoiceTitle.text.toString()

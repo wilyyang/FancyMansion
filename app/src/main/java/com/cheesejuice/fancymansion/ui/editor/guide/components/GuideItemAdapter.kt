@@ -1,10 +1,10 @@
-package com.cheesejuice.fancymansion.view
+package com.cheesejuice.fancymansion.ui.editor.guide.components
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.cheesejuice.fancymansion.databinding.ItemPageGuideBinding
-import com.cheesejuice.fancymansion.model.Guide
+import com.cheesejuice.fancymansion.data.models.Guide
 
 class GuideItemAdapter(val datas: MutableList<Guide>):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
@@ -16,7 +16,7 @@ class GuideItemAdapter(val datas: MutableList<Guide>):
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is GuideItemAdapter.GuideItemViewHolder){
+        if (holder is GuideItemViewHolder){
             if(datas[position].image != -1){
                 holder.binding.imageViewContent.setImageResource(datas[position].image)
             }

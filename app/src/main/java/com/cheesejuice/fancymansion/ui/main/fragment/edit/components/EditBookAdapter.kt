@@ -1,4 +1,4 @@
-package com.cheesejuice.fancymansion.view
+package com.cheesejuice.fancymansion.ui.main.fragment.edit.components
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -10,11 +10,11 @@ import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.databinding.ItemEditBookBinding
 import com.cheesejuice.fancymansion.databinding.ItemLoadingBinding
-import com.cheesejuice.fancymansion.model.Config
-import com.cheesejuice.fancymansion.util.CommonUtil
-import com.cheesejuice.fancymansion.util.FileUtil
+import com.cheesejuice.fancymansion.data.models.Config
+import com.cheesejuice.fancymansion.util.Util
+import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
 
-class EditBookAdapter(val datas: MutableList<Config>, val fileUtil: FileUtil, val context: Context):
+class EditBookAdapter(val datas: MutableList<Config>, val fileRepository: FileRepository, val context: Context):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     companion object {
@@ -56,14 +56,14 @@ class EditBookAdapter(val datas: MutableList<Config>, val fileUtil: FileUtil, va
             val binding=holder.binding
             with(datas[position]){
                 binding.tvEditBookId.text = "#${bookId} ${publishCode}"
-                binding.tvEditBookUpdate.text = CommonUtil.longToTimeFormatss(updateTime)
+                binding.tvEditBookUpdate.text = Util.longToTimeFormatss(updateTime)
 
                 binding.tvEditBookTitle.text = title
                 binding.tvEditBookWriter.text = writer
                 binding.tvEditBookIllustrator.text = illustrator
 
                 binding.imageCover.clipToOutline = true
-                fileUtil.getImageFile(bookId, coverImage, isCover = true)?.also {
+                fileRepository.getImageFile(bookId, coverImage, isCover = true)?.also {
                     Glide.with(context).load(it).into(binding.imageCover)
                 }?:also {
                     Glide.with(context).load(R.drawable.default_image).into(binding.imageCover)

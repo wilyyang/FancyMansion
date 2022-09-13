@@ -9,8 +9,8 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import com.cheesejuice.fancymansion.databinding.ActivityAuthBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
-import com.cheesejuice.fancymansion.util.CommonUtil
-import com.cheesejuice.fancymansion.util.FirebaseUtil
+import com.cheesejuice.fancymansion.util.Util
+import com.cheesejuice.fancymansion.data.repositories.networking.FirebaseRepository
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -31,9 +31,9 @@ class AuthActivity : AppCompatActivity() {
     lateinit var binding: ActivityAuthBinding
 
     @Inject
-    lateinit var util: CommonUtil
+    lateinit var util: Util
     @Inject
-    lateinit var firebaseUtil: FirebaseUtil
+    lateinit var firebaseRepository: FirebaseRepository
 
     private val googleLoginForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -43,11 +43,11 @@ class AuthActivity : AppCompatActivity() {
                 try {
                     val account = task.getResult(ApiException::class.java)!!
                     val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-                    FirebaseUtil.auth.signInWithCredential(credential)
+                    FirebaseRepository.auth.signInWithCredential(credential)
                         .addOnCompleteListener(this) { task ->
                             if (task.isSuccessful) {
                                 CoroutineScope(Dispatchers.Default).launch {
-                                    firebaseUtil.initUserInfo()
+                                    firebaseRepository.initUserInfo()
                                     withContext(Main){
                                         val intent = Intent(this@AuthActivity, MainActivity::class.java)
                                         startActivity(intent)
@@ -71,10 +71,10 @@ class AuthActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val logoutExtra = intent.getBooleanExtra(Const.INTENT_LOGOUT, false)
-        FirebaseUtil.userInfo = null
+        FirebaseRepository.userInfo = null
         CoroutineScope(Dispatchers.Default).launch {
-            if (firebaseUtil.checkAuth()) {
-                firebaseUtil.initUserInfo()
+            if (firebaseRepository.checkAuth()) {
+                firebaseRepository.initUserInfo()
             }
             withContext(Main) {
                 val constraintSet = ConstraintSet().apply {
@@ -101,7 +101,7 @@ class AuthActivity : AppCompatActivity() {
                     delay(1500L)
                 }
 
-                FirebaseUtil.userInfo?.also {
+                FirebaseRepository.userInfo?.also {
                     val intent = Intent(this@AuthActivity, MainActivity::class.java).apply {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     }

@@ -373,7 +373,7 @@
                             app:hintEnabled="false"
                             android:textSize="@dimen/size_item">
 
-                            <com.cheesejuice.fancymansion.view.RoundEditText
+                            <com.cheesejuice.fancymansion.ui.RoundEditText
                                 android:id="@+id/etAddComment"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"

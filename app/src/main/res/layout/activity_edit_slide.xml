@@ -214,7 +214,7 @@
                                             app:hintEnabled="false"
                                             app:counterMaxLength="@integer/count_slide_title">
 
-                                            <com.cheesejuice.fancymansion.view.RoundEditText
+                                            <com.cheesejuice.fancymansion.ui.RoundEditText
                                                 android:id="@+id/etSlideTitle"
                                                 android:layout_width="match_parent"
                                                 android:layout_height="wrap_content"
@@ -242,7 +242,7 @@
                                         app:hintEnabled="false"
                                         android:layout_marginBottom="@dimen/margin_default">
 
-                                        <com.cheesejuice.fancymansion.view.RoundEditText
+                                        <com.cheesejuice.fancymansion.ui.RoundEditText
                                             android:id="@+id/etSlideDescription"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
@@ -273,7 +273,7 @@
                                             app:hintEnabled="false"
                                             app:counterMaxLength="@integer/count_slide_question">
 
-                                            <com.cheesejuice.fancymansion.view.RoundEditText
+                                            <com.cheesejuice.fancymansion.ui.RoundEditText
                                                 android:id="@+id/etSlideQuestion"
                                                 android:layout_width="match_parent"
                                                 android:layout_height="wrap_content"
