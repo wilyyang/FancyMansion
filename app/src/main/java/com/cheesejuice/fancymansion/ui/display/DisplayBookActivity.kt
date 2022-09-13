@@ -1,23 +1,19 @@
-package com.cheesejuice.fancymansion
+package com.cheesejuice.fancymansion.ui.display
 
-import android.content.DialogInterface
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.cheesejuice.fancymansion.Const.Companion.TAG
+import com.cheesejuice.fancymansion.Const
+import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.databinding.ActivityDisplayBookBinding
 import com.cheesejuice.fancymansion.databinding.LayoutEditCommentBinding
 import com.cheesejuice.fancymansion.databinding.LayoutReportBinding
-import com.cheesejuice.fancymansion.extension.showDialogAndStart
 import com.cheesejuice.fancymansion.extension.showLoadingPercent
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.Comment
@@ -27,13 +23,11 @@ import com.cheesejuice.fancymansion.util.FileUtil
 import com.cheesejuice.fancymansion.util.FirebaseUtil
 import com.cheesejuice.fancymansion.view.CommentAdapter
 import com.cheesejuice.fancymansion.view.ReportItemAdapter
-import com.cheesejuice.fancymansion.view.StoreBookAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.consumeEach
 import java.io.File
 import javax.inject.Inject
 
@@ -194,7 +188,9 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                                     override fun onClick(position: Int) {
                                         util.getAlertDailog(
                                             context = this@DisplayBookActivity,
-                                            title = getString(R.string.report_title), message = getString(R.string.report_question),
+                                            title = getString(R.string.report_title), message = getString(
+                                                R.string.report_question
+                                            ),
                                             click = { _, _ ->
                                                 bottomSheetCommonProcess(dialog, progressbarReport, layoutReport) {
                                                     firebaseUtil.incrementCommentReport(comment, position)
@@ -294,7 +290,9 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
     {
         when(item.itemId) {
             R.id.menu_remove_store -> {
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_remove_store_book))
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(
+                    R.string.loading_text_remove_store_book
+                ))
                 CoroutineScope(Dispatchers.IO).launch {
                     if(firebaseUtil.checkAuth() && config.uid == FirebaseUtil.auth.uid) {
                         firebaseUtil.deleteBook(config)
@@ -308,9 +306,11 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
             }
 
             R.id.menu_download -> {
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_download_store_book))
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(
+                    R.string.loading_text_download_store_book
+                ))
                 CoroutineScope(Dispatchers.IO).launch {
-                    val dir = File(fileUtil.readOnlyUserPath, Const.FILE_PREFIX_READ+config.bookId+"_${config.publishCode}")
+                    val dir = File(fileUtil.readOnlyUserPath, Const.FILE_PREFIX_READ +config.bookId+"_${config.publishCode}")
 
                     val channel : Channel<Pair<String, Int>> = Channel()
                     launch {
@@ -347,7 +347,9 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                                     override fun onClick(position: Int) {
                                         util.getAlertDailog(
                                             context = this@DisplayBookActivity,
-                                            title = getString(R.string.report_title), message = getString(R.string.report_question),
+                                            title = getString(R.string.report_title), message = getString(
+                                                R.string.report_question
+                                            ),
                                             click = { _, _ ->
                                                 dialog.setCancelable(false)
                                                 progressbarReport.visibility = View.VISIBLE
@@ -443,8 +445,8 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                 isListLoading = true
                 firebaseUtil.initUserInfo()
                 val current = System.currentTimeMillis()
-                if(FirebaseUtil.userInfo!!.addCommentTime+Const.CONST_TIME_LIMIT_COMMENT > current){
-                    val leftTime = (FirebaseUtil.userInfo!!.addCommentTime+Const.CONST_TIME_LIMIT_COMMENT - current) / 1000
+                if(FirebaseUtil.userInfo!!.addCommentTime+ Const.CONST_TIME_LIMIT_COMMENT > current){
+                    val leftTime = (FirebaseUtil.userInfo!!.addCommentTime+ Const.CONST_TIME_LIMIT_COMMENT - current) / 1000
                     withContext(Main){
                         isListLoading = false
                         util.getAlertDailog(

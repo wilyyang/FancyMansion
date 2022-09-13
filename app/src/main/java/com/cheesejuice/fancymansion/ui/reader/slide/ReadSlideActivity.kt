@@ -1,18 +1,27 @@
-package com.cheesejuice.fancymansion
+package com.cheesejuice.fancymansion.ui.reader.slide
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.databinding.ActivityReadSlideBinding
-import com.cheesejuice.fancymansion.model.*
-import com.cheesejuice.fancymansion.util.*
+import com.cheesejuice.fancymansion.model.ChoiceItem
+import com.cheesejuice.fancymansion.model.Logic
+import com.cheesejuice.fancymansion.model.Slide
+import com.cheesejuice.fancymansion.util.BookUtil
+import com.cheesejuice.fancymansion.util.CommonUtil
+import com.cheesejuice.fancymansion.util.FileUtil
+import com.cheesejuice.fancymansion.util.FirebaseUtil
 import com.cheesejuice.fancymansion.view.ChoiceAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -38,7 +47,8 @@ class ReadSlideActivity : AppCompatActivity() {
         setContentView(binding.root)
         showReadBookLoadingScreen(true)
 
-        if(bookUtil.getEditPlay()) { mode = Const.EDIT_PLAY}
+        if(bookUtil.getEditPlay()) { mode = Const.EDIT_PLAY
+        }
 
         // init config & slide object
         val bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, Const.ID_NOT_FOUND)

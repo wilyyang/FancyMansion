@@ -1,11 +1,8 @@
-package com.cheesejuice.fancymansion
+package com.cheesejuice.fancymansion.ui.editor.start
 
 import android.content.Intent
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -13,28 +10,33 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.cheesejuice.fancymansion.databinding.ActivityEditStartBinding
-import com.cheesejuice.fancymansion.model.Config
-import com.cheesejuice.fancymansion.util.*
+import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
-import com.cheesejuice.fancymansion.Const.Companion.TAG
+import com.cheesejuice.fancymansion.ui.editor.guide.GuideActivity
+import com.cheesejuice.fancymansion.R
+import com.cheesejuice.fancymansion.databinding.ActivityEditStartBinding
+import com.cheesejuice.fancymansion.extension.*
+import com.cheesejuice.fancymansion.model.Config
+import com.cheesejuice.fancymansion.ui.reader.start.ReadStartActivity
+import com.cheesejuice.fancymansion.util.BookUtil
+import com.cheesejuice.fancymansion.util.CommonUtil
+import com.cheesejuice.fancymansion.util.FileUtil
+import com.cheesejuice.fancymansion.util.FirebaseUtil
+import com.cheesejuice.fancymansion.view.RoundEditText
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import javax.inject.Inject
-import com.cheesejuice.fancymansion.extension.*
-import com.cheesejuice.fancymansion.view.RoundEditText
-import com.google.firebase.storage.StorageReference
-import kotlinx.coroutines.*
-import kotlinx.coroutines.tasks.await
-import java.io.File
-import java.util.*
-
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.io.File
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class EditStartActivity : AppCompatActivity(), View.OnClickListener {
@@ -185,7 +187,9 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                 gallaryForResult.launch(intent)
             }
             R.id.btnEditBook -> {
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_save_make_book))
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(
+                    R.string.loading_text_save_make_book
+                ))
                 CoroutineScope(IO).launch {
                     saveConfigFile(config)
                     withContext(Main) {
@@ -215,9 +219,9 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                 this@EditStartActivity.currentFocus?.clearFocus()
 
                 val current = System.currentTimeMillis()
-                if(!isBookUpload && FirebaseUtil.userInfo!!.uploadBookTime+Const.CONST_TIME_LIMIT_BOOK > current){
+                if(!isBookUpload && FirebaseUtil.userInfo!!.uploadBookTime+ Const.CONST_TIME_LIMIT_BOOK > current){
 
-                    val leftTime = (FirebaseUtil.userInfo!!.uploadBookTime+Const.CONST_TIME_LIMIT_BOOK - current) / 60000
+                    val leftTime = (FirebaseUtil.userInfo!!.uploadBookTime+ Const.CONST_TIME_LIMIT_BOOK - current) / 60000
                     util.getAlertDailog(
                         context = this@EditStartActivity,
                         title = getString(R.string.dialog_time_limit_title),
@@ -227,7 +231,9 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                     return true
                 }
 
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_upload_make_book))
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(
+                    R.string.loading_text_upload_make_book
+                ))
                 CoroutineScope(IO).launch {
                     val dbSuccess = uploadBook()
                     val fileSuccess = uploadBookFile()
@@ -253,7 +259,9 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.menu_play -> {
                 startAfterSaveEdits{
-                    bookUtil.setEditPlay(true); bookUtil.deleteBookPref(config.bookId, FirebaseUtil.auth.uid!!, config.publishCode, Const.EDIT_PLAY);
+                    bookUtil.setEditPlay(true); bookUtil.deleteBookPref(config.bookId, FirebaseUtil.auth.uid!!, config.publishCode,
+                    Const.EDIT_PLAY
+                );
                     val intent = Intent(this, ReadStartActivity::class.java).apply {
                         putExtra(Const.INTENT_BOOK_ID, config.bookId)
                     }
@@ -263,7 +271,9 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.menu_save -> {
                 this@EditStartActivity.currentFocus?.clearFocus()
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_save_make_book))
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(
+                    R.string.loading_text_save_make_book
+                ))
                 CoroutineScope(IO).launch {
                     saveConfigFile(config)
                     withContext(Main) {
@@ -275,7 +285,9 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.menu_delete -> {
                 this@EditStartActivity.currentFocus?.clearFocus()
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_delete_make_book))
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(
+                    R.string.loading_text_delete_make_book
+                ))
                 CoroutineScope(IO).launch {
                     fileUtil.deleteBookFolder(config.bookId)
                     withContext(Main) {
@@ -291,7 +303,9 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.menu_copy -> {
                 this@EditStartActivity.currentFocus?.clearFocus()
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_copy_make_book))
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(
+                    R.string.loading_text_copy_make_book
+                ))
                 CoroutineScope(IO).launch {
                     val copyBookId = fileUtil.getNewEditBookId()
                     if (copyBookId != -1L) {

@@ -1,12 +1,10 @@
-package com.cheesejuice.fancymansion.fragment
+package com.cheesejuice.fancymansion.ui.main.fragment.store
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBar
@@ -20,6 +18,7 @@ import com.cheesejuice.fancymansion.*
 import com.cheesejuice.fancymansion.databinding.FragmentStoreBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.Config
+import com.cheesejuice.fancymansion.ui.display.DisplayBookActivity
 import com.cheesejuice.fancymansion.util.BookUtil
 import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FileUtil

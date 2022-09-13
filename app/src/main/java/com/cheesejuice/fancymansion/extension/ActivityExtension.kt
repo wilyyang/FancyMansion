@@ -2,7 +2,6 @@ package com.cheesejuice.fancymansion.extension
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.provider.OpenableColumns
 import android.view.View
@@ -21,7 +20,8 @@ import com.cheesejuice.fancymansion.etc.Sample
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.model.Logic
 import com.cheesejuice.fancymansion.model.Slide
-import com.cheesejuice.fancymansion.view.RoundEditText
+import com.cheesejuice.fancymansion.ui.editor.slide.EditSlideActivity
+import com.cheesejuice.fancymansion.ui.reader.slide.ReadSlideActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

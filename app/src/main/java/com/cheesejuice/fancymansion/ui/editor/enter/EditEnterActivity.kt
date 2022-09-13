@@ -1,8 +1,6 @@
-package com.cheesejuice.fancymansion
+package com.cheesejuice.fancymansion.ui.editor.enter
 
-import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -10,17 +8,23 @@ import android.view.View
 import android.widget.ArrayAdapter
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.cheesejuice.fancymansion.Const
+import com.cheesejuice.fancymansion.ui.editor.guide.GuideActivity
+import com.cheesejuice.fancymansion.MainApplication
+import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.databinding.ActivityEditEnterBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.*
+import com.cheesejuice.fancymansion.ui.editor.condition.EditConditionActivity
 import com.cheesejuice.fancymansion.util.BookUtil
 import com.cheesejuice.fancymansion.view.EditConditionListAdapter
 import com.cheesejuice.fancymansion.view.EditConditionListDragCallback
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
@@ -58,7 +62,7 @@ class EditEnterActivity : AppCompatActivity(), View.OnClickListener  {
     private val editEnterConditionForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             (application as MainApplication).enter = null
-            (application as MainApplication).condition?.let {  condition ->
+            (application as MainApplication).condition?.let { condition ->
                 when (result.resultCode) {
                     Const.RESULT_NEW -> {
                         enterItem.enterConditions.add(Json.decodeFromString(Json.encodeToString(condition)))

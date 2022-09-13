@@ -20,14 +20,14 @@
             android:value="@string/app_ad_id"/>
 
         <activity
-            android:name=".GuideActivity"
+            android:name=".ui.editor.guide.GuideActivity"
             android:exported="false"
             android:noHistory="true"
             android:screenOrientation="portrait">
 
         </activity>
         <activity
-            android:name=".AuthActivity"
+            android:name=".ui.auth.AuthActivity"
             android:exported="true"
             android:noHistory="true"
             android:screenOrientation="portrait">
@@ -38,39 +38,39 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.main.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".DisplayBookActivity"
+            android:name=".ui.display.DisplayBookActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".EditStartActivity"
+            android:name=".ui.editor.start.EditStartActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".EditSlideActivity"
+            android:name=".ui.editor.slide.EditSlideActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".EditChoiceActivity"
+            android:name=".ui.editor.choice.EditChoiceActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".EditEnterActivity"
+            android:name=".ui.editor.enter.EditEnterActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".EditConditionActivity"
+            android:name=".ui.editor.condition.EditConditionActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".ReadStartActivity"
+            android:name=".ui.reader.start.ReadStartActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".ReadSlideActivity"
+            android:name=".ui.reader.slide.ReadSlideActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
     </application>

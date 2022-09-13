@@ -1,19 +1,21 @@
-package com.cheesejuice.fancymansion
+package com.cheesejuice.fancymansion.ui.editor.condition
 
-import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import com.cheesejuice.fancymansion.Const.Companion.TAG
+import androidx.appcompat.app.AppCompatActivity
+import com.cheesejuice.fancymansion.*
 import com.cheesejuice.fancymansion.databinding.ActivityEditConditionBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
-import com.cheesejuice.fancymansion.model.*
+import com.cheesejuice.fancymansion.model.ChoiceItem
+import com.cheesejuice.fancymansion.model.Condition
+import com.cheesejuice.fancymansion.model.Logic
+import com.cheesejuice.fancymansion.model.SlideLogic
+import com.cheesejuice.fancymansion.ui.editor.guide.GuideActivity
 import com.cheesejuice.fancymansion.util.BookUtil
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.decodeFromString

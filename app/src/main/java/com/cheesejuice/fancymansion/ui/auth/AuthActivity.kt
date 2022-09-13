@@ -1,17 +1,14 @@
-package com.cheesejuice.fancymansion
+package com.cheesejuice.fancymansion.ui.auth
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import com.cheesejuice.fancymansion.databinding.ActivityAuthBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
-import com.cheesejuice.fancymansion.model.UserInfo
 import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FirebaseUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -22,11 +19,12 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
 import javax.inject.Inject
-import android.view.animation.TranslateAnimation
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
-import com.cheesejuice.fancymansion.Const.Companion.TAG
+import com.cheesejuice.fancymansion.Const
+import com.cheesejuice.fancymansion.R
+import com.cheesejuice.fancymansion.ui.main.MainActivity
 
 @AndroidEntryPoint
 class AuthActivity : AppCompatActivity() {

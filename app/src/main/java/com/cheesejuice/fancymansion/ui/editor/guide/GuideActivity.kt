@@ -1,7 +1,9 @@
-package com.cheesejuice.fancymansion
+package com.cheesejuice.fancymansion.ui.editor.guide
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import com.cheesejuice.fancymansion.Const
+import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.databinding.ActivityGuideBinding
 import com.cheesejuice.fancymansion.model.Guide
 import com.cheesejuice.fancymansion.view.GuideItemAdapter

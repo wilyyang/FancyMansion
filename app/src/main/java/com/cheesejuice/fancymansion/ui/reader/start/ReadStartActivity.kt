@@ -1,21 +1,19 @@
-package com.cheesejuice.fancymansion
+package com.cheesejuice.fancymansion.ui.reader.start
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import com.bumptech.glide.Glide
+import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.databinding.ActivityReadStartBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.Config
 import com.cheesejuice.fancymansion.util.*
 import com.cheesejuice.fancymansion.Const.Companion.FIRST_SLIDE
 import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
+import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.extension.showDialogAndStart
 import com.cheesejuice.fancymansion.extension.startReadSlideActivity
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.MobileAds
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Default
@@ -41,7 +39,8 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(binding.root)
         showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_get_read_book))
 
-        if(bookUtil.getEditPlay()) { mode = Const.EDIT_PLAY}
+        if(bookUtil.getEditPlay()) { mode = Const.EDIT_PLAY
+        }
 
         binding.btnStartBook.setOnClickListener(this)
         binding.tvRemoveBook.setOnClickListener(this)
@@ -94,7 +93,9 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
                 startBookWithSetting(mode, config)
             }
             R.id.tvRemoveBook -> {
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_delete_read_book))
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(
+                    R.string.loading_text_delete_read_book
+                ))
                 CoroutineScope(Dispatchers.IO).launch {
                     fileUtil.deleteBookFolder(config.bookId, isReadOnly = (mode != Const.EDIT_PLAY), publishCode = config.publishCode)
                     withContext(Main) {
@@ -114,7 +115,9 @@ class ReadStartActivity : AppCompatActivity(), View.OnClickListener {
             onlyNo = { bookUtil.deleteBookPref(con.bookId, FirebaseUtil.auth.uid!!, config.publishCode, ""); startReadSlideActivity(con.bookId, config.publishCode, FIRST_SLIDE) },
             noShow = {
                 if(mod == Const.EDIT_PLAY){
-                    bookUtil.deleteBookPref(con.bookId, FirebaseUtil.auth.uid!!, config.publishCode, Const.EDIT_PLAY)
+                    bookUtil.deleteBookPref(con.bookId, FirebaseUtil.auth.uid!!, config.publishCode,
+                        Const.EDIT_PLAY
+                    )
                 }
                 startReadSlideActivity(con.bookId, config.publishCode, FIRST_SLIDE)
             },

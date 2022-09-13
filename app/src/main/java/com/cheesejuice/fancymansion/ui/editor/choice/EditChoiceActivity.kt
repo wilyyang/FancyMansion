@@ -1,19 +1,22 @@
-package com.cheesejuice.fancymansion
+package com.cheesejuice.fancymansion.ui.editor.choice
 
-import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.cheesejuice.fancymansion.*
 import com.cheesejuice.fancymansion.databinding.ActivityEditChoiceBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.*
+import com.cheesejuice.fancymansion.ui.editor.condition.EditConditionActivity
+import com.cheesejuice.fancymansion.ui.editor.enter.EditEnterActivity
+import com.cheesejuice.fancymansion.ui.editor.guide.GuideActivity
 import com.cheesejuice.fancymansion.util.BookUtil
 import com.cheesejuice.fancymansion.view.EditConditionListAdapter
 import com.cheesejuice.fancymansion.view.EditConditionListDragCallback
@@ -56,7 +59,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
     private val editEnterForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             (application as MainApplication).choice = null
-            (application as MainApplication).enter?.let {  enterItem ->
+            (application as MainApplication).enter?.let { enterItem ->
                 when (result.resultCode) {
                     Const.RESULT_NEW -> {
                         choice.enterItems.add(Json.decodeFromString(Json.encodeToString(enterItem)))
@@ -86,7 +89,7 @@ class EditChoiceActivity : AppCompatActivity(), View.OnClickListener {
     private val editShowConditionForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             (application as MainApplication).choice = null
-            (application as MainApplication).condition?.let {  condition ->
+            (application as MainApplication).condition?.let { condition ->
                 when (result.resultCode) {
                     Const.RESULT_NEW -> {
                         choice.showConditions.add(Json.decodeFromString(Json.encodeToString(condition)))

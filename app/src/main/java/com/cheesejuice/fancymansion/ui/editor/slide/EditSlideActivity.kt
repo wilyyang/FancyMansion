@@ -1,10 +1,8 @@
-package com.cheesejuice.fancymansion
+package com.cheesejuice.fancymansion.ui.editor.slide
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -13,15 +11,27 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.cheesejuice.fancymansion.util.*
+import com.cheesejuice.fancymansion.*
 import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
-import com.cheesejuice.fancymansion.Const.Companion.TAG
 import com.cheesejuice.fancymansion.databinding.ActivityEditSlideBinding
-import com.cheesejuice.fancymansion.extension.*
-import com.cheesejuice.fancymansion.model.*
+import com.cheesejuice.fancymansion.extension.registerGallaryResultName
+import com.cheesejuice.fancymansion.extension.showDialogAndStart
+import com.cheesejuice.fancymansion.extension.showLoadingScreen
+import com.cheesejuice.fancymansion.model.ChoiceItem
+import com.cheesejuice.fancymansion.model.Logic
+import com.cheesejuice.fancymansion.model.Slide
+import com.cheesejuice.fancymansion.model.SlideLogic
+import com.cheesejuice.fancymansion.ui.editor.choice.EditChoiceActivity
+import com.cheesejuice.fancymansion.ui.editor.guide.GuideActivity
+import com.cheesejuice.fancymansion.ui.reader.slide.ReadSlideActivity
+import com.cheesejuice.fancymansion.util.BookUtil
+import com.cheesejuice.fancymansion.util.CommonUtil
+import com.cheesejuice.fancymansion.util.FileUtil
+import com.cheesejuice.fancymansion.util.FirebaseUtil
 import com.cheesejuice.fancymansion.view.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -77,7 +87,7 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             (application as MainApplication).logic = null
             (application as MainApplication).slideLogic = null
-            (application as MainApplication).choice?.let {  choiceItem ->
+            (application as MainApplication).choice?.let { choiceItem ->
                 when (result.resultCode) {
                     Const.RESULT_NEW -> {
                         slideLogic.choiceItems.add(Json.decodeFromString(Json.encodeToString(choiceItem)))
@@ -203,7 +213,10 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
         val touchHelper = ItemTouchHelper(SlideTitleListDragCallback(slideTitleListAdapter))
         touchHelper.attachToRecyclerView(binding.recyclerNavEditSlide)
 
-        slideTitleToggle = ActionBarDrawerToggle(this@EditSlideActivity, binding.layoutActive, R.string.drawer_opened, R.string.drawer_closed)
+        slideTitleToggle = ActionBarDrawerToggle(this@EditSlideActivity, binding.layoutActive,
+            R.string.drawer_opened,
+            R.string.drawer_closed
+        )
         slideTitleToggle.syncState()
     }
 
@@ -416,7 +429,9 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                 }
             }
             R.id.menu_save -> {
-                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_save_slide))
+                showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(
+                    R.string.loading_text_save_slide
+                ))
                 CoroutineScope(IO).launch {
                     saveSlideFile(logic, slide)
                     setSaveFlag(false)
@@ -429,7 +444,9 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
             R.id.menu_play -> {
                 startAfterSaveEdits {
                     bookUtil.setEditPlay(true)
-                    bookUtil.deleteBookPref(logic.bookId, FirebaseUtil.auth.uid!!, "", Const.EDIT_PLAY)
+                    bookUtil.deleteBookPref(logic.bookId, FirebaseUtil.auth.uid!!, "",
+                        Const.EDIT_PLAY
+                    )
 
                     val intent = Intent(this, ReadSlideActivity::class.java).apply {
                         putExtra(Const.INTENT_BOOK_ID, logic.bookId)
@@ -496,7 +513,9 @@ class EditSlideActivity : AppCompatActivity(), View.OnClickListener{
                     }
                 }
             } else {
-                slide = Slide(slideId = nextId, slideTitle = getString(R.string.name_slide_prefix), question = getString(R.string.text_question_default))
+                slide = Slide(slideId = nextId, slideTitle = getString(R.string.name_slide_prefix), question = getString(
+                    R.string.text_question_default
+                ))
                 slideLogic = SlideLogic(slide.slideId, slide.slideTitle)
             }
             logic.logics.add(slideLogic)

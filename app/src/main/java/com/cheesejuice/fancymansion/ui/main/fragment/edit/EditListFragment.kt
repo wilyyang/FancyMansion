@@ -1,4 +1,4 @@
-package com.cheesejuice.fancymansion.fragment
+package com.cheesejuice.fancymansion.ui.main.fragment.edit
 
 import android.content.Intent
 import android.os.Bundle
@@ -13,15 +13,17 @@ import androidx.appcompat.widget.AppCompatSpinner
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.cheesejuice.fancymansion.*
-import com.cheesejuice.fancymansion.databinding.FragmentReadListBinding
+import com.cheesejuice.fancymansion.Const
+import com.cheesejuice.fancymansion.Const.Companion.ID_NOT_FOUND
+import com.cheesejuice.fancymansion.R
+import com.cheesejuice.fancymansion.databinding.FragmentEditListBinding
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
 import com.cheesejuice.fancymansion.model.Config
+import com.cheesejuice.fancymansion.ui.editor.start.EditStartActivity
 import com.cheesejuice.fancymansion.util.BookUtil
 import com.cheesejuice.fancymansion.util.CommonUtil
 import com.cheesejuice.fancymansion.util.FileUtil
 import com.cheesejuice.fancymansion.view.EditBookAdapter
-import com.cheesejuice.fancymansion.view.ReadBookAdapter
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,11 +31,11 @@ import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ReadListFragment : Fragment() {
-    private var _binding: FragmentReadListBinding? = null
+class EditListFragment : Fragment(), View.OnClickListener {
+    private var _binding: FragmentEditListBinding? = null
     private val binding get() = _binding!!
 
-    private var readList : MutableList<Config> = mutableListOf()
+    private val editList : MutableList<Config> = mutableListOf()
 
     private var page = 1
     private var isListLoading = false
@@ -49,23 +51,23 @@ class ReadListFragment : Fragment() {
     lateinit var fileUtil: FileUtil
 
     // ui
-    private lateinit var readBookAdapter: ReadBookAdapter
+    private lateinit var editBookAdapter: EditBookAdapter
 
-    private val readStartForResult =
+    private val editStartForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_frag_my_book))
+            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_frag_make_book))
 
             isListLoading = true
             CoroutineScope(Dispatchers.Default).launch {
-                readList.clear()
+                editList.clear()
                 page = 1
 
-                val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isReadOnly = true, isLatest = isLatest)
+                val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isLatest = isLatest)
                 withContext(Dispatchers.Main) {
                     if(list != null) {
-                        readList.addAll(list)
+                        editList.addAll(list)
                         _binding?.let {
-                            makeReadList(readList)
+                            makeEditList(editList)
                             isListLoading = false
                         }
                     }else{
@@ -80,23 +82,25 @@ class ReadListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentReadListBinding.inflate(inflater, container, false)
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_frag_my_book))
+        _binding = FragmentEditListBinding.inflate(inflater, container, false)
+        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_frag_make_book))
 
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         setHasOptionsMenu(true)
 
-        binding.toolbar.title = getString(R.string.frag_main_book)
+        binding.fabMakeBook.setOnClickListener(this)
+
+        binding.toolbar.title = getString(R.string.frag_main_make)
 
         isListLoading = true
         CoroutineScope(Dispatchers.Default).launch {
-            val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isReadOnly = true, isLatest = isLatest)
+            val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isLatest = isLatest)
             withContext(Dispatchers.Main) {
                 if(list != null) {
-                    readList.addAll(list)
+                    editList.addAll(list)
                     _binding?.let {
-                        makeReadList(readList)
+                        makeEditList(editList)
                         isListLoading = false
 
                         MobileAds.initialize(requireContext()) {}
@@ -112,13 +116,13 @@ class ReadListFragment : Fragment() {
     }
 
     private fun updateEmptyBook(){
-        if(readList.size < 1 && _binding != null)
+        if(editList.size < 1 && _binding != null)
         {
             binding.layoutEmptyBook.visibility = View.VISIBLE
-            binding.recyclerReadBook.visibility = View.INVISIBLE
+            binding.recyclerEditBook.visibility = View.INVISIBLE
         }else{
             binding.layoutEmptyBook.visibility = View.INVISIBLE
-            binding.recyclerReadBook.visibility = View.VISIBLE
+            binding.recyclerEditBook.visibility = View.VISIBLE
         }
     }
 
@@ -127,32 +131,31 @@ class ReadListFragment : Fragment() {
         _binding = null
     }
 
-    private fun makeReadList(_readList : MutableList<Config>) {
+    private fun makeEditList(_editList : MutableList<Config>) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
 
-        readBookAdapter = ReadBookAdapter(_readList, fileUtil, requireActivity())
-        readBookAdapter.setItemClickListener(object: ReadBookAdapter.OnItemClickListener{
+        editBookAdapter = EditBookAdapter(_editList, fileUtil, requireActivity())
+        editBookAdapter.setItemClickListener(object: EditBookAdapter.OnItemClickListener{
             override fun onClick(v: View, config: Config) {
-                bookUtil.setEditPlay(false)
-                val intent = Intent(activity, ReadStartActivity::class.java).apply {
+                val intent = Intent(activity, EditStartActivity::class.java).apply {
+                    putExtra(Const.INTENT_BOOK_CREATE, false)
                     putExtra(Const.INTENT_BOOK_ID, config.bookId)
-                    putExtra(Const.INTENT_PUBLISH_CODE, config.publishCode)
                 }
-                readStartForResult.launch(intent)
+                editStartForResult.launch(intent)
             }
 
         })
 
-        binding.recyclerReadBook.layoutManager = LinearLayoutManager(context)
-        binding.recyclerReadBook.adapter = readBookAdapter
+        binding.recyclerEditBook.layoutManager = LinearLayoutManager(context)
+        binding.recyclerEditBook.adapter = editBookAdapter
 
-        binding.recyclerReadBook.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.recyclerEditBook.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
                 if(!isListLoading){
-                    if ((recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition() == readList.size - 1){
-                        addMoreReadBook()
+                    if ((recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition() == editList.size - 1){
+                        addMoreEditBook()
                     }
                 }
             }
@@ -160,22 +163,34 @@ class ReadListFragment : Fragment() {
         updateEmptyBook()
     }
 
-    private fun addMoreReadBook(){
+    override fun onClick(view: View?) {
+        when(view?.id) {
+            R.id.fabMakeBook -> {
+                val intent = Intent(activity, EditStartActivity::class.java).apply {
+                    putExtra(Const.INTENT_BOOK_CREATE, true)
+                    putExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
+                }
+                editStartForResult.launch(intent)
+            }
+        }
+    }
+
+    private fun addMoreEditBook(){
         isListLoading = true
 
-        readList.add(Config(bookId = Const.VIEW_HOLDER_LOADING))
-        readBookAdapter.notifyItemInserted(readList.size -1)
+        editList.add(Config(bookId = Const.VIEW_HOLDER_LOADING))
+        editBookAdapter.notifyItemInserted(editList.size -1)
 
         CoroutineScope(Dispatchers.Default).launch {
             delay(500L)
-            val list = fileUtil.getConfigListRange(page * Const.PAGE_COUNT, ++page * Const.PAGE_COUNT -1, isReadOnly = true, isLatest = isLatest)
+            val list = fileUtil.getConfigListRange(page * Const.PAGE_COUNT, ++page * Const.PAGE_COUNT -1, isLatest = isLatest)
             withContext(Dispatchers.Main) {
                 if(list != null) {
-                    val beforeSize = readList.size
-                    readList.removeAt(beforeSize - 1)
-                    readBookAdapter.notifyItemRemoved(beforeSize - 1)
-                    readList.addAll(list)
-                    readBookAdapter.notifyItemRangeInserted(beforeSize, list.size)
+                    val beforeSize = editList.size
+                    editList.removeAt(beforeSize - 1)
+                    editBookAdapter.notifyItemRemoved(beforeSize - 1)
+                    editList.addAll(list)
+                    editBookAdapter.notifyItemRangeInserted(beforeSize, list.size)
                 }else{
                     util.getAlertDailog(activity as AppCompatActivity).show()
                 }
@@ -185,13 +200,13 @@ class ReadListFragment : Fragment() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_frag_read, menu)
+        inflater.inflate(R.menu.menu_frag_edit, menu)
 
         val sortItem = menu.findItem(R.id.action_sort)
         spinnerOrder = (sortItem)?.actionView as AppCompatSpinner
         spinnerOrder.apply {
             layoutParams = ActionBar.LayoutParams(450, ActionBar.LayoutParams.WRAP_CONTENT)
-            val sortOrders = resources.getStringArray(R.array.sort_read)
+            val sortOrders = resources.getStringArray(R.array.sort_edit)
             adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, sortOrders)
 
             onItemSelectedListener =  object : AdapterView.OnItemSelectedListener{
@@ -200,15 +215,15 @@ class ReadListFragment : Fragment() {
                         isListLoading = true
                         isLatest = (spinnerOrder.selectedItemPosition == 0)
                         CoroutineScope(Dispatchers.Default).launch {
-                            readList.clear()
+                            editList.clear()
                             page = 1
 
-                            val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isReadOnly = true, isLatest = isLatest)
+                            val list = fileUtil.getConfigListRange(0, page * Const.PAGE_COUNT -1, isLatest = isLatest)
                             withContext(Dispatchers.Main) {
                                 if(list != null) {
-                                    readList.addAll(list)
+                                    editList.addAll(list)
                                     _binding?.let {
-                                        makeReadList(readList)
+                                        makeEditList(editList)
                                         isListLoading = false
                                     }
                                 }else{
