@@ -13,7 +13,7 @@ import com.cheesejuice.fancymansion.data.models.SlideLogic
 import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
 
-class PreferenceProvider @Inject constructor(@ActivityContext private val context: Context){
+class PreferenceProvider constructor(private val context: Context){
     // Setting Pref
     fun isSampleMake():Boolean{
         val pref = context.getSharedPreferences(Const.PREF_SETTING, Context.MODE_PRIVATE)

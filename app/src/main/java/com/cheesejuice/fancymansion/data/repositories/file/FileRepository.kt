@@ -32,7 +32,7 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 
-class FileRepository @Inject constructor(@ActivityContext private val context: Context){
+class FileRepository constructor(private val context: Context){
     private val path = context.getExternalFilesDir(null)
     private val bookPath = File(path, Const.FILE_DIR_BOOK)
     private val readOnlyPath = File(path, Const.FILE_DIR_READONLY)

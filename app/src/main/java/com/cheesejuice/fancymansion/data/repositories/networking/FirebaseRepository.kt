@@ -26,7 +26,7 @@ import kotlinx.coroutines.tasks.await
 import java.io.File
 import javax.inject.Inject
 
-class FirebaseRepository @Inject constructor(@ActivityContext private val context: Context){
+class FirebaseRepository constructor(private val context: Context){
     companion object{
         val auth: FirebaseAuth by lazy { Firebase.auth }
         private val db: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
