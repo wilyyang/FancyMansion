@@ -83,24 +83,17 @@ class ReadStartActivity : AppCompatActivity(){
 
     private fun startBookWithSetting(mod: String, con: Config){
         if((mod != Const.EDIT_PLAY && viewModel.saveSlideId != ID_NOT_FOUND)){
-            getAlertDialog(getString(R.string.record_dialog_title),
-                getString(R.string.record_dialog_question),
-                {startReadSlideActivity(con.bookId, viewModel.config!!.publishCode, viewModel.saveSlideId)},
-            ) {
-                viewModel.deleteBookPref()
-                startReadSlideActivity(con.bookId, viewModel.config!!.publishCode, FIRST_SLIDE)
-            }.show()
-            AlertDialog.Builder(this).also { builder ->
-                builder.setTitle(getString(R.string.record_dialog_title))
-                builder.setMessage(getString(R.string.record_dialog_question))
-                builder.setPositiveButton(this.getString(R.string.dialog_ok)) { _, _ ->
+            getAlertDialog(
+                title = getString(R.string.record_dialog_title),
+                message = getString(R.string.record_dialog_question),
+                positiveAction = {
                     startReadSlideActivity(con.bookId, viewModel.config!!.publishCode, viewModel.saveSlideId)
-                }
-                builder.setNegativeButton(this.getString(R.string.dialog_no)) { _, _ ->
+                },
+                negativeAction = {
                     viewModel.deleteBookPref()
                     startReadSlideActivity(con.bookId, viewModel.config!!.publishCode, FIRST_SLIDE)
                 }
-            }.show()
+            ).show()
         }else{
             if(mod == Const.EDIT_PLAY){
                 viewModel.deleteBookPref()

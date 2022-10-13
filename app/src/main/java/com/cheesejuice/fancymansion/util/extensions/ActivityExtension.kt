@@ -114,13 +114,17 @@ fun Activity.showLoadingScreen(isLoading: Boolean, loading: View, main: View, lo
 fun Activity.getAlertDialog(
     title: String = getString(R.string.alert_default_title),
     message: String = getString(R.string.alert_default_message),
-    positiveAction: () -> Unit = DialogInterface.OnClickListener { _, _ -> finish() },
-    negativeAction: () -> Unit = DialogInterface.OnClickListener { _, _ -> finish() }
+    positiveAction: () -> Unit = { finish() },
+    negativeAction: () -> Unit = { finish() }
 ) = AlertDialog.Builder(this).apply {
     setTitle(title)
     setMessage(message)
-    setPositiveButton(getString(R.string.alert_default_button), positiveAction)
-    setNegativeButton(getString(R.string.dialog_no), negativeAction)
+    setPositiveButton(getString(R.string.alert_default_button)) { _, _ ->
+        positiveAction()
+    }
+    setNegativeButton(getString(R.string.dialog_no)) { _, _ ->
+        negativeAction()
+    }
 }
 
 fun Activity.showDialogAndStart(isShow: Boolean, loading: View? = null, main: View? = null, title:String, message:String, onlyOkBackground:()->Unit = {}, onlyOk:()->Unit = {}, onlyNo:()->Unit = {}, noShow:() ->Unit = {}, always:() ->Unit = {}
