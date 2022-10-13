@@ -79,7 +79,7 @@ class ReadStartViewModel @Inject constructor(
         _init.value = true
     }
 
-    fun setLoading(loading: Boolean, loadingText: String = "") {
+    private fun setLoading(loading: Boolean, loadingText: String = "") {
         _loading.value = loading
         _loadingText = loadingText
     }
