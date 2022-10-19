@@ -91,5 +91,5 @@ class ReadStartViewModel @Inject constructor(
     }
 
     fun deleteBookPref() =
-        preferenceProvider.deleteBookPref(_config!!.bookId, FirebaseRepository.auth.uid!!, _config!!.publishCode, "")
+        preferenceProvider.deleteBookPref(_config!!.bookId, FirebaseRepository.auth.uid!!, _config!!.publishCode, mode)
 }
