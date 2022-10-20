@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.data.models.Config
@@ -13,8 +12,6 @@ import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
 import com.cheesejuice.fancymansion.data.repositories.networking.FirebaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
 
@@ -80,8 +77,8 @@ class ReadStartViewModel @Inject constructor(
     }
 
     private fun setLoading(loading: Boolean, loadingText: String = "") {
-        _loading.value = loading
         _loadingText = loadingText
+        _loading.value = loading
     }
 
     fun deleteBookFolder(){

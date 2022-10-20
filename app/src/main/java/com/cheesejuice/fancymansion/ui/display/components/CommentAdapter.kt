@@ -10,11 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.R
+import com.cheesejuice.fancymansion.data.models.Comment
+import com.cheesejuice.fancymansion.data.repositories.networking.FirebaseRepository
 import com.cheesejuice.fancymansion.databinding.ItemCommentBinding
 import com.cheesejuice.fancymansion.databinding.ItemCommentLoadingBinding
-import com.cheesejuice.fancymansion.data.models.Comment
-import com.cheesejuice.fancymansion.util.Util
-import com.cheesejuice.fancymansion.data.repositories.networking.FirebaseRepository
+import com.cheesejuice.fancymansion.util.Formatter
 
 class CommentAdapter(val datas: MutableList<Comment>, val context: Context, val bookUid:String):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
@@ -68,9 +68,9 @@ class CommentAdapter(val datas: MutableList<Comment>, val context: Context, val 
 
                 binding.tvCommentUserName.text = userName
                 if(editCount == 0){
-                    binding.tvCommentDate.text = Util.longToTimeFormatss(updateTime)
+                    binding.tvCommentDate.text = Formatter.longToTimeUntilSecond(updateTime)
                 }else{
-                    binding.tvCommentDate.text = Util.longToTimeFormatss(editTime)+" "+context.getString(R.string.display_comment_is_edit)
+                    binding.tvCommentDate.text = Formatter.longToTimeUntilSecond(editTime)+" "+context.getString(R.string.display_comment_is_edit)
                 }
 
                 binding.tvComment.text = if(holder.itemViewType == TYPE_REPORT){

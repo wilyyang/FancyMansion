@@ -8,11 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.R
+import com.cheesejuice.fancymansion.data.models.Config
+import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
 import com.cheesejuice.fancymansion.databinding.ItemEditBookBinding
 import com.cheesejuice.fancymansion.databinding.ItemLoadingBinding
-import com.cheesejuice.fancymansion.data.models.Config
-import com.cheesejuice.fancymansion.util.Util
-import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
+import com.cheesejuice.fancymansion.util.Formatter
 
 class EditBookAdapter(val datas: MutableList<Config>, val fileRepository: FileRepository, val context: Context):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
@@ -56,7 +56,7 @@ class EditBookAdapter(val datas: MutableList<Config>, val fileRepository: FileRe
             val binding=holder.binding
             with(datas[position]){
                 binding.tvEditBookId.text = "#${bookId} ${publishCode}"
-                binding.tvEditBookUpdate.text = Util.longToTimeFormatss(updateTime)
+                binding.tvEditBookUpdate.text = Formatter.longToTimeUntilSecond(updateTime)
 
                 binding.tvEditBookTitle.text = title
                 binding.tvEditBookWriter.text = writer

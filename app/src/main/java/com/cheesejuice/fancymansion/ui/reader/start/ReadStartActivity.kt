@@ -1,7 +1,6 @@
 package com.cheesejuice.fancymansion.ui.reader.start
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -17,7 +16,7 @@ import com.cheesejuice.fancymansion.data.models.Config
 import com.cheesejuice.fancymansion.databinding.ActivityReadStartBinding
 import com.cheesejuice.fancymansion.extension.getAlertDialog
 import com.cheesejuice.fancymansion.ui.reader.slide.ReadSlideActivity
-import com.cheesejuice.fancymansion.util.Util
+import com.cheesejuice.fancymansion.util.Formatter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -68,8 +67,8 @@ class ReadStartActivity : AppCompatActivity(){
             binding.tvConfigTitle.text = title
             binding.tvConfigDescription.text = description
 
-            binding.tvConfigVersion.text = "v ${Util.versionToString(version)}"
-            binding.tvConfigTime.text = Util.longToTimeFormatss(updateTime)
+            binding.tvConfigVersion.text = "v ${Formatter.versionToString(version)}"
+            binding.tvConfigTime.text = Formatter.longToTimeUntilSecond(updateTime)
             binding.tvConfigUser.text = "$user ($email)"
             binding.tvConfigWriter.text = writer
             binding.tvConfigIllustrator.text = illustrator

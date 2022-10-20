@@ -1,5 +1,6 @@
 package com.cheesejuice.fancymansion.ui.display
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -11,18 +12,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.R
+import com.cheesejuice.fancymansion.data.models.Comment
+import com.cheesejuice.fancymansion.data.models.Config
+import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
+import com.cheesejuice.fancymansion.data.repositories.networking.FirebaseRepository
 import com.cheesejuice.fancymansion.databinding.ActivityDisplayBookBinding
 import com.cheesejuice.fancymansion.databinding.LayoutEditCommentBinding
 import com.cheesejuice.fancymansion.databinding.LayoutReportBinding
 import com.cheesejuice.fancymansion.extension.showLoadingPercent
 import com.cheesejuice.fancymansion.extension.showLoadingScreen
-import com.cheesejuice.fancymansion.data.models.Comment
-import com.cheesejuice.fancymansion.data.models.Config
-import com.cheesejuice.fancymansion.util.Util
-import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
-import com.cheesejuice.fancymansion.data.repositories.networking.FirebaseRepository
 import com.cheesejuice.fancymansion.ui.display.components.CommentAdapter
 import com.cheesejuice.fancymansion.ui.display.components.ReportItemAdapter
+import com.cheesejuice.fancymansion.util.Formatter
+import com.cheesejuice.fancymansion.util.Util
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -90,6 +92,7 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun makeBookDisplayScreen(conf: Config, isGood:Boolean) {
         showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
         with(conf){
@@ -100,8 +103,8 @@ class DisplayBookActivity : AppCompatActivity(), View.OnClickListener  {
                 binding.tvConfigDescription.visibility = View.GONE
             }
 
-            binding.tvConfigVersion.text = "v ${Util.versionToString(version)}"
-            binding.tvConfigTime.text = Util.longToTimeFormatss(updateTime)
+            binding.tvConfigVersion.text = "v ${Formatter.versionToString(version)}"
+            binding.tvConfigTime.text = Formatter.longToTimeUntilSecond(updateTime)
             binding.tvConfigDownloads.text = "$downloads"
             binding.tvConfigGood.text = "$good"
 

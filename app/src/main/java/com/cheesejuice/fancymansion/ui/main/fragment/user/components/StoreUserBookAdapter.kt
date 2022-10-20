@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.R
-import com.cheesejuice.fancymansion.databinding.ItemStoreUserBookBinding
 import com.cheesejuice.fancymansion.data.models.Config
-import com.cheesejuice.fancymansion.util.Util
 import com.cheesejuice.fancymansion.data.repositories.networking.FirebaseRepository
+import com.cheesejuice.fancymansion.databinding.ItemStoreUserBookBinding
+import com.cheesejuice.fancymansion.util.Formatter
 
 class StoreUserBookAdapter(val datas: MutableList<Config>, val context: Context, val firebaseRepository: FirebaseRepository):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
@@ -38,7 +38,7 @@ class StoreUserBookAdapter(val datas: MutableList<Config>, val context: Context,
         if (holder is StoreUserBookViewHolder){
             val binding=(holder).binding
             with(datas[position]){
-                binding.tvStoreBookUpdate.text = Util.longToTimeFormatss(updateTime)
+                binding.tvStoreBookUpdate.text = Formatter.longToTimeUntilSecond(updateTime)
                 binding.imageCover.clipToOutline = true
             }
 

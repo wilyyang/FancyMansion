@@ -15,6 +15,7 @@ import com.cheesejuice.fancymansion.data.models.Config
 import com.cheesejuice.fancymansion.ui.main.fragment.read.components.ReadBookAdapter
 import com.cheesejuice.fancymansion.util.Util
 import com.cheesejuice.fancymansion.data.repositories.networking.FirebaseRepository
+import com.cheesejuice.fancymansion.util.Formatter
 
 class StoreBookAdapter(val datas: MutableList<Config>, val context: Context, val firebaseRepository: FirebaseRepository):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
@@ -57,7 +58,7 @@ class StoreBookAdapter(val datas: MutableList<Config>, val context: Context, val
             val binding=(holder).binding
             with(datas[position]){
                 binding.tvStoreBookId.text = "#${bookId} ${publishCode}"
-                binding.tvStoreBookUpdate.text = Util.longToTimeFormatss(updateTime)
+                binding.tvStoreBookUpdate.text = Formatter.longToTimeUntilSecond(updateTime)
 
                 binding.tvStoreBookUser.text = user
                 binding.tvStoreBookEmail.text = email

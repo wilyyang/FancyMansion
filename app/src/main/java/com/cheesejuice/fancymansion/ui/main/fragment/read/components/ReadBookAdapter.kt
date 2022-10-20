@@ -13,6 +13,7 @@ import com.cheesejuice.fancymansion.databinding.ItemReadBookBinding
 import com.cheesejuice.fancymansion.data.models.Config
 import com.cheesejuice.fancymansion.util.Util
 import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
+import com.cheesejuice.fancymansion.util.Formatter
 
 class ReadBookAdapter(val datas: MutableList<Config>, val fileRepository: FileRepository, val context: Context):
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
@@ -55,7 +56,7 @@ class ReadBookAdapter(val datas: MutableList<Config>, val fileRepository: FileRe
             val binding=(holder).binding
             with(datas[position]){
                 binding.tvReadBookId.text = "#${bookId} ${publishCode}"
-                binding.tvReadBookUpdate.text = Util.longToTimeFormatss(updateTime)
+                binding.tvReadBookUpdate.text = Formatter.longToTimeUntilSecond(updateTime)
 
                 binding.tvReadBookTitle.text = title
                 binding.tvReadBookUser.text = user
