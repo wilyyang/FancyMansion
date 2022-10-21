@@ -2,9 +2,8 @@ package com.cheesejuice.fancymansion.extension
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
 import android.provider.OpenableColumns
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -16,12 +15,13 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.cheesejuice.fancymansion.*
-import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
-import com.cheesejuice.fancymansion.data.repositories.file.MakeSample
+import com.cheesejuice.fancymansion.Const
+import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.data.models.Config
 import com.cheesejuice.fancymansion.data.models.Logic
 import com.cheesejuice.fancymansion.data.models.Slide
+import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
+import com.cheesejuice.fancymansion.data.repositories.file.MakeSample
 import com.cheesejuice.fancymansion.ui.editor.slide.EditSlideActivity
 import com.cheesejuice.fancymansion.ui.reader.slide.ReadSlideActivity
 import kotlinx.coroutines.CoroutineScope
@@ -108,22 +108,6 @@ fun Activity.showLoadingScreen(isLoading: Boolean, loading: View, main: View, lo
     }else{
         loading.visibility = View.GONE
         main.visibility = View.VISIBLE
-    }
-}
-
-fun Activity.getAlertDialog(
-    title: String = getString(R.string.alert_default_title),
-    message: String = getString(R.string.alert_default_message),
-    positiveAction: () -> Unit = { finish() },
-    negativeAction: () -> Unit = { finish() }
-) = AlertDialog.Builder(this).apply {
-    setTitle(title)
-    setMessage(message)
-    setPositiveButton(getString(R.string.alert_default_button)) { _, _ ->
-        positiveAction()
-    }
-    setNegativeButton(getString(R.string.dialog_no)) { _, _ ->
-        negativeAction()
     }
 }
 
@@ -225,3 +209,37 @@ fun Activity.createReadOnlySampleFiles(){
         fileRepository.extractBook(File(readOnlyPath, Const.FILE_PREFIX_READ+12345+"_12345"))
     }
 }
+
+// New
+
+fun Activity.getAlertDialog(
+    title: String = getString(R.string.alert_default_title),
+    message: String = getString(R.string.alert_default_message),
+    positiveAction: () -> Unit = { finish() },
+    negativeAction: () -> Unit = { finish() }
+) = AlertDialog.Builder(this).apply {
+    setTitle(title)
+    setMessage(message)
+    setPositiveButton(getString(R.string.alert_default_button)) { _, _ ->
+        positiveAction()
+    }
+    setNegativeButton(getString(R.string.dialog_no)) { _, _ ->
+        negativeAction()
+    }
+}
+
+fun Activity.registerGallaryResultName(afterResult:(String, Uri?)->Unit) =
+    (this as ComponentActivity).registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data!!.data?.let { returnUri ->
+                contentResolver.query(returnUri, null, null, null, null)
+            }?.use { cursor ->
+                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                cursor.moveToFirst()
+
+                cursor.getString(nameIndex)?.let {
+                    afterResult(it, result.data!!.data)
+                }
+            }
+        }
+    }

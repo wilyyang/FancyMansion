@@ -7,10 +7,12 @@ import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.cheesejuice.fancymansion.Const
@@ -26,7 +28,6 @@ import com.cheesejuice.fancymansion.ui.RoundEditText
 import com.cheesejuice.fancymansion.ui.editor.guide.GuideActivity
 import com.cheesejuice.fancymansion.ui.reader.start.ReadStartActivity
 import com.cheesejuice.fancymansion.util.Formatter
-import com.cheesejuice.fancymansion.util.Util
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
@@ -47,8 +48,6 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
     private var updateImage = false
 
     @Inject
-    lateinit var util: Util
-    @Inject
     lateinit var preferenceProvider: PreferenceProvider
     @Inject
     lateinit var fileRepository: FileRepository
@@ -60,83 +59,53 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var gallaryForResult: ActivityResultLauncher<Intent>
 
-    private val readStartForResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_get_make_book))
-
-            CoroutineScope(Default).launch {
-                val conf = fileRepository.getConfigFromFile(config.bookId)
-                withContext(Main) {
-                    conf?.also{
-                        config = it
-                        makeEditReadyScreen(config)
-                    }?:also{
-                        util.getAlertDailog(this@EditStartActivity).show()
-                    }
-                }
-            }
-        }
+    private val viewModel: EditStartViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEditStartBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_get_make_book))
 
+        // observe
+        viewModel.loading.observe(this) { isLoading ->
+            binding.layoutLoading.root.findViewById<TextView>(R.id.tvLoading).text = viewModel.loadingText
+            binding.layoutLoading.root.visibility = if(isLoading) View.VISIBLE else View.GONE
+            binding.layoutActive.visibility = if(isLoading) View.GONE else View.VISIBLE
+        }
+
+        // action bar
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.toolbar.title = getString(R.string.toolbar_title_update)
 
-        gallaryForResult = registerGallaryResultName(binding.imageViewShowMain) { imageName ->
-            config.coverImage = imageName; updateImage = true
+        gallaryForResult = registerGallaryResultName { imageName, imageUri ->
+            viewModel.setImageFromGallery(imageName, imageUri)
         }
 
         binding.imageViewConfigAdd.setOnClickListener(this)
         binding.imageViewConfigCrop.setOnClickListener(this)
         binding.btnEditBook.setOnClickListener(this)
 
+        // init book
         val isCreate = intent.getBooleanExtra(Const.INTENT_BOOK_CREATE, false)
-        var bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
+        val bookId = intent.getLongExtra(Const.INTENT_BOOK_ID, ID_NOT_FOUND)
+        viewModel.initBook(isCreate, bookId)
 
-        CoroutineScope(Default).launch {
-            if(isCreate || bookId == ID_NOT_FOUND){
-                makeBook = true
-                bookId = fileRepository.getNewEditBookId()
-
-                if(bookId != -1L){
-                    fileRepository.makeEmptyBook(bookId)
-                }
-            }
-
-            val conf = fileRepository.getConfigFromFile(bookId)
-            conf?.let {
-                if(conf.publishCode != ""){
-                    isBookUpload = firebaseRepository.isBookUpload(conf.publishCode)
-                }
-            }
-
-
-            withContext(Main) {
-                conf?.also{
-                    config = it
-                    makeEditReadyScreen(config)
-                }?:also{
-                    util.getAlertDailog(this@EditStartActivity).show()
-                }
-            }
+        viewModel.config?.also{
+            makeEditReadyScreen(it)
+        }?:also{
+            getAlertDialog().show()
         }
     }
 
     @SuppressLint("SetTextI18n")
-    private fun makeEditReadyScreen(conf: Config) {
-        showLoadingScreen(false, binding.layoutLoading.root, binding.layoutActive, "")
-
-        if(isBookUpload){
+    private fun makeEditReadyScreen(config: Config) {
+        if(viewModel.isBookUpload){
             val menuItem = binding.toolbar.menu.findItem(R.id.menu_upload)
             menuItem.title = getString(R.string.menu_book_update)
         }
 
-        with(conf){
+        with(config){
             binding.tvConfigVersion.text = "v ${Formatter.versionToString(version)}"
             binding.tvConfigTime.text = Formatter.longToTimeUntilSecond(updateTime)
 
@@ -146,7 +115,7 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
             binding.etConfigDescription.setText(description)
             binding.tvConfigPub.text = getString(R.string.book_config_pub)+publishCode
         }
-        fileRepository.getImageFile(conf.bookId, conf.coverImage, isCover = true)?.also {
+        viewModel.coverImage?.also {
             Glide.with(applicationContext).load(it).into(binding.imageViewShowMain)
         }?:also {
             Glide.with(applicationContext).load(R.drawable.default_image).into(binding.imageViewShowMain)
@@ -204,6 +173,23 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private val readStartForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            showLoadingScreen(true, binding.layoutLoading.root, binding.layoutActive, getString(R.string.loading_text_get_make_book))
+
+            CoroutineScope(Default).launch {
+                val conf = fileRepository.getConfigFromFile(config.bookId)
+                withContext(Main) {
+                    conf?.also{
+                        config = it
+                        makeEditReadyScreen(config)
+                    }?:also{
+                        getAlertDialog().show()
+                    }
+                }
+            }
+        }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_edit_config, menu)
@@ -225,11 +211,11 @@ class EditStartActivity : AppCompatActivity(), View.OnClickListener {
                 if(!isBookUpload && FirebaseRepository.userInfo!!.uploadBookTime+ Const.CONST_TIME_LIMIT_BOOK > current){
 
                     val leftTime = (FirebaseRepository.userInfo!!.uploadBookTime+ Const.CONST_TIME_LIMIT_BOOK - current) / 60000
-                    util.getAlertDailog(
-                        context = this@EditStartActivity,
+
+                    getAlertDialog(
                         title = getString(R.string.dialog_time_limit_title),
                         message = String.format(getString(R.string.dialog_time_limit_book), leftTime),
-                        click = { _, _ -> }
+                        positiveAction = {}
                     ).show()
                     return true
                 }
