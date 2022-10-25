@@ -1,7 +1,6 @@
 package com.cheesejuice.fancymansion.ui.editor.start
 
 import android.content.Context
-import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.cheesejuice.fancymansion.Const
 import com.cheesejuice.fancymansion.R
 import com.cheesejuice.fancymansion.data.models.Config
+import com.cheesejuice.fancymansion.data.models.Logic
 import com.cheesejuice.fancymansion.data.repositories.PreferenceProvider
 import com.cheesejuice.fancymansion.data.repositories.file.FileRepository
 import com.cheesejuice.fancymansion.data.repositories.networking.FirebaseRepository
@@ -43,23 +43,17 @@ class EditStartViewModel @Inject constructor(
     val coverImage: File?
         get() = fileRepository.getImageFile(_config!!.bookId, _config!!.coverImage, isCover = true)
 
-    // gallery image
-    private val _updateImage = MutableLiveData<Boolean>()
-    val updateImage: LiveData<Boolean>
-        get() = _updateImage
-
-    var imageUri: Uri? = null
-
-
     // data
     private var _isBookUpload = false
     val isBookUpload: Boolean
         get() = _isBookUpload
 
+
     private var makeBook = false
 
 
-
+    // logic
+    private lateinit var _logic: Logic
 
     init {
         _loading.value = true
@@ -95,12 +89,5 @@ class EditStartViewModel @Inject constructor(
     private fun setLoading(loading: Boolean, loadingText: String = "") {
         _loadingText = loadingText
         _loading.value = loading
-    }
-
-    fun setImageFromGallery(imageName: String, imageUri: Uri?) {
-        this.imageUri = imageUri
-        _config!!.coverImage = imageName
-
-        _updateImage.value = true
     }
 }
